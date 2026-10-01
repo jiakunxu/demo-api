@@ -1,5 +1,7 @@
 package com.example.demo.article.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.article.api.ArticleService;
 import com.example.demo.article.api.bo.Article;
 import com.example.demo.article.dao.dataobject.ArticleDO;
@@ -8,9 +10,9 @@ import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +30,23 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             return 0;
         }
 
-        return this.count(BeanUtil.copy(article, ArticleDO.class));
+        return this.baseMapper.countArticle(BeanUtil.copy(article, ArticleDO.class));
     }
 
     @Override
     public List<Article> listArticles(Article article) {
         if (article == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(article, ArticleDO.class)), Article.class);
+        List<Article> list = BeanUtil.copy(
+            this.baseMapper.listArticles(BeanUtil.copy(article, ArticleDO.class)), Article.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -55,7 +64,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             return null;
         }
 
-        return BeanUtil.copy(this.get(new ArticleDO(id)), Article.class);
+        return BeanUtil.copy(this.getById(id), Article.class);
     }
 
     @Override
@@ -63,12 +72,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         ArticleDO articleDO = BeanUtil.copy(article, ArticleDO.class);
         articleDO.setCreator(creator);
 
-        try {
-            this.insert(articleDO);
-        } catch (Exception e) {
-            log.error("{}", articleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(articleDO);
 
         article.setId(articleDO.getId());
 
@@ -83,15 +87,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         ArticleDO articleDO = BeanUtil.copy(article, ArticleDO.class);
         articleDO.setModifier(modifier);
 
-        try {
-            if (this.update(articleDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", articleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(articleDO)) {
+            log.error("{}", articleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         return article;
@@ -99,18 +97,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
 
     @Override
     public Article deleteArticle(@NotNull BigInteger id, @NotBlank String modifier) {
-        ArticleDO articleDO = new ArticleDO();
-        articleDO.setId(id);
-        articleDO.setModifier(modifier);
+        var updateWrapper = Wrappers.<ArticleDO> lambdaUpdate().eq(ArticleDO::getId, id)
+            .set(ArticleDO::getDeleted, true).set(ArticleDO::getModifier, modifier);
 
-        try {
-            this.delete(articleDO);
-        } catch (Exception e) {
-            log.error("{}", articleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", id, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return BeanUtil.copy(articleDO, Article.class);
+        return new Article();
     }
 
 }
