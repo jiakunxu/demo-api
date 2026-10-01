@@ -105,7 +105,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return new Article();
+        return new Article(id);
     }
 
 }
