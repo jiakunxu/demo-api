@@ -1,14 +1,12 @@
 package com.example.demo.alipay.service;
 
 import com.alipay.easysdk.factory.Factory;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.alipay.api.AlipayFundAuthNotifyService;
 import com.example.demo.alipay.api.bo.fund.AlipayFundAuthNotify;
 import com.example.demo.alipay.dao.dataobject.AlipayFundAuthNotifyDO;
 import com.example.demo.alipay.dao.mapper.AlipayFundAuthNotifyMapper;
 import com.example.demo.framework.annotation.NotNull;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.framework.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -82,12 +80,7 @@ public class AlipayFundAuthNotifyServiceImpl extends
         AlipayFundAuthNotifyDO alipayFundAuthNotifyDO = BeanUtil.copy(alipayFundAuthNotify,
             AlipayFundAuthNotifyDO.class);
 
-        try {
-            this.insert(alipayFundAuthNotifyDO);
-        } catch (Exception e) {
-            log.error("{}", alipayFundAuthNotifyDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(alipayFundAuthNotifyDO);
 
         return alipayFundAuthNotify;
     }
