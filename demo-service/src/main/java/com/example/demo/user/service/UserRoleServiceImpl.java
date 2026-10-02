@@ -1,10 +1,11 @@
 package com.example.demo.user.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.role.api.RoleService;
 import com.example.demo.role.api.bo.Role;
@@ -16,6 +17,7 @@ import com.example.demo.user.dao.dataobject.UserDO;
 import com.example.demo.user.dao.dataobject.UserRoleDO;
 import com.example.demo.user.dao.mapper.UserRoleMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +49,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setRoleId(roleId);
 
-        return this.count(userRoleDO);
+        return this.baseMapper.countUserRole(userRoleDO);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserId(userId);
         userRoleDO.setCode(roleCode);
 
-        return this.count(userRoleDO);
+        return this.baseMapper.countUserRole(userRoleDO);
     }
 
     @Override
@@ -73,13 +75,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserId(userId);
         userRoleDO.setCodes(roleCode);
 
-        return this.count(userRoleDO);
+        return this.baseMapper.countUserRole(userRoleDO);
     }
 
     @Override
     public List<UserRole> listUserRoles(String userId) {
         if (StringUtils.isBlank(userId)) {
-            return null;
+            return List.of();
         }
 
         return listUserRoles(new BigInteger(userId));
@@ -88,29 +90,37 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     @Override
     public List<UserRole> listUserRoles(BigInteger userId) {
         if (userId == null) {
-            return null;
+            return List.of();
         }
 
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setUserId(userId);
 
-        return BeanUtil.copy(this.list(userRoleDO), UserRole.class);
+        List<UserRole> list = BeanUtil.copy(this.baseMapper.listUserRoles(userRoleDO),
+            UserRole.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
     public List<Role> listRoles(BigInteger userId, String status) {
         if (userId == null) {
-            return null;
+            return List.of();
         }
 
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setUserId(userId);
         userRoleDO.setStatus(status);
 
-        List<UserRole> userRoleList = BeanUtil.copy(this.list(userRoleDO), UserRole.class);
+        List<UserRole> userRoleList = BeanUtil.copy(this.baseMapper.listUserRoles(userRoleDO),
+            UserRole.class);
 
-        if (userRoleList == null || userRoleList.isEmpty()) {
-            return null;
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            return List.of();
         }
 
         List<Role> list = new ArrayList<>();
@@ -136,13 +146,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userDO.setRoleId(new BigInteger(roleId));
         userDO.setExists("true".equals(exists));
 
-        return count(userDO);
+        return this.baseMapper.countUser(userDO);
     }
 
     @Override
     public List<User> listUsers(BigInteger corpId, String roleId, String exists, User user) {
         if (corpId == null || StringUtils.isBlank(roleId) || user == null) {
-            return null;
+            return List.of();
         }
 
         user.setCorpId(corpId);
@@ -151,13 +161,19 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userDO.setRoleId(new BigInteger(roleId));
         userDO.setExists("true".equals(exists));
 
-        return BeanUtil.copy(list(userDO), User.class);
+        List<User> list = BeanUtil.copy(this.baseMapper.listUsers(userDO), User.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
     public List<User> listUsers(BigInteger corpId, String... roleCode) {
         if (corpId == null || roleCode == null || roleCode.length == 0) {
-            return null;
+            return List.of();
         }
 
         UserDO userDO = new UserDO();
@@ -166,16 +182,22 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userDO.setExists(Boolean.TRUE);
         userDO.setCodes(roleCode);
 
-        int count = count(userDO);
+        int count = this.baseMapper.countUser(userDO);
 
         if (count == 0) {
-            return null;
+            return List.of();
         }
 
         userDO.setPageNo(1);
         userDO.setPageSize(count);
 
-        return BeanUtil.copy(list(userDO), User.class);
+        List<User> list = BeanUtil.copy(this.baseMapper.listUsers(userDO), User.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -188,12 +210,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         UserRoleDO userRoleDO = BeanUtil.copy(userRole, UserRoleDO.class);
         userRoleDO.setCreator(creator);
 
-        try {
-            this.insert(userRoleDO);
-        } catch (Exception e) {
-            log.error("{}", userRoleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(userRoleDO);
 
         userRole.setId(userRoleDO.getId());
 
@@ -202,8 +219,8 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
     private List<UserRole> insertUserRole(BigInteger userId, List<UserRole> userRoleList,
                                           String creator) {
-        if (userRoleList == null || userRoleList.isEmpty()) {
-            return null;
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            return List.of();
         }
 
         for (UserRole userRole : userRoleList) {
@@ -212,12 +229,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             UserRoleDO userRoleDO = BeanUtil.copy(userRole, UserRoleDO.class);
             userRoleDO.setCreator(creator);
 
-            try {
-                this.insert(userRoleDO);
-            } catch (Exception e) {
-                log.error("{}", userRoleDO, e);
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-            }
+            this.save(userRoleDO);
 
             userRole.setId(userRoleDO.getId());
         }
@@ -246,7 +258,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         List<UserRole> list0 = listUserRoles(userId);
 
-        if (list0 == null || list0.isEmpty()) {
+        if (CollectionUtils.isEmpty(list0)) {
             insertUserRole(userId, userRoleList, modifier);
 
             userService.refreshToken(corpId, userId, modifier);
@@ -276,11 +288,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             UserRoleDO userRoleDO = BeanUtil.copy(m.getValue(), UserRoleDO.class);
             userRoleDO.setModifier(modifier);
 
-            try {
-                this.delete(userRoleDO);
-            } catch (Exception e) {
-                log.error("{}", userRoleDO, e);
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+            var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate()
+                .eq(UserRoleDO::getId, userRoleDO.getId()).set(UserRoleDO::getDeleted, true)
+                .set(UserRoleDO::getModifier, modifier);
+
+            if (!this.update(updateWrapper)) {
+                log.error("{}", userRoleDO);
+                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
             }
         }
 
@@ -305,12 +319,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             userRoleDO.setRoleId(roleId);
             userRoleDO.setCreator(modifier);
 
-            try {
-                this.insert(userRoleDO);
-            } catch (Exception e) {
-                log.error("{}", userRoleDO, e);
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-            }
+            this.save(userRoleDO);
 
             list.add(BeanUtil.copy(userRoleDO, UserRole.class));
 
@@ -332,11 +341,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setRoleId(roleId);
         userRoleDO.setModifier(modifier);
 
-        try {
-            this.delete(userRoleDO);
-        } catch (Exception e) {
-            log.error("{}", userRoleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().eq(UserRoleDO::getUserId, userId)
+            .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
+            .set(UserRoleDO::getModifier, modifier);
+
+        if (!this.update(updateWrapper)) {
+            log.error("{}", userRoleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         userService.refreshToken(corpId, userId, modifier);
@@ -348,6 +359,12 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     public UserRole deleteUserRole(@NotNull BigInteger corpId, @NotNull String[] userIds,
                                    BigInteger roleId, @NotBlank String modifier) {
         // TODO roleService.validate(corpId, roleId);
+
+        if (userIds.length == 0) {
+            UserRole userRole = new UserRole();
+            userRole.setRoleId(roleId);
+            return userRole;
+        }
 
         List<BigInteger> list = new ArrayList<>();
 
@@ -362,36 +379,18 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserIds(list.toArray(new BigInteger[0]));
         userRoleDO.setModifier(modifier);
 
-        try {
-            this.delete(userRoleDO);
-        } catch (Exception e) {
-            log.error("{}", userRoleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().in(UserRoleDO::getUserId, list)
+            .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
+            .set(UserRoleDO::getModifier, modifier);
+
+        if (!this.update(updateWrapper)) {
+            log.error("{}", userRoleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         userService.refreshToken(corpId, list.toArray(new BigInteger[0]), modifier);
 
         return BeanUtil.copy(userRoleDO, UserRole.class);
-    }
-
-    private int count(UserDO userDO) {
-        try {
-            return this.baseMapper.countUser(userDO);
-        } catch (Exception e) {
-            log.error("{}", userDO, e);
-        }
-
-        return 0;
-    }
-
-    private List<UserDO> list(UserDO userDO) {
-        try {
-            return this.baseMapper.listUsers(userDO);
-        } catch (Exception e) {
-            log.error("{}", userDO, e);
-        }
-
-        return null;
     }
 
 }
