@@ -1,6 +1,7 @@
 package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
@@ -105,12 +106,7 @@ public class WxpayProfitSharingServiceImpl extends
         WxpayProfitSharingDO wxpayProfitSharingDO = BeanUtil.copy(wxpayProfitSharing,
             WxpayProfitSharingDO.class);
 
-        try {
-            wxpayProfitSharingMapper.insert(wxpayProfitSharingDO);
-        } catch (Exception e) {
-            log.error("{}", wxpayProfitSharingDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(wxpayProfitSharingDO);
 
         return wxpayProfitSharing;
     }
@@ -124,16 +120,28 @@ public class WxpayProfitSharingServiceImpl extends
 
         wxpayProfitSharing.setOrderId(orderId);
 
-        WxpayProfitSharingDO wxpayProfitSharingDO = BeanUtil.copy(wxpayProfitSharing,
-            WxpayProfitSharingDO.class);
+        var updateWrapper = Wrappers.<WxpayProfitSharingDO> lambdaUpdate()
+            .eq(WxpayProfitSharingDO::getOrderId, orderId)
+            .set(WxpayProfitSharingDO::getOrderId, orderId)
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getMchid()),
+                WxpayProfitSharingDO::getMchid, wxpayProfitSharing.getMchid())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getSpMchid()),
+                WxpayProfitSharingDO::getSpMchid, wxpayProfitSharing.getSpMchid())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getSubMchid()),
+                WxpayProfitSharingDO::getSubMchid, wxpayProfitSharing.getSubMchid())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getTransactionId()),
+                WxpayProfitSharingDO::getTransactionId, wxpayProfitSharing.getTransactionId())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getOutOrderNo()),
+                WxpayProfitSharingDO::getOutOrderNo, wxpayProfitSharing.getOutOrderNo())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getState()),
+                WxpayProfitSharingDO::getState, wxpayProfitSharing.getState())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getReceivers()),
+                WxpayProfitSharingDO::getReceivers, wxpayProfitSharing.getReceivers())
+            .set(StringUtils.isNotEmpty(wxpayProfitSharing.getSuccessTime()),
+                WxpayProfitSharingDO::getSuccessTime, wxpayProfitSharing.getSuccessTime());
 
-        try {
-            if (wxpayProfitSharingMapper.update(wxpayProfitSharingDO) == 0) {
-                wxpayProfitSharingMapper.insert(wxpayProfitSharingDO);
-            }
-        } catch (Exception e) {
-            log.error("{}", wxpayProfitSharingDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            this.save(BeanUtil.copy(wxpayProfitSharing, WxpayProfitSharingDO.class));
         }
 
         return wxpayProfitSharing;

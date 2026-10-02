@@ -155,34 +155,7 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
 
         WxpayRefundDO wxpayRefundDO = BeanUtil.copy(wxpayRefund, WxpayRefundDO.class);
 
-        try {
-            wxpayRefundMapper.insert(wxpayRefundDO);
-        } catch (Exception e) {
-            log.error("{}", wxpayRefundDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
-
-        return wxpayRefund;
-    }
-
-    @Override
-    public WxpayRefund updateRefund(String refundId, WxpayRefund wxpayRefund) {
-        if (StringUtils.isBlank(refundId) || wxpayRefund == null) {
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
-        }
-
-        wxpayRefund.setRefundId(refundId);
-
-        WxpayRefundDO wxpayRefundDO = BeanUtil.copy(wxpayRefund, WxpayRefundDO.class);
-
-        try {
-            if (wxpayRefundMapper.update(wxpayRefundDO) == 0) {
-                wxpayRefundMapper.insert(wxpayRefundDO);
-            }
-        } catch (Exception e) {
-            log.error("{}", wxpayRefundDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(wxpayRefundDO);
 
         return wxpayRefund;
     }

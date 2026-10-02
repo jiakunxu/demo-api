@@ -16,6 +16,4 @@ public interface WxpayRefundService {
 
     WxpayRefund insertRefund(WxpayRefund wxpayRefund);
 
-    WxpayRefund updateRefund(String refundId, WxpayRefund wxpayRefund);
-
 }

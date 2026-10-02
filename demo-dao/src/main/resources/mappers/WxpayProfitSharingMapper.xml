@@ -34,38 +34,5 @@
 	]]>
 	</insert>
 
-	<update id="update" parameterType="wxpayProfitSharingDO">
-	<![CDATA[
-		UPDATE `tb_wxpay_profit_sharing` t
-		   SET t.`order_id` = #{orderId}
-	]]>
-		<if test="mchid != null and mchid != ''">
-		<![CDATA[ , t.`mchid` = #{mchid} ]]>
-		</if>
-		<if test="spMchid != null and spMchid != ''">
-		<![CDATA[ , t.`sp_mchid` = #{spMchid} ]]>
-		</if>
-		<if test="subMchid != null and subMchid != ''">
-		<![CDATA[ , t.`sub_mchid` = #{subMchid} ]]>
-		</if>
-		<if test="transactionId != null and transactionId != ''">
-		<![CDATA[ , t.`transaction_id` = #{transactionId} ]]>
-		</if>
-		<if test="outOrderNo != null and outOrderNo != ''">
-		<![CDATA[ , t.`out_order_no` = #{outOrderNo} ]]>
-		</if>
-		<if test="state != null and state != ''">
-		<![CDATA[ , t.`state` = #{state} ]]>
-		</if>
-		<if test="receivers != null and receivers != ''">
-		<![CDATA[ , t.`receivers` = #{receivers} ]]>
-		</if>
-		<if test="successTime != null and successTime != ''">
-		<![CDATA[ , t.`success_time` = #{successTime} ]]>
-		</if>
-	<![CDATA[
-		 WHERE t.`order_id` = #{orderId}
-	]]>
-	</update>
 
 </mapper>

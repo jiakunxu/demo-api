@@ -139,8 +139,8 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
 
         for (int i = 1;; i++) {
             Subscribe subscribe = new Subscribe();
-            subscribe.setPageNo(i);
-            subscribe.setPageSize(20);
+            subscribe.setPageNo((long) i);
+            subscribe.setPageSize(20L);
 
             List<Tunnel> list = listSubscribes(scene, sceneId, subscribe);
 
