@@ -3,18 +3,15 @@ package com.example.demo.wxpay.api.bo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Getter
 @Setter
-public class WxpayNotify implements Serializable {
+public class WxpayTrade implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -5946034537353065485L;
-
-    /**
-     * 通知id
-     */
-    private String            id;
 
     /**
      * 通知创建时间
@@ -27,38 +24,24 @@ public class WxpayNotify implements Serializable {
     private String            eventType;
 
     /**
+     * 通知数据类型
+     */
+    private String            resourceType;
+
+    /**
      * 回调摘要
      */
     private String            summary;
 
     /**
-     * 通知数据类型
+     * 应用ID
      */
-    private String            resourceType;
-
     private String            appid;
 
+    /**
+     * 商户号
+     */
     private String            mchid;
-
-    /**
-     * 服务商应用id
-     */
-    private String            spAppid;
-
-    /**
-     * 服务商户号
-     */
-    private String            spMchid;
-
-    /**
-     * 子商户应用id
-     */
-    private String            subAppid;
-
-    /**
-     * 子商户号
-     */
-    private String            subMchid;
 
     /**
      * 商户订单号

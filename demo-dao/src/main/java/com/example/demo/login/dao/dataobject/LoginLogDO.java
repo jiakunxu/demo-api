@@ -1,7 +1,11 @@
 package com.example.demo.login.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -12,11 +16,14 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@TableName("tb_login_log")
 public class LoginLogDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = -4810978561182544347L;
 
+    @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
     /**
@@ -48,9 +55,6 @@ public class LoginLogDO extends BaseDO {
      * 错误消息
      */
     private String            errMsg;
-
-    public LoginLogDO() {
-    }
 
     public LoginLogDO(BigInteger id) {
         this.id = id;

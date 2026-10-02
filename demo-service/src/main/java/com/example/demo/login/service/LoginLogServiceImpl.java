@@ -1,19 +1,17 @@
 package com.example.demo.login.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.login.api.LoginLogService;
 import com.example.demo.login.api.bo.LoginLog;
 import com.example.demo.login.dao.dataobject.LoginLogDO;
 import com.example.demo.login.dao.mapper.LoginLogMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -29,7 +27,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
             return 0;
         }
 
-        return this.count(BeanUtil.copy(log, LoginLogDO.class));
+        return this.baseMapper.countLog(BeanUtil.copy(log, LoginLogDO.class));
     }
 
     @Override
@@ -38,8 +36,8 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
             return List.of();
         }
 
-        List<LoginLog> list = BeanUtil.copy(this.list(BeanUtil.copy(log, LoginLogDO.class)),
-            LoginLog.class);
+        List<LoginLog> list = BeanUtil
+            .copy(this.baseMapper.listLogs(BeanUtil.copy(log, LoginLogDO.class)), LoginLog.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -63,7 +61,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
             return null;
         }
 
-        return BeanUtil.copy(this.get(new LoginLogDO(id)), LoginLog.class);
+        return BeanUtil.copy(this.getById(id), LoginLog.class);
     }
 
     @Override
@@ -71,12 +69,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
         LoginLogDO logDO = BeanUtil.copy(log, LoginLogDO.class);
         logDO.setCreator(creator);
 
-        try {
-            this.insert(logDO);
-        } catch (Exception e) {
-            LoginLogServiceImpl.log.error("{}", logDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(logDO);
 
         log.setId(logDO.getId());
 
