@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.operate.dao.mapper.OperateLogMapper">
 
-	<sql id="queryConditions">
+	<sql id="queryCondition">
 		<if test="clazz != null and clazz != ''">
 		<![CDATA[ AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
 		</if>
@@ -28,7 +28,7 @@
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
 	]]>
-		<include refid="queryConditions"/>
+		<include refid="queryCondition"/>
 	</select>
 
 	<select id="listLogs" parameterType="operateLogDO" resultType="operateLogDO">
@@ -50,7 +50,7 @@
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
 	]]>
-		<include refid="queryConditions"/>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY ${sort} ${dir}, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}

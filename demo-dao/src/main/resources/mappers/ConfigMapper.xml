@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.config.dao.mapper.ConfigMapper">
 
-	<sql id="queryConditions">
+	<sql id="queryCondition">
 		<if test="name != null and name != ''">
 		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
 		</if>
@@ -28,7 +28,7 @@
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
 	]]>
-		<include refid="queryConditions"/>
+		<include refid="queryCondition"/>
 	</select>
 
 	<select id="listConfigs" parameterType="configDO" resultType="configDO">
@@ -43,7 +43,7 @@
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
   	]]>
-		<include refid="queryConditions"/>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
