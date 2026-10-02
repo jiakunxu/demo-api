@@ -4,15 +4,7 @@
 
 <mapper namespace="com.example.demo.role.dao.mapper.RoleMapper">
 
-	<select id="count" parameterType="roleDO" resultType="java.lang.Integer">
-	<![CDATA[
-		SELECT COUNT(*)
-		  FROM `tb_role` t
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
-		</if>
+	<sql id="queryCondition">
 		<if test="code != null and code != ''">
 		<![CDATA[ AND t.`code` LIKE #{code,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
 		</if>
@@ -28,9 +20,21 @@
 		<if test="end != null and end != ''">
 		<![CDATA[ AND t.`create_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
 		</if>
+	</sql>
+
+	<select id="countRole" parameterType="roleDO" resultType="java.lang.Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM `tb_role` t
+		 WHERE t.`is_deleted` = 0
+	]]>
+		<if test="id != null">
+		<![CDATA[ AND t.`id` = #{id} ]]>
+		</if>
+		<include refid="queryCondition"/>
 	</select>
 
-	<select id="list" parameterType="roleDO" resultType="roleDO">
+	<select id="listRoles" parameterType="roleDO" resultType="roleDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`code`,
@@ -41,110 +45,12 @@
 			   t.`create_time` AS createTime
 		  FROM `tb_role` t
 		 WHERE t.`is_deleted` = 0
-  	]]>
-		<if test="code != null and code != ''">
-		<![CDATA[ AND t.`code` LIKE #{code,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`create_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`create_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
+	]]>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY t.`order`, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
-
-	<select id="get" parameterType="roleDO" resultType="roleDO">
-	<![CDATA[
-		SELECT t.`id`,
-			   t.`code`,
-			   t.`name`,
-			   t.`remark`,
-			   t.`order`,
-			   t.`status`
-		  FROM `tb_role` t
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
-		</if>
-		<if test="code != null and code != ''">
-		<![CDATA[ AND t.`code` = #{code} ]]>
-		</if>
-	</select>
-
-	<insert id="insert" parameterType="roleDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_role`
-		  (
-			`code`,
-			`name`,
-			`remark`,
-			`order`,
-			`status`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{code},
-			#{name},
-			#{remark},
-			#{order},
-			#{status},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
-
-	<update id="update" parameterType="roleDO">
-	<![CDATA[
-		UPDATE `tb_role` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`code` = #{code},
-			   t.`name` = #{name},
-			   t.`remark` = #{remark},
-			   t.`order` = #{order},
-			   t.`status` = #{status}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
-
-	<update id="updateStatus" parameterType="roleDO">
-	<![CDATA[
-		UPDATE `tb_role` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`status` = #{status}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
-
-	<update id="delete" parameterType="roleDO">
-	<![CDATA[
-		UPDATE `tb_role` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`is_deleted` = 1
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
 
 </mapper>

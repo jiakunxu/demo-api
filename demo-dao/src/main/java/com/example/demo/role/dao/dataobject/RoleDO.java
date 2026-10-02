@@ -1,6 +1,7 @@
 package com.example.demo.role.dao.dataobject;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
@@ -37,6 +38,7 @@ public class RoleDO extends BaseDO {
      */
     private String            remark;
 
+    @TableField("`order`")
     private Integer           order;
 
     /**
