@@ -34,10 +34,13 @@ public class UserDO extends BaseDO {
 
     private String            password;
 
+    @TableField("is_expired")
     private Boolean           expired;
 
+    @TableField("is_locked")
     private Boolean           locked;
 
+    @TableField("is_enabled")
     private Boolean           enabled;
 
     private String            refreshToken;
