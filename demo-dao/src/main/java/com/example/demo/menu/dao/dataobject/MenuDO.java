@@ -60,6 +60,7 @@ public class MenuDO extends BaseDO {
     /**
      * 路由参数
      */
+    @TableField("`query`")
     private String            query;
 
     /**
@@ -70,21 +71,25 @@ public class MenuDO extends BaseDO {
     /**
      * 排序
      */
+    @TableField("`order`")
     private Integer           order;
 
     /**
      * 0 不是 1 是
      */
+    @TableField("is_external")
     private Boolean           external;
 
     /**
      * 0 不缓存 1 缓存
      */
+    @TableField("is_cached")
     private Boolean           cached;
 
     /**
      * 0 显示 1 不显示
      */
+    @TableField("is_hidden")
     private Boolean           hidden;
 
     /**

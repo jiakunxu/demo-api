@@ -1,10 +1,11 @@
 package com.example.demo.menu.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.menu.api.MenuService;
 import com.example.demo.menu.api.bo.Menu;
@@ -38,7 +39,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = new MenuDO();
         menuDO.setPid(pid);
 
-        return this.count(menuDO);
+        return this.baseMapper.countMenu(menuDO);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             menu.setPid(new BigInteger(pid));
         }
 
-        return this.count(BeanUtil.copy(menu, MenuDO.class));
+        return this.baseMapper.countMenu(BeanUtil.copy(menu, MenuDO.class));
     }
 
     @Override
@@ -64,7 +65,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             menu.setPid(new BigInteger(pid));
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(menu, MenuDO.class)), Menu.class);
+        return BeanUtil.copy(this.baseMapper.listMenus(BeanUtil.copy(menu, MenuDO.class)),
+            Menu.class);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setName(name);
         menuDO.setStatus(status);
 
-        return BeanUtil.copy(this.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.baseMapper.listMenus(menuDO), Menu.class);
     }
 
     @Override
@@ -86,7 +88,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = new MenuDO();
         menuDO.setIds(ids);
 
-        List<Menu> menus = BeanUtil.copy(this.list(menuDO), Menu.class);
+        List<Menu> menus = BeanUtil.copy(this.baseMapper.listMenus(menuDO), Menu.class);
 
         if (CollectionUtils.isEmpty(menus)) {
             return null;
@@ -121,7 +123,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setStatus(Menu.Status.ENABLE.value);
         menuDO.setTypes(type);
 
-        return BeanUtil.copy(this.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.baseMapper.listMenus(menuDO), Menu.class);
     }
 
     @Override
@@ -135,7 +137,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setTypes(type);
         menuDO.setUserId(userId);
 
-        return BeanUtil.copy(this.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.baseMapper.listMenus(menuDO), Menu.class);
     }
 
     @Override
@@ -153,7 +155,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             return null;
         }
 
-        return BeanUtil.copy(this.get(new MenuDO(id)), Menu.class);
+        return BeanUtil.copy(this.getById(id), Menu.class);
     }
 
     @Override
@@ -163,12 +165,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = BeanUtil.copy(menu, MenuDO.class);
         menuDO.setCreator(creator);
 
-        try {
-            this.insert(menuDO);
-        } catch (Exception e) {
-            log.error("{}", menuDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(menuDO);
 
         menu.setId(menuDO.getId());
 
@@ -182,15 +179,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = BeanUtil.copy(menu, MenuDO.class);
         menuDO.setModifier(modifier);
 
-        try {
-            if (this.update(menuDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", menuDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(menuDO)) {
+            log.error("{}", menuDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         return menu;
@@ -206,18 +197,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "已关联角色，请先调整角色菜单");
         }
 
-        MenuDO menuDO = new MenuDO();
-        menuDO.setId(id);
-        menuDO.setModifier(modifier);
+        var updateWrapper = Wrappers.<MenuDO> lambdaUpdate().eq(MenuDO::getId, id)
+            .set(MenuDO::getDeleted, true).set(MenuDO::getModifier, modifier);
 
-        try {
-            this.delete(menuDO);
-        } catch (Exception e) {
-            log.error("{}", menuDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", id, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return BeanUtil.copy(menuDO, Menu.class);
+        return new Menu(id);
     }
 
 }
