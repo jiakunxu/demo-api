@@ -217,11 +217,12 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         return userRole;
     }
 
-    private List<UserRole> insertUserRole(BigInteger userId, List<UserRole> userRoleList,
-                                          String creator) {
+    private void insertUserRole(BigInteger userId, List<UserRole> userRoleList, String creator) {
         if (CollectionUtils.isEmpty(userRoleList)) {
-            return List.of();
+            return;
         }
+
+        List<UserRoleDO> userRoleDOs = new ArrayList<>(userRoleList.size());
 
         for (UserRole userRole : userRoleList) {
             userRole.setUserId(userId);
@@ -229,12 +230,10 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             UserRoleDO userRoleDO = BeanUtil.copy(userRole, UserRoleDO.class);
             userRoleDO.setCreator(creator);
 
-            this.save(userRoleDO);
-
-            userRole.setId(userRoleDO.getId());
+            userRoleDOs.add(userRoleDO);
         }
 
-        return userRoleList;
+        this.saveBatch(userRoleDOs);
     }
 
     @Override
@@ -309,7 +308,11 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
                                          BigInteger roleId, @NotBlank String modifier) {
         // TODO roleService.validate(corpId, roleId);
 
-        List<UserRole> list = new ArrayList<>();
+        if (userIds.length == 0) {
+            return List.of();
+        }
+
+        List<UserRoleDO> userRoleDOs = new ArrayList<>(userIds.length);
 
         for (String userId : userIds) {
             userService.validate(corpId, userId);
@@ -319,14 +322,16 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             userRoleDO.setRoleId(roleId);
             userRoleDO.setCreator(modifier);
 
-            this.save(userRoleDO);
-
-            list.add(BeanUtil.copy(userRoleDO, UserRole.class));
-
-            userService.refreshToken(corpId, new BigInteger(userId), modifier);
+            userRoleDOs.add(userRoleDO);
         }
 
-        return list;
+        this.saveBatch(userRoleDOs);
+
+        for (UserRoleDO userRoleDO : userRoleDOs) {
+            userService.refreshToken(corpId, userRoleDO.getUserId(), modifier);
+        }
+
+        return BeanUtil.copy(userRoleDOs, UserRole.class);
     }
 
     @Override
