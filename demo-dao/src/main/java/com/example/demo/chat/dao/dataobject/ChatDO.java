@@ -1,7 +1,11 @@
 package com.example.demo.chat.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -15,11 +19,14 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@TableName("tb_chat")
 public class ChatDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = 8356420243427841172L;
 
+    @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
     private BigInteger        userId;

@@ -1,8 +1,12 @@
 package com.example.demo.bytedance.dao.dataobject;
 
 import com.alibaba.fastjson2.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -15,11 +19,14 @@ import java.math.BigInteger;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@TableName("tb_bytedance_notify")
 public class BytedanceNotifyDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = 7889307835833273313L;
 
+    @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
     /**
