@@ -2,6 +2,7 @@ package com.example.demo.subscribe.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class Subscribe extends BaseBO {
 
     @Serial

@@ -47,7 +47,7 @@
 	]]>
 	</select>
 
-	<select id="get" parameterType="subscribeDO" resultType="subscribeDO">
+	<select id="getSubscribe" parameterType="subscribeDO" resultType="subscribeDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
@@ -64,30 +64,4 @@
 	]]>
 	</select>
 
-	<insert id="insert" parameterType="subscribeDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_subscribe`
-		  (
-			`user_id`,
-			`app_id`,
-			`scene`,
-			`scene_id`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{userId},
-			#{appId},
-			#{scene},
-			#{sceneId},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-    </insert>
-	
 </mapper>

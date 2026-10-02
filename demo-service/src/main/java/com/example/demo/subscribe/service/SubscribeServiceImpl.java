@@ -1,19 +1,19 @@
 package com.example.demo.subscribe.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.demo.framework.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.framework.constant.HttpStatus;
+import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.mq.api.ProducerService;
 import com.example.demo.socket.api.bo.Message;
 import com.example.demo.subscribe.api.SubscribeService;
 import com.example.demo.subscribe.api.bo.Subscribe;
 import com.example.demo.subscribe.dao.dataobject.SubscribeDO;
-import com.example.demo.tunnel.api.bo.Tunnel;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.subscribe.dao.mapper.SubscribeMapper;
-import com.example.demo.tunnel.dao.dataobject.TunnelDO;
+import com.example.demo.tunnel.api.bo.Tunnel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribeDO.setScene(scene);
         subscribeDO.setSceneId(new BigInteger(sceneId));
 
-        return count0(subscribeDO);
+        return this.baseMapper.countSubscribe0(subscribeDO);
     }
 
     @Override
@@ -58,20 +58,27 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribeDO.setScene(scene);
         subscribeDO.setSceneId(new BigInteger(sceneId));
 
-        return count1(subscribeDO);
+        return this.baseMapper.countSubscribe1(subscribeDO);
     }
 
     @Override
     public List<Tunnel> listSubscribes(String scene, String sceneId, Subscribe subscribe) {
         if (StringUtils.isBlank(scene) || StringUtils.isBlank(sceneId) || subscribe == null) {
-            return null;
+            return List.of();
         }
 
         subscribe.setScene(scene);
         subscribe.setSceneId(new BigInteger(sceneId));
 
-        return BeanUtil.copy(listSubscribes(BeanUtil.copy(subscribe, SubscribeDO.class)),
+        List<Tunnel> list = BeanUtil.copy(
+            this.baseMapper.listSubscribes(BeanUtil.copy(subscribe, SubscribeDO.class)),
             Tunnel.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -87,7 +94,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribeDO.setScene(scene);
         subscribeDO.setSceneId(new BigInteger(sceneId));
 
-        return BeanUtil.copy(this.get(subscribeDO), Subscribe.class);
+        return BeanUtil.copy(this.baseMapper.getSubscribe(subscribeDO), Subscribe.class);
     }
 
     @Override
@@ -119,12 +126,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
             return s;
         }
 
-        try {
-            this.insert(subscribeDO);
-        } catch (Exception e) {
-            log.error("{}", subscribeDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(subscribeDO);
 
         return BeanUtil.copy(subscribeDO, Subscribe.class);
     }
@@ -142,7 +144,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
 
             List<Tunnel> list = listSubscribes(scene, sceneId, subscribe);
 
-            if (list == null || list.isEmpty()) {
+            if (CollectionUtils.isEmpty(list)) {
                 return;
             }
 
@@ -155,36 +157,6 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
                 return;
             }
         }
-    }
-
-    private int count0(SubscribeDO subscribeDO) {
-        try {
-            return this.baseMapper.count0(subscribeDO);
-        } catch (Exception e) {
-            log.error("{}", subscribeDO, e);
-        }
-
-        return 0;
-    }
-
-    private int count1(SubscribeDO subscribeDO) {
-        try {
-            return this.baseMapper.count1(subscribeDO);
-        } catch (Exception e) {
-            log.error("{}", subscribeDO, e);
-        }
-
-        return 0;
-    }
-
-    private List<TunnelDO> listSubscribes(SubscribeDO subscribeDO) {
-        try {
-            return this.baseMapper.listSubscribes(subscribeDO);
-        } catch (Exception e) {
-            log.error("{}", subscribeDO, e);
-        }
-
-        return null;
     }
 
 }
