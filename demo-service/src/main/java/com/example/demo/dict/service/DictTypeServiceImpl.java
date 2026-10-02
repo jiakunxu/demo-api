@@ -1,5 +1,7 @@
 package com.example.demo.dict.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.cache.api.RedisService;
 import com.example.demo.dict.api.DictDataService;
 import com.example.demo.dict.api.DictTypeService;
@@ -10,9 +12,9 @@ import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,16 +40,23 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return 0;
         }
 
-        return this.count(BeanUtil.copy(type, DictTypeDO.class));
+        return this.baseMapper.countType(BeanUtil.copy(type, DictTypeDO.class));
     }
 
     @Override
     public List<DictType> listTypes(DictType type) {
         if (type == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(type, DictTypeDO.class)), DictType.class);
+        List<DictType> list = BeanUtil
+            .copy(this.baseMapper.listTypes(BeanUtil.copy(type, DictTypeDO.class)), DictType.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -78,7 +87,11 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
 
         typeDO.setValue(value);
 
-        type = BeanUtil.copy(this.get(typeDO), DictType.class);
+        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery()
+            .eq(typeDO.getId() != null, DictTypeDO::getId, typeDO.getId())
+            .eq(StringUtils.isNotEmpty(value), DictTypeDO::getValue, value);
+
+        type = BeanUtil.copy(this.getOne(queryWrapper), DictType.class);
 
         if (type == null) {
             return null;
@@ -99,11 +112,11 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return null;
         }
 
-        DictTypeDO typeDO = new DictTypeDO();
-        typeDO.setId(id);
-        typeDO.setValue(value);
+        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery()
+            .eq(id != null, DictTypeDO::getId, id)
+            .eq(StringUtils.isNotEmpty(value), DictTypeDO::getValue, value);
 
-        return BeanUtil.copy(this.get(typeDO), DictType.class);
+        return BeanUtil.copy(this.getOne(queryWrapper), DictType.class);
     }
 
     @Override
@@ -111,12 +124,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         DictTypeDO typeDO = BeanUtil.copy(type, DictTypeDO.class);
         typeDO.setCreator(creator);
 
-        try {
-            this.insert(typeDO);
-        } catch (Exception e) {
-            log.error("{}", typeDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(typeDO);
 
         type.setId(typeDO.getId());
 
@@ -138,15 +146,9 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         DictTypeDO typeDO = BeanUtil.copy(type, DictTypeDO.class);
         typeDO.setModifier(modifier);
 
-        try {
-            if (this.update(typeDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", typeDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(typeDO)) {
+            log.error("{}", typeDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         dictDataService.updateData(id, type.getValue(), modifier);
@@ -171,11 +173,12 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         typeDO.setId(id);
         typeDO.setModifier(modifier);
 
-        try {
-            this.delete(typeDO);
-        } catch (Exception e) {
-            log.error("{}", typeDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        var updateWrapper = Wrappers.<DictTypeDO> lambdaUpdate().eq(DictTypeDO::getId, id)
+            .set(DictTypeDO::getDeleted, true).set(DictTypeDO::getModifier, modifier);
+
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", id, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         dictDataService.deleteData(id, null, modifier);
