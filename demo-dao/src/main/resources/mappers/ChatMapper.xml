@@ -45,7 +45,6 @@
 	]]>
 	</select>
 
-
 	<update id="updateChat" parameterType="chatDO">
 	<![CDATA[
 		UPDATE `tb_chat` t
