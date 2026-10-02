@@ -1,5 +1,6 @@
 package com.example.demo.menu.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
+@TableName("tb_menu")
 public class MenuDO extends BaseDO {
 
     @Serial

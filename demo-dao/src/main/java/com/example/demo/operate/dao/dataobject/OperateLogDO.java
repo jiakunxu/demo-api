@@ -1,5 +1,6 @@
 package com.example.demo.operate.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@TableName("tb_operate_log")
 public class OperateLogDO extends BaseDO {
 
     @Serial
