@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RoleMapper extends BaseMapper<RoleDO> {
 
-    int countRole(RoleDO roleDO);
+    long countRole(RoleDO roleDO);
 
     List<RoleDO> listRoles(RoleDO roleDO);
 

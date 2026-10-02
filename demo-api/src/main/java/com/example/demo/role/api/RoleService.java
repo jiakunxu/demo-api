@@ -12,7 +12,7 @@ public interface RoleService {
 
     String ROLE_ADMIN = "ROLE_ADMIN";
 
-    int countRole(Role role);
+    long countRole(Role role);
 
     List<Role> listRoles(Role role);
 

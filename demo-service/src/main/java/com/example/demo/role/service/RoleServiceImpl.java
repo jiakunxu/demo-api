@@ -39,7 +39,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     private UserRoleService            userRoleService;
 
     @Override
-    public int countRole(Role role) {
+    public long countRole(Role role) {
         if (role == null) {
             return 0;
         }
