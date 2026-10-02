@@ -32,7 +32,7 @@ public class DictTypeController extends BaseController {
         dictType.setValue(this.getParameter(request, "value"));
         dictType.setStatus(this.getParameter(request, "status"));
 
-        int count = dictTypeService.countType(dictType);
+        long count = dictTypeService.countType(dictType);
 
         if (count == 0) {
             return new ListResponse<>(0, List.of());

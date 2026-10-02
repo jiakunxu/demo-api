@@ -29,7 +29,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
                                  implements RoleMenuService {
 
     @Override
-    public int countRoleMenu(BigInteger menuId) {
+    public long countRoleMenu(BigInteger menuId) {
         if (menuId == null) {
             return 0;
         }

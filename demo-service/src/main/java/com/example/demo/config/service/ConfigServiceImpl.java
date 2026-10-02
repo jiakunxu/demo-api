@@ -25,7 +25,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
                                implements ConfigService {
 
     @Override
-    public int countConfig(Config config) {
+    public long countConfig(Config config) {
         if (config == null) {
             return 0;
         }

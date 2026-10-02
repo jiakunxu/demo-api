@@ -26,7 +26,7 @@ public class CorpController extends BaseController {
     public ListResponse<Corp> list(HttpServletRequest request, HttpServletResponse response) {
         Corp corp = this.getParameter(request, new Corp());
 
-        int count = corpService.countCorp(corp);
+        long count = corpService.countCorp(corp);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.corp.dao.mapper.CorpMapper">
 
-	<select id="countCorp" parameterType="corpDO" resultType="java.lang.Integer">
+	<select id="countCorp" parameterType="corpDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(1)
 		  FROM `tb_corp` t

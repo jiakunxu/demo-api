@@ -33,7 +33,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
     private ProducerService producerService;
 
     @Override
-    public int countSubscribe(BigInteger userId, String appId, String scene, String sceneId) {
+    public long countSubscribe(BigInteger userId, String appId, String scene, String sceneId) {
         if (userId == null || StringUtils.isBlank(scene) || StringUtils.isBlank(sceneId)) {
             return 0;
         }
@@ -48,7 +48,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
     }
 
     @Override
-    public int countSubscribe(BigInteger userId, String scene, String sceneId) {
+    public long countSubscribe(BigInteger userId, String scene, String sceneId) {
         if (userId == null || StringUtils.isBlank(scene) || StringUtils.isBlank(sceneId)) {
             return 0;
         }

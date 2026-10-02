@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ArticleService {
 
-    int countArticle(Article article);
+    long countArticle(Article article);
 
     List<Article> listArticles(Article article);
 

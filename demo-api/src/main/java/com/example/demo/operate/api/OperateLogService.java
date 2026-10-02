@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OperateLogService {
 
-    int countLog(OperateLog operateLog);
+    long countLog(OperateLog operateLog);
 
     List<OperateLog> listLogs(OperateLog operateLog);
 

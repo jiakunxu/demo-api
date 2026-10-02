@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface DictTypeService {
 
-    int countType(DictType type);
+    long countType(DictType type);
 
     List<DictType> listTypes(DictType type);
 

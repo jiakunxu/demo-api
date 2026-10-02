@@ -37,7 +37,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
     private UserService       userService;
 
     @Override
-    public int countChat(BigInteger userId) {
+    public long countChat(BigInteger userId) {
         if (userId == null) {
             return 0;
         }

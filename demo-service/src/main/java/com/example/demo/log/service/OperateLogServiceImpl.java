@@ -22,7 +22,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
                                    implements OperateLogService {
 
     @Override
-    public int countLog(OperateLog log) {
+    public long countLog(OperateLog log) {
         if (log == null) {
             return 0;
         }

@@ -45,15 +45,15 @@ public class BaseQuery implements Serializable {
      * 分页号，从1开始.
      */
     @TableField(exist = false)
-    private Integer           pageNo;
+    private Long              pageNo;
 
     @TableField(exist = false)
-    private Integer           pageSize;
+    private Long              pageSize;
 
     @TableField(exist = false)
-    private Integer           offset;
+    private Long              offset;
 
-    public Integer getOffset() {
+    public Long getOffset() {
         if (this.pageNo == null || this.pageSize == null) {
             return null;
         }

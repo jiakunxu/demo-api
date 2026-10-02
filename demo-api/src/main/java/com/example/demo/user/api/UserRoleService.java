@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface UserRoleService {
 
-    int countUserRole(BigInteger roleId);
+    long countUserRole(BigInteger roleId);
 
-    int countUserRole(BigInteger userId, String roleCode);
+    long countUserRole(BigInteger userId, String roleCode);
 
-    int countUserRole(BigInteger userId, String... roleCode);
+    long countUserRole(BigInteger userId, String... roleCode);
 
     List<UserRole> listUserRoles(String userId);
 
@@ -21,7 +21,7 @@ public interface UserRoleService {
 
     List<Role> listRoles(BigInteger userId, String status);
 
-    int countUser(BigInteger corpId, String roleId, String exists, User user);
+    long countUser(BigInteger corpId, String roleId, String exists, User user);
 
     List<User> listUsers(BigInteger corpId, String roleId, String exists, User user);
 

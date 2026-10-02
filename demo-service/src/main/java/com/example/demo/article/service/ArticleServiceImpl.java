@@ -25,7 +25,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
                                 implements ArticleService {
 
     @Override
-    public int countArticle(Article article) {
+    public long countArticle(Article article) {
         if (article == null) {
             return 0;
         }

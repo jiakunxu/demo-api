@@ -29,7 +29,7 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
                              implements CorpService, ICorpService {
 
     @Override
-    public int countCorp(Corp corp) {
+    public long countCorp(Corp corp) {
         if (corp == null) {
             return 0;
         }

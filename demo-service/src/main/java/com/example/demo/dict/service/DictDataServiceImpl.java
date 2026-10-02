@@ -30,7 +30,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     private RedisService<String, DictData> redisService;
 
     @Override
-    public int countData(String typeId, String typeValue, DictData data) {
+    public long countData(String typeId, String typeValue, DictData data) {
         if (StringUtils.isAllBlank(typeId, typeValue) || data == null) {
             return 0;
         }

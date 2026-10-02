@@ -35,7 +35,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
     private RedisService<String, DictType> redisService;
 
     @Override
-    public int countType(DictType type) {
+    public long countType(DictType type) {
         if (type == null) {
             return 0;
         }

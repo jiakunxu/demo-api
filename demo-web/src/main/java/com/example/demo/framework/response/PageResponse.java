@@ -17,17 +17,17 @@ public class PageResponse<T> extends AbstractResponse {
     @Serial
     private static final long serialVersionUID = 5272336433321751345L;
 
-    private Integer           pageNo;
+    private Long              pageNo;
 
-    private Integer           pageSize;
+    private Long              pageSize;
 
-    private Integer           pageCount;
+    private Long              pageCount;
 
-    private Integer           totalCount;
+    private Long              totalCount;
 
     private List<T>           list;
 
-    public PageResponse(Integer pageNo, Integer pageSize, Integer totalCount, List<T> list) {
+    public PageResponse(Long pageNo, Long pageSize, Long totalCount, List<T> list) {
         this.setCode(HttpStatus.OK);
         this.setPageNo(pageNo == null ? 0 : pageNo);
         this.setPageSize(pageSize == null ? 0 : pageSize);

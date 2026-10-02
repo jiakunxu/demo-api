@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RoleMenuService {
 
-    int countRoleMenu(BigInteger menuId);
+    long countRoleMenu(BigInteger menuId);
 
     List<RoleMenu> listRoleMenus(BigInteger roleId);
 

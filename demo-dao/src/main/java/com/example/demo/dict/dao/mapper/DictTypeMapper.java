@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface DictTypeMapper extends BaseMapper<DictTypeDO> {
 
-    int countType(DictTypeDO dictTypeDO);
+    long countType(DictTypeDO dictTypeDO);
 
     List<DictTypeDO> listTypes(DictTypeDO dictTypeDO);
 

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface CorpService {
 
-    int countCorp(Corp corp);
+    long countCorp(Corp corp);
 
     List<Corp> listCorps(Corp corp);
 

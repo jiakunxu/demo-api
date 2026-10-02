@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface LoginLogMapper extends BaseMapper<LoginLogDO> {
 
-    int countLog(LoginLogDO loginLogDO);
+    long countLog(LoginLogDO loginLogDO);
 
     List<LoginLogDO> listLogs(LoginLogDO loginLogDO);
 

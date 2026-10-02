@@ -22,7 +22,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
                                  implements LoginLogService {
 
     @Override
-    public int countLog(LoginLog log) {
+    public long countLog(LoginLog log) {
         if (log == null) {
             return 0;
         }

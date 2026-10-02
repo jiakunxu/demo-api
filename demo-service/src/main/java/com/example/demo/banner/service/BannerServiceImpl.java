@@ -25,7 +25,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
                                implements BannerService {
 
     @Override
-    public int countBanner(Banner banner) {
+    public long countBanner(Banner banner) {
         if (banner == null) {
             return 0;
         }

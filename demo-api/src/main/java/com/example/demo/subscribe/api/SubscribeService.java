@@ -20,7 +20,7 @@ public interface SubscribeService {
      * @param sceneId
      * @return
      */
-    int countSubscribe(BigInteger userId, String appId, String scene, String sceneId);
+    long countSubscribe(BigInteger userId, String appId, String scene, String sceneId);
 
     /**
      *
@@ -29,7 +29,7 @@ public interface SubscribeService {
      * @param sceneId
      * @return
      */
-    int countSubscribe(BigInteger userId, String scene, String sceneId);
+    long countSubscribe(BigInteger userId, String scene, String sceneId);
 
     /**
      *

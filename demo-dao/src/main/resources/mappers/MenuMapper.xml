@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.menu.dao.mapper.MenuMapper">
 
-	<select id="countMenu" parameterType="menuDO" resultType="java.lang.Integer">
+	<select id="countMenu" parameterType="menuDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_menu` t

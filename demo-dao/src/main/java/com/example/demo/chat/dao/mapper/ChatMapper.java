@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface ChatMapper extends BaseMapper<ChatDO> {
 
-    int countChat(ChatDO chatDO);
+    long countChat(ChatDO chatDO);
 
     List<ChatDO> listChats(ChatDO chatDO);
 

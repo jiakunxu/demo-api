@@ -41,7 +41,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     private UserService userService;
 
     @Override
-    public int countUserRole(BigInteger roleId) {
+    public long countUserRole(BigInteger roleId) {
         if (roleId == null) {
             return 0;
         }
@@ -53,7 +53,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     }
 
     @Override
-    public int countUserRole(BigInteger userId, String roleCode) {
+    public long countUserRole(BigInteger userId, String roleCode) {
         if (userId == null || StringUtils.isBlank(roleCode)) {
             return 0;
         }
@@ -66,7 +66,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     }
 
     @Override
-    public int countUserRole(BigInteger userId, String... roleCode) {
+    public long countUserRole(BigInteger userId, String... roleCode) {
         if (userId == null || roleCode == null || roleCode.length == 0) {
             return 0;
         }
@@ -133,7 +133,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
     }
 
     @Override
-    public int countUser(BigInteger corpId, String roleId, String exists, User user) {
+    public long countUser(BigInteger corpId, String roleId, String exists, User user) {
         if (corpId == null || StringUtils.isBlank(roleId) || user == null) {
             return 0;
         }
@@ -182,13 +182,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userDO.setExists(Boolean.TRUE);
         userDO.setCodes(roleCode);
 
-        int count = this.baseMapper.countUser(userDO);
+        long count = this.baseMapper.countUser(userDO);
 
         if (count == 0) {
             return List.of();
         }
 
-        userDO.setPageNo(1);
+        userDO.setPageNo(1L);
         userDO.setPageSize(count);
 
         List<User> list = BeanUtil.copy(this.baseMapper.listUsers(userDO), User.class);

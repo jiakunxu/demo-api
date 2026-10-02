@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface DictDataService {
 
-    int countData(String typeId, String typeValue, DictData data);
+    long countData(String typeId, String typeValue, DictData data);
 
     List<DictData> listDatas(String typeId, String typeValue);
 

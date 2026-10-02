@@ -31,7 +31,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
     private RoleMenuService roleMenuService;
 
     @Override
-    public int countMenu(BigInteger pid) {
+    public long countMenu(BigInteger pid) {
         if (pid == null) {
             return 0;
         }
@@ -43,7 +43,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
     }
 
     @Override
-    public int countMenu(String pid, Menu menu) {
+    public long countMenu(String pid, Menu menu) {
         if (menu == null) {
             return 0;
         }
