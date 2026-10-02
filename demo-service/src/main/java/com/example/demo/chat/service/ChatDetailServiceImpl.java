@@ -50,8 +50,8 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
 
         chatDetailDO.setUserId(userId);
         chatDetailDO.setFriendId(new BigInteger(friendId));
-        chatDetailDO.setPageNo(Integer.parseInt(pageNo));
-        chatDetailDO.setPageSize(Integer.parseInt(pageSize));
+        chatDetailDO.setPageNo(Long.valueOf(pageNo));
+        chatDetailDO.setPageSize(Long.valueOf(pageSize));
 
         List<ChatDetail> list = BeanUtil.copy(this.baseMapper.listChatDetails(chatDetailDO),
             ChatDetail.class);

@@ -35,7 +35,7 @@ public class PageResponse<T> extends AbstractResponse {
         this.setList(list);
 
         if (this.pageSize == 0 || this.totalCount == 0) {
-            this.setPageCount(1);
+            this.setPageCount(1L);
         } else {
             this.setPageCount(
                 this.totalCount / this.pageSize + (this.totalCount % this.pageSize == 0 ? 0 : 1));

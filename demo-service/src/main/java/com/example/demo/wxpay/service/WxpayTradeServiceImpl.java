@@ -50,7 +50,6 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
             .queryOrderByOutTradeNo(mchid, outTradeNo);
 
         WxpayTrade wxpayTrade = new WxpayTrade();
-        wxpayTrade.setId(String.valueOf(UUID.randomUUID()));
         wxpayTrade.setAppid(transaction.getAppid());
         wxpayTrade.setMchid(transaction.getMchid());
         wxpayTrade.setOutTradeNo(transaction.getOutTradeNo());
@@ -76,7 +75,6 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
             .queryOrderByOutTradeNo(spMchid, subMchid, outTradeNo);
 
         WxpayTrade wxpayTrade = new WxpayTrade();
-        wxpayTrade.setId(String.valueOf(UUID.randomUUID()));
         wxpayTrade.setSpAppid(transaction.getSpAppid());
         wxpayTrade.setSpMchid(transaction.getSpMchid());
         wxpayTrade.setSubAppid(transaction.getSubAppid());
@@ -110,7 +108,6 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
             .parse(requestParam, com.wechat.pay.java.service.payments.model.Transaction.class);
 
         WxpayTrade wxpayTrade = new WxpayTrade();
-        wxpayTrade.setId(notification.getId());
         wxpayTrade.setCreateTime(notification.getCreateTime());
         wxpayTrade.setEventType(notification.getEventType());
         wxpayTrade.setSummary(notification.getSummary());
@@ -146,7 +143,6 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
                 com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction.class);
 
         WxpayTrade wxpayTrade = new WxpayTrade();
-        wxpayTrade.setId(notification.getId());
         wxpayTrade.setCreateTime(notification.getCreateTime());
         wxpayTrade.setEventType(notification.getEventType());
         wxpayTrade.setSummary(notification.getSummary());

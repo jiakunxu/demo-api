@@ -56,8 +56,8 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
 
         ChatDO chatDO = new ChatDO();
         chatDO.setUserId(userId);
-        chatDO.setPageNo(Integer.parseInt(pageNo));
-        chatDO.setPageSize(Integer.parseInt(pageSize));
+        chatDO.setPageNo(Long.valueOf(pageNo));
+        chatDO.setPageSize(Long.valueOf(pageSize));
 
         List<Chat> list = BeanUtil.copy(this.baseMapper.listChats(chatDO), Chat.class);
 

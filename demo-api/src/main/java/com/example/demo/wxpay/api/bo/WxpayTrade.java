@@ -103,6 +103,14 @@ public class WxpayTrade implements Serializable {
      */
     private String            promotionDetail;
 
+    private String            spAppid;
+
+    private String            spMchid;
+
+    private String            subAppid;
+
+    private String            subMchid;
+
     public enum TradeState {
                             /**
                              * 交易状态
