@@ -1,7 +1,7 @@
 package com.example.demo.corp.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.corp.dao.dataobject.CorpRoleDO;
-import com.example.demo.framework.mapper.BaseMapper;
 
 public interface CorpRoleMapper extends BaseMapper<CorpRoleDO> {
 }

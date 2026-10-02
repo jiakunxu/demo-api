@@ -32,6 +32,7 @@ public class DictDataDO extends BaseDO {
 
     private String            name;
 
+    @TableField("`value`")
     private String            value;
 
     private String            remark;
