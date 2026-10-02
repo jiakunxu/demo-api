@@ -8,8 +8,7 @@ import com.example.demo.wxpay.api.JsapiService;
 import com.example.demo.wxpay.api.PartnerJsapiService;
 import com.example.demo.wxpay.api.WxpayTradeService;
 import com.example.demo.wxpay.api.bo.WxpayNotify;
-import com.example.demo.wxpay.dao.dataobject.WxpayNotifyDO;
-import com.example.demo.wxpay.dao.mapper.WxpayNotifyMapper;
+import com.example.demo.wxpay.dao.mapper.WxpayTradeMapper;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.notification.Notification;
 import com.wechat.pay.java.core.notification.NotificationParser;
@@ -38,7 +37,7 @@ public class WxpayTradeServiceImpl implements WxpayTradeService {
     private PartnerJsapiService      partnerJsapiService;
 
     @Autowired
-    private WxpayNotifyMapper        wxpayNotifyMapper;
+    private WxpayTradeMapper         wxpayTradeMapper;
 
     @Value("${wxpay.merchant.serialNumber}")
     private String                   serialNumber;

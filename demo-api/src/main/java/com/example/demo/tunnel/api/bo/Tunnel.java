@@ -2,6 +2,7 @@ package com.example.demo.tunnel.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class Tunnel extends BaseBO {
 
     @Serial
@@ -24,5 +26,13 @@ public class Tunnel extends BaseBO {
     private String            tunnelId;
 
     private String            host;
+
+    public Tunnel(BigInteger id) {
+        this.id = id;
+    }
+
+    public Tunnel(String tunnelId) {
+        this.tunnelId = tunnelId;
+    }
 
 }
