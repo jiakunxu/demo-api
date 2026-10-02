@@ -10,15 +10,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.math.BigInteger;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-@TableName("tb_wxpay_refund")
-public class WxpayRefundDO extends BaseDO {
+@TableName("tb_wxpay_trade")
+public class WxpayTradeDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = -7407102721978781501L;
@@ -28,8 +27,6 @@ public class WxpayRefundDO extends BaseDO {
 
     private String            outTradeNo;
 
-    private String            outRefundNo;
-
-    private String            refund;
+    private String            trade;
 
 }

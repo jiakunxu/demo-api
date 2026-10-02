@@ -1,6 +1,7 @@
 package com.example.demo.config.service;
 
-import com.example.demo.cache.api.RedisService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.config.api.ConfigService;
 import com.example.demo.config.api.bo.Config;
 import com.example.demo.config.dao.dataobject.ConfigDO;
@@ -9,11 +10,10 @@ import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -24,30 +24,34 @@ import java.util.List;
 public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
                                implements ConfigService {
 
-    @Autowired
-    private RedisService<String, Config> redisService;
-
     @Override
     public int countConfig(Config config) {
         if (config == null) {
             return 0;
         }
 
-        return this.count(BeanUtil.copy(config, ConfigDO.class));
+        return this.baseMapper.countConfig(BeanUtil.copy(config, ConfigDO.class));
     }
 
     @Override
     public List<Config> listConfigs(Config config) {
         if (config == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(config, ConfigDO.class)), Config.class);
+        List<Config> list = BeanUtil
+            .copy(this.baseMapper.listConfigs(BeanUtil.copy(config, ConfigDO.class)), Config.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
     public Config getConfig(String id, String key) {
-        if (StringUtils.isBlank(id) && StringUtils.isBlank(key)) {
+        if (StringUtils.isAllBlank(id, key)) {
             return null;
         }
 
@@ -59,7 +63,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
 
         configDO.setKey(key);
 
-        return BeanUtil.copy(this.get(configDO), Config.class);
+        return BeanUtil.copy(this.baseMapper.getConfig(configDO), Config.class);
     }
 
     @Override
@@ -67,12 +71,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
         ConfigDO configDO = BeanUtil.copy(config, ConfigDO.class);
         configDO.setCreator(creator);
 
-        try {
-            this.insert(configDO);
-        } catch (Exception e) {
-            log.error("{}", configDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(configDO);
 
         config.setId(configDO.getId());
 
@@ -87,15 +86,9 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
         ConfigDO configDO = BeanUtil.copy(config, ConfigDO.class);
         configDO.setModifier(modifier);
 
-        try {
-            if (this.update(configDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", configDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(configDO)) {
+            log.error("{}", configDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         return config;
@@ -103,18 +96,15 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
 
     @Override
     public Config deleteConfig(@NotNull BigInteger id, @NotBlank String modifier) {
-        ConfigDO configDO = new ConfigDO();
-        configDO.setId(id);
-        configDO.setModifier(modifier);
+        var updateWrapper = Wrappers.<ConfigDO> lambdaUpdate().eq(ConfigDO::getId, id)
+            .set(ConfigDO::getDeleted, true).set(ConfigDO::getModifier, modifier);
 
-        try {
-            this.delete(configDO);
-        } catch (Exception e) {
-            log.error("{}", configDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", id, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return BeanUtil.copy(configDO, Config.class);
+        return new Config(id);
     }
 
 }

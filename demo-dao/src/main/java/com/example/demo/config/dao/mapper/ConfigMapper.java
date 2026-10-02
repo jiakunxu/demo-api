@@ -1,7 +1,16 @@
 package com.example.demo.config.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.config.dao.dataobject.ConfigDO;
-import com.example.demo.framework.mapper.BaseMapper;
+
+import java.util.List;
 
 public interface ConfigMapper extends BaseMapper<ConfigDO> {
+
+    int countConfig(ConfigDO configDO);
+
+    List<ConfigDO> listConfigs(ConfigDO configDO);
+
+    ConfigDO getConfig(ConfigDO configDO);
+
 }

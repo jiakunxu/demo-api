@@ -4,12 +4,7 @@
 
 <mapper namespace="com.example.demo.config.dao.mapper.ConfigMapper">
 
-	<select id="count" parameterType="configDO" resultType="java.lang.Integer">
-	<![CDATA[
-		SELECT COUNT(*)
-		  FROM `tb_config` t
-		 WHERE t.`is_deleted` = 0
-	]]>
+	<sql id="queryConditions">
 		<if test="name != null and name != ''">
 		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
 		</if>
@@ -25,9 +20,18 @@
 		<if test="end != null and end != ''">
 		<![CDATA[ AND t.`create_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
 		</if>
+	</sql>
+
+	<select id="countConfig" parameterType="configDO" resultType="java.lang.Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM `tb_config` t
+		 WHERE t.`is_deleted` = 0
+	]]>
+		<include refid="queryConditions"/>
 	</select>
 
-	<select id="list" parameterType="configDO" resultType="configDO">
+	<select id="listConfigs" parameterType="configDO" resultType="configDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`,
@@ -39,28 +43,14 @@
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
   	]]>
-		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="key != null and key != ''">
-		<![CDATA[ AND t.`key` LIKE #{key,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="system != null">
-		<![CDATA[ AND t.`is_system` = #{system} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`create_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`create_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
+		<include refid="queryConditions"/>
 	<![CDATA[
 		 ORDER BY t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
 
-	<select id="get" parameterType="configDO" resultType="configDO">
+	<select id="getConfig" parameterType="configDO" resultType="configDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`,
@@ -78,59 +68,5 @@
 		<![CDATA[ AND t.`key` = #{key} ]]>
 		</if>
 	</select>
-
-	<insert id="insert" parameterType="configDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_config`
-		  (
-			`name`,
-			`key`,
-			`value`,
-			`remark`,
-			`is_system`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{name},
-			#{key},
-			#{value},
-			#{remark},
-			#{system},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
-
-	<update id="update" parameterType="configDO">
-	<![CDATA[
-		UPDATE `tb_config` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`name` = #{name},
-			   t.`key` = #{key},
-			   t.`value` = #{value},
-			   t.`remark` = #{remark},
-			   t.`is_system` = #{system}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
-
-	<update id="delete" parameterType="configDO">
-	<![CDATA[
-		UPDATE `tb_config` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`is_deleted` = 1
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
 
 </mapper>

@@ -1,6 +1,8 @@
 package com.example.demo.wxpay.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -10,6 +12,8 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@TableName("tb_wxpay_profit_sharing")
 public class WxpayProfitSharingDO implements Serializable {
 
     @Serial
