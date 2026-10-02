@@ -1,6 +1,7 @@
 package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.framework.util.BeanUtil;
@@ -22,16 +23,15 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class WxpayProfitSharingServiceImpl implements WxpayProfitSharingService {
+public class WxpayProfitSharingServiceImpl extends
+                                           ServiceImpl<WxpayProfitSharingMapper, WxpayProfitSharingDO>
+                                           implements WxpayProfitSharingService {
 
     @Autowired(required = false)
     private RSAAutoCertificateConfig partnerConfig;
 
     @Autowired
     private ProfitsharingService     profitsharingService;
-
-    @Autowired
-    private WxpayProfitSharingMapper wxpayProfitSharingMapper;
 
     @Override
     public WxpayProfitSharing getWxpayProfitSharing(String transactionId, String outOrderNo) {

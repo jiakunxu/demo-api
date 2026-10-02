@@ -1,6 +1,7 @@
 package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.framework.util.BeanUtil;
@@ -22,7 +23,8 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class WxpayRefundServiceImpl implements WxpayRefundService {
+public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, WxpayRefundDO>
+                                    implements WxpayRefundService {
 
     @Autowired(required = false)
     private RSAAutoCertificateConfig merchantConfig;
@@ -32,9 +34,6 @@ public class WxpayRefundServiceImpl implements WxpayRefundService {
 
     @Autowired
     private RefundService            refundService;
-
-    @Autowired
-    private WxpayRefundMapper        wxpayRefundMapper;
 
     @Value("${wxpay.merchant.serialNumber}")
     private String                   serialNumber;
