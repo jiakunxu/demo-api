@@ -61,6 +61,13 @@ spring:
       max-request-size: 99MB
   #
   cloud:
+    nacos:
+      discovery:
+        server-addr:
+        namespace:
+        username:
+        password:
+        group: GATEWAY_GROUP
     sentinel:
       datasource:
         flow:
