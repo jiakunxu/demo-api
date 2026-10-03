@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
@@ -108,7 +107,8 @@ public class LoginUser extends User implements UserDetails {
 
     private static class AuthorityComparator implements Comparator<GrantedAuthority>, Serializable {
 
-        private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+        @Serial
+        private static final long serialVersionUID = 620L;
 
         @Override
         public int compare(GrantedAuthority g1, GrantedAuthority g2) {

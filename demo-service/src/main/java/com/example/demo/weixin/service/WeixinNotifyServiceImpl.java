@@ -1,6 +1,6 @@
 package com.example.demo.weixin.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.weixin.api.MessageService;
 import com.example.demo.weixin.api.WeixinNotifyService;
 import com.example.demo.weixin.dao.dataobject.WeixinNotifyDO;

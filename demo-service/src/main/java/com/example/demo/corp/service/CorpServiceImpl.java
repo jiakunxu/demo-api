@@ -1,6 +1,6 @@
 package com.example.demo.corp.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.corp.api.CorpService;
 import com.example.demo.corp.api.ICorpService;
 import com.example.demo.corp.api.bo.Corp;

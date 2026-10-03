@@ -1,7 +1,7 @@
 package com.example.demo.chat.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.chat.api.ChatDetailService;
 import com.example.demo.chat.api.bo.Chat;
 import com.example.demo.chat.api.bo.ChatDetail;

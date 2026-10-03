@@ -6,6 +6,7 @@ import com.example.demo.file.api.bo.File;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class FileServiceImpl implements FileService {
 
     private String getKey(String name) {
         return DateTime.now().toString("yyyy/MM/dd/") + UUID.randomUUID() + StringUtils
-            .split(StringUtils.substring(name, StringUtils.lastIndexOf(name, ".")), "?")[0];
+            .split(StringUtils.substring(name, Strings.CS.lastIndexOf(name, ".")), "?")[0];
     }
 
     @Override

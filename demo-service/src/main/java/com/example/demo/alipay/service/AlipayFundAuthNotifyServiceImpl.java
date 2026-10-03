@@ -1,7 +1,7 @@
 package com.example.demo.alipay.service;
 
 import com.alipay.easysdk.factory.Factory;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.alipay.api.AlipayFundAuthNotifyService;
 import com.example.demo.alipay.api.bo.fund.AlipayFundAuthNotify;
 import com.example.demo.alipay.dao.dataobject.AlipayFundAuthNotifyDO;

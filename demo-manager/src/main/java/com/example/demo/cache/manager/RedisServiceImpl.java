@@ -10,8 +10,8 @@ import org.joda.time.Seconds;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author JiakunXu
@@ -41,8 +41,8 @@ public class RedisServiceImpl<K, V> implements RedisService<K, V> {
     @Override
     public V add(K key, V value, long timeout) throws ServiceException {
         try {
-            Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, timeout,
-                TimeUnit.SECONDS);
+            Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value,
+                Duration.ofSeconds(timeout));
             if (result != null && result) {
                 return value;
             }
@@ -71,7 +71,7 @@ public class RedisServiceImpl<K, V> implements RedisService<K, V> {
     @Override
     public V set(K key, V value, long timeout) throws ServiceException {
         try {
-            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(timeout));
             return value;
         } catch (Exception e) {
             log.error("set", e);
@@ -135,7 +135,8 @@ public class RedisServiceImpl<K, V> implements RedisService<K, V> {
     @Override
     public void expire(K key) throws ServiceException {
         try {
-            Boolean result = redisTemplate.expire(key, RedisService.DEFAULT_EXP, TimeUnit.SECONDS);
+            Boolean result = redisTemplate.expire(key,
+                Duration.ofSeconds(RedisService.DEFAULT_EXP));
             if (result != null && result) {
                 return;
             }

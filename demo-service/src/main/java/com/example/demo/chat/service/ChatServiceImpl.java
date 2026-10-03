@@ -1,6 +1,6 @@
 package com.example.demo.chat.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.chat.api.ChatDetailService;
 import com.example.demo.chat.api.ChatService;
 import com.example.demo.chat.api.ChatStatusService;

@@ -1,7 +1,7 @@
 package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.wxpay.api.RefundService;
 import com.example.demo.wxpay.api.WxpayRefundService;

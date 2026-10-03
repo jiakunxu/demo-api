@@ -3,7 +3,7 @@ package com.example.demo.alipay.service;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.payment.common.models.AlipayTradeQueryResponse;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.alipay.api.AlipayTradeService;
 import com.example.demo.alipay.api.FactoryPaymentCommonService;
 import com.example.demo.alipay.api.bo.AlipayTrade;

@@ -1,7 +1,7 @@
 package com.example.demo.article.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.article.api.ArticleService;
 import com.example.demo.article.api.bo.Article;
 import com.example.demo.article.dao.dataobject.ArticleDO;
