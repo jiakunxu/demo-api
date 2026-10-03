@@ -1,8 +1,8 @@
 package com.example.demo.framework.util;
 
 import com.alibaba.fastjson2.JSON;
+import org.jspecify.annotations.NonNull;
 import org.springframework.cglib.beans.BeanCopier;
-import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
