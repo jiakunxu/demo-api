@@ -17,7 +17,7 @@ public class ListResponse<T> extends AbstractResponse {
     @Serial
     private static final long serialVersionUID = -5567902033588518919L;
 
-    private Integer           total;
+    private Long              total;
 
     private List<T>           rows;
 
@@ -28,13 +28,13 @@ public class ListResponse<T> extends AbstractResponse {
         this.setRows(rows);
     }
 
-    public ListResponse(int total, List<T> rows) {
+    public ListResponse(long total, List<T> rows) {
         this.setCode(HttpStatus.OK);
         this.setTotal(total);
         this.setRows(rows);
     }
 
-    public ListResponse(int total, List<T> rows, T extra) {
+    public ListResponse(long total, List<T> rows, T extra) {
         this.setCode(HttpStatus.OK);
         this.setTotal(total);
         this.setRows(rows);

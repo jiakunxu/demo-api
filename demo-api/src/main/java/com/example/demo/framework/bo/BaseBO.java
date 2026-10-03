@@ -43,9 +43,9 @@ public class BaseBO implements Serializable {
     /**
      * 分页号，从1开始.
      */
-    private Integer           pageNo;
+    private Long              pageNo;
 
-    private Integer           pageSize;
+    private Long              pageSize;
 
     private Date              createTime;
 

@@ -1,13 +1,14 @@
 package com.example.demo.tunnel.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
-import com.example.demo.framework.service.impl.ServiceImpl;
+import com.example.demo.framework.constant.HttpStatus;
+import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.tunnel.api.TunnelService;
 import com.example.demo.tunnel.api.bo.Tunnel;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.tunnel.dao.dataobject.TunnelDO;
 import com.example.demo.tunnel.dao.mapper.TunnelMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -32,30 +33,22 @@ public class TunnelServiceImpl extends ServiceImpl<TunnelMapper, TunnelDO>
         tunnelDO.setHost(host);
         tunnelDO.setCreator(creator);
 
-        try {
-            this.insert(tunnelDO);
-        } catch (Exception e) {
-            log.error("{}", tunnelDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(tunnelDO);
 
         return BeanUtil.copy(tunnelDO, Tunnel.class);
     }
 
     @Override
     public Tunnel deleteTunnel(@NotBlank String tunnelId, @NotBlank String modifier) {
-        TunnelDO tunnelDO = new TunnelDO();
-        tunnelDO.setTunnelId(tunnelId);
-        tunnelDO.setModifier(modifier);
+        var updateWrapper = Wrappers.<TunnelDO> lambdaUpdate().eq(TunnelDO::getTunnelId, tunnelId)
+            .set(TunnelDO::getDeleted, true).set(TunnelDO::getModifier, modifier);
 
-        try {
-            this.delete(tunnelDO);
-        } catch (Exception e) {
-            log.error("{}", tunnelDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", tunnelId, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return BeanUtil.copy(tunnelDO, Tunnel.class);
+        return new Tunnel(tunnelId);
     }
 
 }

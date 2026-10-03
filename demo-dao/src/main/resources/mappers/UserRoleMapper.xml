@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.user.dao.mapper.UserRoleMapper">
 
-	<select id="count" parameterType="userRoleDO" resultType="java.lang.Integer">
+	<select id="countUserRole" parameterType="userRoleDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_user_role` t
@@ -42,7 +42,7 @@
 		</if>
 	</select>
 
-	<select id="list" parameterType="userRoleDO" resultType="userRoleDO">
+	<select id="listUserRoles" parameterType="userRoleDO" resultType="userRoleDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
@@ -63,7 +63,7 @@
 		</if>
 	</select>
 
-	<select id="countUser" parameterType="userDO" resultType="java.lang.Integer">
+	<select id="countUser" parameterType="userDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_user` t
@@ -160,52 +160,5 @@
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
-
-	<insert id="insert" parameterType="userRoleDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_user_role`
-		  (
-			`user_id`,
-			`role_id`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{userId},
-			#{roleId},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
-
-	<update id="delete" parameterType="userRoleDO">
-	<![CDATA[
-		UPDATE `tb_user_role` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`is_deleted` = 1
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
-		</if>
-		<if test="id == null">
-		<![CDATA[
-		   AND t.`role_id` = #{roleId}
-		]]>
-			<if test="userId != null">
-			<![CDATA[ AND t.`user_id` = #{userId} ]]>
-			</if>
-			<if test="userId == null">
-			<![CDATA[ AND t.`user_id` IN ]]>
-				<foreach collection="userIds" item="userId" open="(" close=")" separator=",">#{userId}</foreach>
-			</if>
-		</if>
-	</update>
 
 </mapper>

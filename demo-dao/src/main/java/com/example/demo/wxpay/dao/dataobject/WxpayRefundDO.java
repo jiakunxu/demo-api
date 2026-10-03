@@ -1,78 +1,35 @@
 package com.example.demo.wxpay.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Getter
 @Setter
 @ToString
-public class WxpayRefundDO implements Serializable {
+@NoArgsConstructor
+@TableName("tb_wxpay_refund")
+public class WxpayRefundDO extends BaseDO {
 
     @Serial
-    private static final long serialVersionUID = 3624836700192458218L;
+    private static final long serialVersionUID = -7407102721978781501L;
 
-    /**
-     * 微信支付退款号
-     */
-    private String            refundId;
+    @TableId(type = IdType.AUTO)
+    private BigInteger        id;
 
-    /**
-     * 商户退款单号
-     */
-    private String            outRefundNo;
-
-    /**
-     * 微信支付订单号
-     */
-    private String            transactionId;
-
-    /**
-     * 商户订单号
-     */
     private String            outTradeNo;
 
-    /**
-     * 退款渠道
-     */
-    private String            channel;
+    private String            outRefundNo;
 
-    /**
-     * 退款入账账户
-     */
-    private String            userReceivedAccount;
-
-    /**
-     * 退款成功时间
-     */
-    private String            successTime;
-
-    /**
-     * 退款创建时间
-     */
-    private String            createTime;
-
-    /**
-     * 退款状态
-     */
-    private String            status;
-
-    /**
-     * 资金账户
-     */
-    private String            fundsAccount;
-
-    /**
-     * 金额信息
-     */
-    private String            amount;
-
-    /**
-     * 优惠退款信息
-     */
-    private String            promotionDetail;
+    private String            refund;
 
 }

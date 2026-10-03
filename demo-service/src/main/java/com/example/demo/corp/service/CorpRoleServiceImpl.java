@@ -1,9 +1,9 @@
 package com.example.demo.corp.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.corp.api.CorpRoleService;
 import com.example.demo.corp.dao.dataobject.CorpRoleDO;
 import com.example.demo.corp.dao.mapper.CorpRoleMapper;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

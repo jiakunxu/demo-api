@@ -45,7 +45,7 @@ public class DictDataController extends BaseController {
         dict.setName(this.getParameter(request, "name"));
         dict.setStatus(this.getParameter(request, "status"));
 
-        int count = dictDataService.countData(null, typeValue, dict);
+        long count = dictDataService.countData(null, typeValue, dict);
 
         if (count == 0) {
             return new ListResponse<>(0, List.of());

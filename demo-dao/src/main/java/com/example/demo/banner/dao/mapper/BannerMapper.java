@@ -1,7 +1,14 @@
 package com.example.demo.banner.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.banner.dao.dataobject.BannerDO;
-import com.example.demo.framework.mapper.BaseMapper;
+
+import java.util.List;
 
 public interface BannerMapper extends BaseMapper<BannerDO> {
+
+    long countBanner(BannerDO bannerDO);
+
+    List<BannerDO> listBanners(BannerDO bannerDO);
+
 }

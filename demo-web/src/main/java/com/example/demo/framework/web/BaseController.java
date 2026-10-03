@@ -64,12 +64,12 @@ public class BaseController {
 
         String pageNo = request.getParameter("pageNo");
         if (StringUtils.isNumeric(pageNo)) {
-            parameter.setPageNo(Integer.parseInt(pageNo.trim()));
+            parameter.setPageNo(Long.valueOf(pageNo.trim()));
         }
 
         String pageSize = request.getParameter("pageSize");
         if (StringUtils.isNumeric(pageSize)) {
-            parameter.setPageSize(Integer.parseInt(pageSize.trim()));
+            parameter.setPageSize(Long.valueOf(pageSize.trim()));
         }
 
         return parameter;

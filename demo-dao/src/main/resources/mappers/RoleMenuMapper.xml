@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.role.dao.mapper.RoleMenuMapper">
 
-	<select id="count" parameterType="roleMenuDO" resultType="java.lang.Integer">
+	<select id="countRoleMenu" parameterType="roleMenuDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_role_menu` t
@@ -13,7 +13,7 @@
 	]]>
 	</select>
 
-	<select id="list" parameterType="roleMenuDO" resultType="roleMenuDO">
+	<select id="listRoleMenus" parameterType="roleMenuDO" resultType="roleMenuDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`role_id` AS roleId,
@@ -23,48 +23,5 @@
 		   AND t.`role_id` = #{roleId}
 	]]>
 	</select>
-
-	<insert id="insert" parameterType="roleMenuDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_role_menu`
-		  (
-			`role_id`,
-			`menu_id`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{roleId},
-			#{menuId},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
-
-	<update id="delete" parameterType="roleMenuDO">
-	<![CDATA[
-		UPDATE `tb_role_menu` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`is_deleted` = 1
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
-		</if>
-		<if test="id == null">
-			<if test="roleId != null">
-			<![CDATA[ AND t.`role_id` = #{roleId} ]]>
-			</if>
-			<if test="roleId == null">
-			<![CDATA[ AND t.`menu_id` = #{menuId} ]]>
-			</if>
-		</if>
-	</update>
 
 </mapper>

@@ -1,7 +1,14 @@
 package com.example.demo.menu.dao.mapper;
 
-import com.example.demo.framework.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.menu.dao.dataobject.MenuDO;
 
+import java.util.List;
+
 public interface MenuMapper extends BaseMapper<MenuDO> {
+
+    long countMenu(MenuDO menuDO);
+
+    List<MenuDO> listMenus(MenuDO menuDO);
+
 }

@@ -93,7 +93,7 @@ public class UserRoleController extends BaseController {
         user.setName(this.getParameter(request, "name"));
         user.setMobile(this.getParameter(request, "mobile"));
 
-        int count = userRoleService.countUser(corpId, roleId, exists, user);
+        long count = userRoleService.countUser(corpId, roleId, exists, user);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

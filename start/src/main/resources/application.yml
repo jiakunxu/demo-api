@@ -11,20 +11,6 @@ spring:
   messages:
     basename: i18n/messages
     encoding: UTF-8
-  quartz:
-    job-store-type: jdbc
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceId: AUTO
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 5
-          jobStore:
-            isClustered: true
-    scheduler-name: scheduler
-    startup-delay: 1
   threads:
     virtual:
       enabled: true
@@ -75,6 +61,13 @@ spring:
       max-request-size: 99MB
   #
   cloud:
+    nacos:
+      discovery:
+        server-addr:
+        namespace:
+        username:
+        password:
+        group: GATEWAY_GROUP
     sentinel:
       datasource:
         flow:

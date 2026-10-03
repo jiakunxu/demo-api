@@ -1,6 +1,7 @@
 package com.example.demo.chat.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.chat.api.ChatDetailService;
 import com.example.demo.chat.api.bo.Chat;
 import com.example.demo.chat.api.bo.ChatDetail;
@@ -8,10 +9,10 @@ import com.example.demo.chat.dao.dataobject.ChatDetailDO;
 import com.example.demo.chat.dao.mapper.ChatDetailMapper;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.mq.api.ProducerService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
                                             String pageNo, String pageSize) {
         if (userId == null || StringUtils.isBlank(friendId) || StringUtils.isBlank(pageNo)
             || StringUtils.isBlank(pageSize)) {
-            return null;
+            return List.of();
         }
 
         ChatDetailDO chatDetailDO = new ChatDetailDO();
@@ -49,10 +50,17 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
 
         chatDetailDO.setUserId(userId);
         chatDetailDO.setFriendId(new BigInteger(friendId));
-        chatDetailDO.setPageNo(Integer.parseInt(pageNo));
-        chatDetailDO.setPageSize(Integer.parseInt(pageSize));
+        chatDetailDO.setPageNo(Long.valueOf(pageNo));
+        chatDetailDO.setPageSize(Long.valueOf(pageSize));
 
-        return BeanUtil.copy(this.list(chatDetailDO), ChatDetail.class);
+        List<ChatDetail> list = BeanUtil.copy(this.baseMapper.listChatDetails(chatDetailDO),
+            ChatDetail.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -65,7 +73,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
         chatDetailDO.setId(id);
         chatDetailDO.setUserId(userId);
 
-        return BeanUtil.copy(this.get(chatDetailDO), ChatDetail.class);
+        return BeanUtil.copy(this.baseMapper.getChatDetail(chatDetailDO), ChatDetail.class);
     }
 
     @Override
@@ -87,12 +95,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
         chatDetailDO0.setContent(content);
         chatDetailDO0.setCreator(userId.toString());
 
-        try {
-            this.insert(chatDetailDO0);
-        } catch (Exception e) {
-            log.error("{}", chatDetailDO0, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(chatDetailDO0);
 
         ChatDetailDO chatDetailDO1 = new ChatDetailDO();
         chatDetailDO1.setChatId(chatId);
@@ -103,12 +106,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
         chatDetailDO1.setContent(content);
         chatDetailDO1.setCreator(userId.toString());
 
-        try {
-            this.insert(chatDetailDO1);
-        } catch (Exception e) {
-            log.error("{}", chatDetailDO1, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(chatDetailDO1);
 
         producerService.send("topic", "chat.message", JSON.toJSONBytes(chatDetailDO1),
             chatDetailDO1.getUserId().toString());

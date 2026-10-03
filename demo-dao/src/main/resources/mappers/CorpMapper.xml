@@ -2,9 +2,9 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.demo.login.dao.mapper.CorpMapper">
+<mapper namespace="com.example.demo.corp.dao.mapper.CorpMapper">
 
-	<select id="count" parameterType="corpDO" resultType="java.lang.Integer">
+	<select id="countCorp" parameterType="corpDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(1)
 		  FROM `tb_corp` t
@@ -12,7 +12,7 @@
 	]]>
 	</select>
 
-	<select id="list" parameterType="corpDO" resultType="corpDO">
+	<select id="listCorps" parameterType="corpDO" resultType="corpDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`
@@ -20,30 +20,5 @@
 		 WHERE t.`is_deleted`= 0
 	]]>
 	</select>
-	
-	<select id="get" parameterType="corpDO" resultType="corpDO">
-	<![CDATA[
-		SELECT t.`id`,
-			   t.`name`,
-			   t.`create_time` AS createTime
-		  FROM `tb_corp` t
-		 WHERE t.`is_deleted`= 0
-		   AND t.`id` = #{id}
-	]]>
-	</select>
 
-	<update id="update" parameterType="corpDO">
-	<![CDATA[
-		UPDATE `tb_corp` t
-		   SET t.`update_time` = NOW()
-	]]>
-		<if test="name != null and name != ''">
-		<![CDATA[ , t.`name` = #{name} ]]>
-		</if>
-	<![CDATA[
-		 WHERE t.`is_deleted`= 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
-	
 </mapper>

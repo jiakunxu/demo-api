@@ -35,7 +35,7 @@ public class ConfigController extends BaseController {
             config.setSystem("true".equals(system));
         }
 
-        int count = configService.countConfig(config);
+        long count = configService.countConfig(config);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

@@ -2,35 +2,36 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.demo.login.dao.mapper.OperateLogMapper">
+<mapper namespace="com.example.demo.operate.dao.mapper.OperateLogMapper">
 
-	<select id="count" parameterType="operateLogDO" resultType="java.lang.Integer">
+	<sql id="queryCondition">
+		<if test="clazz != null and clazz != ''">
+		<![CDATA[ AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+		</if>
+		<if test="operator != null and operator != ''">
+		<![CDATA[ AND t.`operator` LIKE #{operator,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+		</if>
+		<if test="status != null and status != ''">
+		<![CDATA[ AND t.`status` = #{status} ]]>
+		</if>
+		<if test="start != null and start != ''">
+		<![CDATA[ AND t.`operate_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
+		</if>
+		<if test="end != null and end != ''">
+		<![CDATA[ AND t.`operate_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
+		</if>
+	</sql>
+
+	<select id="countLog" parameterType="operateLogDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
 	]]>
-		<if test="clazz != null and clazz != ''">
-		<![CDATA[ AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="operator != null and operator != ''">
-		<![CDATA[ AND t.`operator` LIKE #{operator,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`oper_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`oper_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
-		<if test="corpId != null">
-		<![CDATA[ AND t.`corp_id` = #{corpId} ]]>
-		</if>
+		<include refid="queryCondition"/>
 	</select>
 
-	<select id="list" parameterType="operateLogDO" resultType="operateLogDO">
+	<select id="listLogs" parameterType="operateLogDO" resultType="operateLogDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`clazz`,
@@ -40,101 +41,20 @@
 			   t.`operator`,
 			   t.`ip`,
 			   t.`ip_addr` AS ipAddr,
-			   t.`oper_time` AS operTime,
+			   t.`operate_time` AS operateTime,
 			   t.`module`,
-			   t.`desc`,
+			   t.`operate_type` AS operateType,
+			   t.`content`,
 			   t.`status`,
 			   t.`err_msg` AS errMsg
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
-  	]]>
-		<if test="clazz != null and clazz != ''">
-		<![CDATA[ AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="operator != null and operator != ''">
-		<![CDATA[ AND t.`operator` LIKE #{operator,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`oper_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`oper_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
-		<if test="corpId != null">
-		<![CDATA[ AND t.`corp_id` = #{corpId} ]]>
-		</if>
+	]]>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY ${sort} ${dir}, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
-
-	<select id="get" parameterType="operateLogDO" resultType="operateLogDO">
-	<![CDATA[
-		SELECT t.`id`,
-			   t.`clazz`,
-			   t.`request_uri` AS requestUri,
-			   t.`request_method` AS requestMethod,
-			   t.`request_params` AS requestParams,
-			   t.`operator`,
-			   t.`ip`,
-			   t.`ip_addr` AS ipAddr,
-			   t.`oper_time` AS operTime,
-			   t.`module`,
-			   t.`desc`,
-			   t.`status`,
-			   t.`err_msg` AS errMsg
-		  FROM `tb_operate_log` t
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</select>
-
-	<insert id="insert" parameterType="operateLogDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_operate_log`
-		  (
-			`clazz`,
-			`request_uri`,
-			`request_method`,
-			`request_params`,
-			`operator`,
-			`ip`,
-			`ip_addr`,
-			`oper_time`,
-			`module`,
-			`desc`,
-			`status`,
-			`err_msg`,
-			`corp_id`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{clazz},
-			#{requestUri},
-			#{requestMethod},
-			#{requestParams},
-			#{operator},
-			#{ip},
-			#{ipAddr},
-			#{operTime},
-			#{module},
-			#{desc},
-			#{status},
-			#{errMsg},
-			#{corpId},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
 
 </mapper>

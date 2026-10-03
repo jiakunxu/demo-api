@@ -1,17 +1,18 @@
 package com.example.demo.corp.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.corp.api.CorpService;
+import com.example.demo.corp.api.ICorpService;
+import com.example.demo.corp.api.bo.Corp;
 import com.example.demo.corp.dao.dataobject.CorpDO;
+import com.example.demo.corp.dao.mapper.CorpMapper;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.service.impl.ServiceImpl;
-import com.example.demo.framework.util.BeanUtil;
-import com.example.demo.corp.api.ICorpService;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.corp.dao.mapper.CorpMapper;
-import com.example.demo.corp.api.CorpService;
-import com.example.demo.corp.api.bo.Corp;
+import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,21 +29,28 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
                              implements CorpService, ICorpService {
 
     @Override
-    public int countCorp(Corp corp) {
+    public long countCorp(Corp corp) {
         if (corp == null) {
             return 0;
         }
 
-        return this.count(BeanUtil.copy(corp, CorpDO.class));
+        return this.baseMapper.countCorp(BeanUtil.copy(corp, CorpDO.class));
     }
 
     @Override
     public List<Corp> listCorps(Corp corp) {
         if (corp == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(corp, CorpDO.class)), Corp.class);
+        List<Corp> list = BeanUtil
+            .copy(this.baseMapper.listCorps(BeanUtil.copy(corp, CorpDO.class)), Corp.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -60,7 +68,7 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
             return null;
         }
 
-        return BeanUtil.copy(this.get(new CorpDO(id)), Corp.class);
+        return BeanUtil.copy(this.getById(id), Corp.class);
     }
 
     @Override
@@ -71,15 +79,13 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
         CorpDO corpDO = BeanUtil.copy(corp, CorpDO.class);
         corpDO.setModifier(modifier);
 
-        try {
-            if (this.update(corpDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", corpDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (StringUtils.isEmpty(corpDO.getName())) {
+            corpDO.setName(null);
+        }
+
+        if (!this.updateById(corpDO)) {
+            log.error("{}", corpDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         return corp;

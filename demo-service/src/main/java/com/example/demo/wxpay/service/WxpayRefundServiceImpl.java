@@ -1,9 +1,8 @@
 package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.util.BeanUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.wxpay.api.RefundService;
 import com.example.demo.wxpay.api.WxpayRefundService;
 import com.example.demo.wxpay.api.bo.WxpayRefund;
@@ -22,7 +21,8 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class WxpayRefundServiceImpl implements WxpayRefundService {
+public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, WxpayRefundDO>
+                                    implements WxpayRefundService {
 
     @Autowired(required = false)
     private RSAAutoCertificateConfig merchantConfig;
@@ -32,9 +32,6 @@ public class WxpayRefundServiceImpl implements WxpayRefundService {
 
     @Autowired
     private RefundService            refundService;
-
-    @Autowired
-    private WxpayRefundMapper        wxpayRefundMapper;
 
     @Value("${wxpay.merchant.serialNumber}")
     private String                   serialNumber;
@@ -149,43 +146,16 @@ public class WxpayRefundServiceImpl implements WxpayRefundService {
     }
 
     @Override
-    public WxpayRefund insertRefund(WxpayRefund wxpayRefund) {
-        if (wxpayRefund == null) {
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
-        }
+    public WxpayRefund insertRefund(@NotNull WxpayRefund refund) {
+        WxpayRefundDO refundDO = new WxpayRefundDO();
+        refundDO.setOutTradeNo(refund.getOutTradeNo());
+        refundDO.setOutRefundNo(refund.getOutRefundNo());
+        refundDO.setRefund(JSON.toJSONString(refund));
+        refundDO.setCreator("系统");
 
-        WxpayRefundDO wxpayRefundDO = BeanUtil.copy(wxpayRefund, WxpayRefundDO.class);
+        this.save(refundDO);
 
-        try {
-            wxpayRefundMapper.insert(wxpayRefundDO);
-        } catch (Exception e) {
-            log.error("{}", wxpayRefundDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
-
-        return wxpayRefund;
-    }
-
-    @Override
-    public WxpayRefund updateRefund(String refundId, WxpayRefund wxpayRefund) {
-        if (StringUtils.isBlank(refundId) || wxpayRefund == null) {
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
-        }
-
-        wxpayRefund.setRefundId(refundId);
-
-        WxpayRefundDO wxpayRefundDO = BeanUtil.copy(wxpayRefund, WxpayRefundDO.class);
-
-        try {
-            if (wxpayRefundMapper.update(wxpayRefundDO) == 0) {
-                wxpayRefundMapper.insert(wxpayRefundDO);
-            }
-        } catch (Exception e) {
-            log.error("{}", wxpayRefundDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
-
-        return wxpayRefund;
+        return refund;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.example.demo.banner.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.banner.api.BannerService;
 import com.example.demo.banner.api.bo.Banner;
 import com.example.demo.banner.dao.dataobject.BannerDO;
@@ -8,9 +10,9 @@ import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +25,28 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
                                implements BannerService {
 
     @Override
-    public int countBanner(Banner banner) {
+    public long countBanner(Banner banner) {
         if (banner == null) {
             return 0;
         }
 
-        return this.count(BeanUtil.copy(banner, BannerDO.class));
+        return this.baseMapper.countBanner(BeanUtil.copy(banner, BannerDO.class));
     }
 
     @Override
     public List<Banner> listBanners(Banner banner) {
         if (banner == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(banner, BannerDO.class)), Banner.class);
+        List<Banner> list = BeanUtil
+            .copy(this.baseMapper.listBanners(BeanUtil.copy(banner, BannerDO.class)), Banner.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -55,7 +64,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
             return null;
         }
 
-        return BeanUtil.copy(this.get(new BannerDO(id)), Banner.class);
+        return BeanUtil.copy(this.getById(id), Banner.class);
     }
 
     @Override
@@ -63,12 +72,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
         BannerDO bannerDO = BeanUtil.copy(banner, BannerDO.class);
         bannerDO.setCreator(creator);
 
-        try {
-            this.insert(bannerDO);
-        } catch (Exception e) {
-            log.error("{}", bannerDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(bannerDO);
 
         banner.setId(bannerDO.getId());
 
@@ -83,33 +87,25 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
         BannerDO bannerDO = BeanUtil.copy(banner, BannerDO.class);
         bannerDO.setModifier(modifier);
 
-        try {
-            if (this.update(bannerDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", bannerDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(bannerDO)) {
+            log.error("{}", bannerDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
+
         return banner;
     }
 
     @Override
     public Banner deleteBanner(@NotNull BigInteger id, @NotBlank String modifier) {
-        BannerDO bannerDO = new BannerDO();
-        bannerDO.setId(id);
-        bannerDO.setModifier(modifier);
+        var updateWrapper = Wrappers.<BannerDO> lambdaUpdate().eq(BannerDO::getId, id)
+            .set(BannerDO::getDeleted, true).set(BannerDO::getModifier, modifier);
 
-        try {
-            this.delete(bannerDO);
-        } catch (Exception e) {
-            log.error("{}", bannerDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", id, modifier);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return BeanUtil.copy(bannerDO, Banner.class);
+        return new Banner(id);
     }
 
 }

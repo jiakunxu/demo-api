@@ -30,7 +30,7 @@ public class RoleController extends BaseController {
         role.setName(this.getParameter(request, "name"));
         role.setStatus(this.getParameter(request, "status"));
 
-        int count = roleService.countRole(role);
+        long count = roleService.countRole(role);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

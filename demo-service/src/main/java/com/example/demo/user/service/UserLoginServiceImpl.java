@@ -1,6 +1,7 @@
 package com.example.demo.user.service;
 
-import com.example.demo.framework.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.security.api.PermissionService;
 import com.example.demo.security.api.bo.LoginUser;
@@ -28,13 +29,7 @@ public class UserLoginServiceImpl extends ServiceImpl<UserMapper, UserDO>
             return null;
         }
 
-        LoginUser user = BeanUtil.copy(this.get(new UserDO(id)), LoginUser.class);
-
-        if (user == null) {
-            return null;
-        }
-
-        return setAuthorities(user);
+        return setAuthorities(this.getById(id));
     }
 
     @Override
@@ -43,16 +38,23 @@ public class UserLoginServiceImpl extends ServiceImpl<UserMapper, UserDO>
             return null;
         }
 
-        LoginUser user = BeanUtil.copy(this.get(new UserDO(username)), LoginUser.class);
+        UserDO userDO = this
+            .getOne(Wrappers.<UserDO> lambdaQuery().eq(UserDO::getUsername, username));
 
-        if (user == null) {
+        return setAuthorities(userDO);
+    }
+
+    private LoginUser setAuthorities(UserDO userDO) {
+        if (userDO == null) {
             return null;
         }
 
-        return setAuthorities(user);
-    }
+        LoginUser user = BeanUtil.copy(userDO, LoginUser.class);
 
-    private LoginUser setAuthorities(LoginUser user) {
+        user.setEnabled(Boolean.TRUE.equals(userDO.getEnabled()));
+        user.setAccountNonExpired(Boolean.FALSE.equals(userDO.getExpired()));
+        user.setAccountNonLocked(Boolean.FALSE.equals(userDO.getLocked()));
+
         if (!user.isEnabled()) {
             return user;
         }

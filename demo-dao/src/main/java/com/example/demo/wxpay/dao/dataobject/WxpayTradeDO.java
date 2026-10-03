@@ -1,4 +1,4 @@
-package com.example.demo.corp.dao.dataobject;
+package com.example.demo.wxpay.dao.dataobject;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,26 +12,21 @@ import lombok.ToString;
 import java.io.Serial;
 import java.math.BigInteger;
 
-/**
- * @author JiakunXu
- */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-@TableName("tb_corp")
-public class CorpDO extends BaseDO {
+@TableName("tb_wxpay_trade")
+public class WxpayTradeDO extends BaseDO {
 
     @Serial
-    private static final long serialVersionUID = 1738874407695964779L;
+    private static final long serialVersionUID = -7407102721978781501L;
 
     @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
-    private String            name;
+    private String            outTradeNo;
 
-    public CorpDO(BigInteger id) {
-        this.id = id;
-    }
+    private String            trade;
 
 }

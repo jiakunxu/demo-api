@@ -1,11 +1,12 @@
 package com.example.demo.role.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.cache.api.RedisService;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.role.api.RoleMenuService;
 import com.example.demo.role.api.RoleService;
@@ -14,6 +15,7 @@ import com.example.demo.role.dao.dataobject.RoleDO;
 import com.example.demo.role.dao.mapper.RoleMapper;
 import com.example.demo.user.api.UserRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -37,30 +39,37 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     private UserRoleService            userRoleService;
 
     @Override
-    public int countRole(Role role) {
+    public long countRole(Role role) {
         if (role == null) {
             return 0;
         }
 
-        return this.count(BeanUtil.copy(role, RoleDO.class));
+        return this.baseMapper.countRole(BeanUtil.copy(role, RoleDO.class));
     }
 
     @Override
     public List<Role> listRoles() {
-        RoleDO roleDO = new RoleDO();
-        roleDO.setPageNo(1);
-        roleDO.setPageSize(99);
+        Role role = new Role();
+        role.setPageNo(1L);
+        role.setPageSize(99L);
 
-        return BeanUtil.copy(this.list(roleDO), Role.class);
+        return listRoles(role);
     }
 
     @Override
     public List<Role> listRoles(Role role) {
         if (role == null) {
-            return null;
+            return List.of();
         }
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(role, RoleDO.class)), Role.class);
+        List<Role> list = BeanUtil
+            .copy(this.baseMapper.listRoles(BeanUtil.copy(role, RoleDO.class)), Role.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -69,7 +78,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return null;
         }
 
-        return BeanUtil.copy(this.get(new RoleDO(new BigInteger(id))), Role.class);
+        return BeanUtil.copy(this.getById(new BigInteger(id)), Role.class);
     }
 
     @Override
@@ -88,7 +97,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return role;
         }
 
-        role = BeanUtil.copy(this.get(new RoleDO(id)), Role.class);
+        role = BeanUtil.copy(this.getById(id), Role.class);
 
         if (role == null) {
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "角色不存在");
@@ -109,10 +118,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return null;
         }
 
-        RoleDO roleDO = new RoleDO();
-        roleDO.setCode(code);
-
-        Role role = BeanUtil.copy(this.get(roleDO), Role.class);
+        RoleDO role = this.getOne(Wrappers.<RoleDO> lambdaQuery().eq(RoleDO::getCode, code));
 
         if (role == null) {
             return null;
@@ -128,13 +134,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         roleDO.setCreator(creator);
 
         try {
-            this.insert(roleDO);
+            this.save(roleDO);
         } catch (DuplicateKeyException e) {
             log.error("{}", roleDO, e);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "编号已存在");
-        } catch (Exception e) {
-            log.error("{}", roleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
         }
 
         role.setId(roleDO.getId());
@@ -152,15 +155,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         RoleDO roleDO = BeanUtil.copy(role, RoleDO.class);
         roleDO.setModifier(modifier);
 
-        try {
-            if (this.update(roleDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", roleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(roleDO)) {
+            log.error("{}", roleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         roleMenuService.updateRoleMenus(role.getId(), role.getMenuIds(), modifier);
@@ -178,15 +175,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         roleDO.setStatus(status);
         roleDO.setModifier(modifier);
 
-        try {
-            if (this.baseMapper.updateStatus(roleDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", roleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (!this.updateById(roleDO)) {
+            log.error("{}", roleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         remove(id);
@@ -205,18 +196,17 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         roleDO.setId(id);
         roleDO.setModifier(modifier);
 
-        try {
-            if (this.delete(roleDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", roleDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        var updateWrapper = Wrappers.<RoleDO> lambdaUpdate().eq(RoleDO::getId, id)
+            .set(RoleDO::getDeleted, true).set(RoleDO::getModifier, modifier);
+
+        if (!this.update(updateWrapper)) {
+            log.error("{}", roleDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        roleMenuService.deleteRoleMenu(id, null, modifier);
+        if (CollectionUtils.isNotEmpty(roleMenuService.listRoleMenus(id))) {
+            roleMenuService.deleteRoleMenu(id, null, modifier);
+        }
 
         remove(id);
 

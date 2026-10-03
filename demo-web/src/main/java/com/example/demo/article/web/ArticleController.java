@@ -26,7 +26,7 @@ public class ArticleController extends BaseController {
     public ListResponse<Article> list(HttpServletRequest request, HttpServletResponse response) {
         Article article = this.getParameter(request, new Article());
 
-        int count = articleService.countArticle(article);
+        long count = articleService.countArticle(article);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

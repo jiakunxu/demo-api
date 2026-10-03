@@ -4,16 +4,14 @@ import com.alibaba.fastjson2.JSON;
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.payment.common.models.AlipayTradeFastpayRefundQueryResponse;
 import com.alipay.easysdk.payment.common.models.AlipayTradeRefundResponse;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.alipay.api.AlipayRefundService;
 import com.example.demo.alipay.api.AlipayService;
 import com.example.demo.alipay.api.bo.AlipayRefund;
 import com.example.demo.alipay.dao.dataobject.AlipayRefundDO;
 import com.example.demo.alipay.dao.mapper.AlipayRefundMapper;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
+import com.example.demo.framework.annotation.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,12 +87,7 @@ public class AlipayRefundServiceImpl extends ServiceImpl<AlipayRefundMapper, Ali
         refundDO.setRefund(JSON.toJSONString(refund));
         refundDO.setCreator("sys");
 
-        try {
-            this.insert(refundDO);
-        } catch (Exception e) {
-            log.error("{}", refundDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(refundDO);
 
         return refund;
     }

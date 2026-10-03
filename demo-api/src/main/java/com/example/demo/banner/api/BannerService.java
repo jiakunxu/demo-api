@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BannerService {
 
-    int countBanner(Banner banner);
+    long countBanner(Banner banner);
 
     List<Banner> listBanners(Banner banner);
 

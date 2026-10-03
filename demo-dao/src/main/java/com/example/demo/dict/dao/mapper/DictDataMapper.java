@@ -1,12 +1,16 @@
 package com.example.demo.dict.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.dict.dao.dataobject.DictDataDO;
-import com.example.demo.framework.mapper.BaseMapper;
+
+import java.util.List;
 
 public interface DictDataMapper extends BaseMapper<DictDataDO> {
 
-    int update0(DictDataDO dictDataDO);
+    long countData(DictDataDO dictDataDO);
 
-    int update1(DictDataDO dictDataDO);
+    List<DictDataDO> listDatas(DictDataDO dictDataDO);
+
+    DictDataDO getData(DictDataDO dictDataDO);
 
 }

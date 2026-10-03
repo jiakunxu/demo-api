@@ -1,5 +1,7 @@
 package com.example.demo.dict.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.cache.api.RedisService;
 import com.example.demo.dict.api.DictDataService;
 import com.example.demo.dict.api.bo.DictData;
@@ -9,13 +11,12 @@ import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -29,7 +30,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     private RedisService<String, DictData> redisService;
 
     @Override
-    public int countData(String typeId, String typeValue, DictData data) {
+    public long countData(String typeId, String typeValue, DictData data) {
         if (StringUtils.isAllBlank(typeId, typeValue) || data == null) {
             return 0;
         }
@@ -40,15 +41,15 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         data.setTypeValue(typeValue);
 
-        return this.count(BeanUtil.copy(data, DictDataDO.class));
+        return this.baseMapper.countData(BeanUtil.copy(data, DictDataDO.class));
     }
 
     @Override
     public List<DictData> listDatas(String typeId, String typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1);
-        data.setPageSize(99);
+        data.setPageNo(1L);
+        data.setPageSize(99L);
 
         return listDatas(typeId, typeValue, data);
     }
@@ -57,8 +58,8 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String[] typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1);
-        data.setPageSize(999);
+        data.setPageNo(1L);
+        data.setPageSize(999L);
 
         return listDatas(typeId, typeValue, data);
     }
@@ -75,8 +76,8 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         data.setTypeValue(typeValue);
 
-        List<DictData> list = BeanUtil.copy(this.list(BeanUtil.copy(data, DictDataDO.class)),
-            DictData.class);
+        List<DictData> list = BeanUtil
+            .copy(this.baseMapper.listDatas(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -89,7 +90,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String[] typeValue, DictData data) {
         if ((StringUtils.isBlank(typeId) && (typeValue == null || typeValue.length == 0))
             || data == null) {
-            return null;
+            return List.of();
         }
 
         if (StringUtils.isNotBlank(typeId)) {
@@ -98,7 +99,14 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         data.setTypeValues(typeValue);
 
-        return BeanUtil.copy(this.list(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
+        List<DictData> list = BeanUtil
+            .copy(this.baseMapper.listDatas(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
+        }
+
+        return list;
     }
 
     @Override
@@ -116,7 +124,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             return null;
         }
 
-        return BeanUtil.copy(this.get(new DictDataDO(id)), DictData.class);
+        return BeanUtil.copy(this.getById(id), DictData.class);
     }
 
     @Override
@@ -144,7 +152,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         dataDO.setValue(value);
         dataDO.setStatus(DictData.Status.ENABLE.value);
 
-        data = BeanUtil.copy(this.get(dataDO), DictData.class);
+        data = BeanUtil.copy(this.baseMapper.getData(dataDO), DictData.class);
 
         if (data == null) {
             return new DictData();
@@ -167,12 +175,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         DictDataDO dataDO = BeanUtil.copy(data, DictDataDO.class);
         dataDO.setCreator(creator);
 
-        try {
-            this.insert(dataDO);
-        } catch (Exception e) {
-            log.error("{}", dataDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(dataDO);
 
         data.setId(dataDO.getId());
 
@@ -193,15 +196,12 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         DictDataDO dataDO = BeanUtil.copy(data, DictDataDO.class);
         dataDO.setModifier(modifier);
 
-        try {
-            if (this.baseMapper.update0(dataDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", dataDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        dataDO.setTypeId(null);
+        dataDO.setTypeValue(null);
+
+        if (!this.updateById(dataDO)) {
+            log.error("{}", dataDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         remove(before.getTypeValue() + "&" + before.getValue());
@@ -225,12 +225,10 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         dataDO.setTypeValue(typeValue);
         dataDO.setModifier(modifier);
 
-        try {
-            this.baseMapper.update1(dataDO);
-        } catch (Exception e) {
-            log.error("{}", dataDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
-        }
+        var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate().eq(DictDataDO::getTypeId, typeId)
+            .set(DictDataDO::getTypeValue, typeValue).set(DictDataDO::getModifier, modifier);
+
+        this.update(updateWrapper);
 
         return BeanUtil.copy(dataDO, DictData.class);
     }
@@ -262,11 +260,13 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         dataDO.setTypeId(typeId);
         dataDO.setModifier(modifier);
 
-        try {
-            this.delete(dataDO);
-        } catch (Exception e) {
-            log.error("{}", dataDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate()
+            .eq(id != null, DictDataDO::getId, id).eq(id == null, DictDataDO::getTypeId, typeId)
+            .set(DictDataDO::getDeleted, true).set(DictDataDO::getModifier, modifier);
+
+        if (!this.update(updateWrapper)) {
+            log.error("{}", dataDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         return BeanUtil.copy(dataDO, DictData.class);

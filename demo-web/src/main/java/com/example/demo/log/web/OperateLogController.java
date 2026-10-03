@@ -27,7 +27,7 @@ public class OperateLogController extends BaseController {
     public ListResponse<OperateLog> list(HttpServletRequest request, HttpServletResponse response) {
         OperateLog log = this.getParameter(request, new OperateLog());
 
-        int count = operateLogService.countLog(log);
+        long count = operateLogService.countLog(log);
 
         if (count == 0) {
             return new ListResponse<>(0, List.of());

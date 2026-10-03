@@ -1,16 +1,14 @@
 package com.example.demo.test.task;
 
 import com.example.demo.framework.util.DateUtil;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.springframework.scheduling.quartz.QuartzJobBean;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestTask extends QuartzJobBean {
+public class TestTask {
 
-    @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    @XxlJob("testJobHandler")
+    public void testJobHandler() {
         System.out.println(this.getClass().getName() + "：" + DateUtil.getNowDateTime());
     }
 

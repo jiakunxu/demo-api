@@ -1,7 +1,9 @@
 package com.example.demo.weixin.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.weixin.api.MessageService;
 import com.example.demo.weixin.api.WeixinNotifyService;
+import com.example.demo.weixin.dao.dataobject.WeixinNotifyDO;
 import com.example.demo.weixin.dao.mapper.WeixinNotifyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,13 +12,11 @@ import org.springframework.stereotype.Service;
  * @author JiakunXu
  */
 @Service
-public class WeixinNotifyServiceImpl implements WeixinNotifyService {
+public class WeixinNotifyServiceImpl extends ServiceImpl<WeixinNotifyMapper, WeixinNotifyDO>
+                                     implements WeixinNotifyService {
 
     @Autowired
-    private MessageService     messageService;
-
-    @Autowired
-    private WeixinNotifyMapper weixinNotifyMapper;
+    private MessageService messageService;
 
     @Override
     public String verify(String signature, String timestamp, String nonce, String echoStr) {

@@ -1,17 +1,18 @@
 package com.example.demo.chat.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.chat.api.ChatDetailService;
 import com.example.demo.chat.api.ChatService;
 import com.example.demo.chat.api.ChatStatusService;
 import com.example.demo.chat.api.bo.Chat;
 import com.example.demo.chat.dao.dataobject.ChatDO;
-import com.example.demo.framework.service.impl.ServiceImpl;
-import com.example.demo.framework.util.BeanUtil;
-import com.example.demo.user.api.UserService;
 import com.example.demo.chat.dao.mapper.ChatMapper;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
+import com.example.demo.framework.util.BeanUtil;
+import com.example.demo.user.api.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
     private UserService       userService;
 
     @Override
-    public int countChat(BigInteger userId) {
+    public long countChat(BigInteger userId) {
         if (userId == null) {
             return 0;
         }
@@ -44,24 +45,24 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         ChatDO chatDO = new ChatDO();
         chatDO.setUserId(userId);
 
-        return this.count(chatDO);
+        return this.baseMapper.countChat(chatDO);
     }
 
     @Override
     public List<Chat> listChats(BigInteger userId, String pageNo, String pageSize) {
         if (userId == null || StringUtils.isBlank(pageNo) || StringUtils.isBlank(pageSize)) {
-            return null;
+            return List.of();
         }
 
         ChatDO chatDO = new ChatDO();
         chatDO.setUserId(userId);
-        chatDO.setPageNo(Integer.parseInt(pageNo));
-        chatDO.setPageSize(Integer.parseInt(pageSize));
+        chatDO.setPageNo(Long.valueOf(pageNo));
+        chatDO.setPageSize(Long.valueOf(pageSize));
 
-        List<Chat> list = BeanUtil.copy(this.list(chatDO), Chat.class);
+        List<Chat> list = BeanUtil.copy(this.baseMapper.listChats(chatDO), Chat.class);
 
-        if (list == null || list.isEmpty()) {
-            return null;
+        if (CollectionUtils.isEmpty(list)) {
+            return List.of();
         }
 
         for (Chat c : list) {
@@ -74,7 +75,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
 
     @Override
     public Chat getChat(BigInteger userId, String friendId) {
-        if (userId == null || friendId == null) {
+        if (userId == null || StringUtils.isBlank(friendId)) {
             return null;
         }
 
@@ -96,7 +97,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         chatDO.setUserId(userId);
         chatDO.setFriendId(friendId);
 
-        return BeanUtil.copy(this.get(chatDO), Chat.class);
+        return BeanUtil.copy(this.baseMapper.getChat(chatDO), Chat.class);
     }
 
     @Override
@@ -114,7 +115,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
 
         try {
             if (this.baseMapper.updateChat(chatDO) != 1) {
-                this.insert(chatDO);
+                this.save(chatDO);
             }
         } catch (Exception e) {
             log.error("{}", chatDO, e);
@@ -138,15 +139,9 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         ChatDO chatDO = BeanUtil.copy(chat, ChatDO.class);
         chatDO.setModifier(userId.toString());
 
-        try {
-            if (this.baseMapper.updateUnread(chatDO) != 1) {
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息不存在");
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("{}", chatDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息更新失败，请稍后再试");
+        if (this.baseMapper.updateUnread(chatDO) != 1) {
+            log.error("{}", chatDO);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息不存在");
         }
 
         return chat;

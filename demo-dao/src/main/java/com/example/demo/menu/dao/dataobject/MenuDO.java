@@ -1,5 +1,9 @@
 package com.example.demo.menu.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +18,13 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
+@TableName("tb_menu")
 public class MenuDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = 6834457453642427426L;
 
+    @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
     /**
@@ -54,6 +60,7 @@ public class MenuDO extends BaseDO {
     /**
      * 路由参数
      */
+    @TableField("`query`")
     private String            query;
 
     /**
@@ -64,21 +71,25 @@ public class MenuDO extends BaseDO {
     /**
      * 排序
      */
+    @TableField("`order`")
     private Integer           order;
 
     /**
      * 0 不是 1 是
      */
+    @TableField("is_external")
     private Boolean           external;
 
     /**
      * 0 不缓存 1 缓存
      */
+    @TableField("is_cached")
     private Boolean           cached;
 
     /**
      * 0 显示 1 不显示
      */
+    @TableField("is_hidden")
     private Boolean           hidden;
 
     /**
@@ -86,15 +97,19 @@ public class MenuDO extends BaseDO {
      */
     private String            status;
 
+    @TableField(exist = false)
     private List<BigInteger>  ids;
 
+    @TableField(exist = false)
     private String[]          types;
 
     /**
      * user user_role role_menu menu.
      */
+    @TableField(exist = false)
     private BigInteger        userId;
 
+    @TableField(exist = false)
     private String[]          roleCodes;
 
     public MenuDO(BigInteger id) {

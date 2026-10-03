@@ -4,40 +4,7 @@
 
 <mapper namespace="com.example.demo.dict.dao.mapper.DictDataMapper">
 
-	<select id="count" parameterType="dictDataDO" resultType="java.lang.Integer">
-	<![CDATA[
-		SELECT COUNT(*)
-		  FROM `tb_dict_data` t
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="typeId != null">
-		<![CDATA[ AND t.`type_id` = #{typeId} ]]>
-		</if>
-		<if test="typeValue != null and typeValue != ''">
-		<![CDATA[ AND t.`type_value` = #{typeValue} ]]>
-		</if>
-		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-	</select>
-
-	<select id="list" parameterType="dictDataDO" resultType="dictDataDO">
-	<![CDATA[
-		SELECT t.`id`,
-			   t.`type_id` AS typeId,
-			   t.`type_value` AS typeValue,
-			   t.`name`,
-			   t.`value`,
-			   t.`remark`,
-			   t.`order`,
-			   t.`status`,
-			   t.`create_time` AS createTime
-		  FROM `tb_dict_data` t
-		 WHERE t.`is_deleted` = 0
-  	]]>
+	<sql id="queryCondition">
 		<if test="typeId != null">
 		<![CDATA[ AND t.`type_id` = #{typeId} ]]>
 		</if>
@@ -54,13 +21,39 @@
 		<if test="status != null and status != ''">
 		<![CDATA[ AND t.`status` = #{status} ]]>
 		</if>
+	</sql>
+
+	<select id="countData" parameterType="dictDataDO" resultType="java.lang.Long">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM `tb_dict_data` t
+		 WHERE t.`is_deleted` = 0
+	]]>
+		<include refid="queryCondition"/>
+	</select>
+
+	<select id="listDatas" parameterType="dictDataDO" resultType="dictDataDO">
+	<![CDATA[
+		SELECT t.`id`,
+			   t.`type_id` AS typeId,
+			   t.`type_value` AS typeValue,
+			   t.`name`,
+			   t.`value`,
+			   t.`remark`,
+			   t.`order`,
+			   t.`status`,
+			   t.`create_time` AS createTime
+		  FROM `tb_dict_data` t
+		 WHERE t.`is_deleted` = 0
+  	]]>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY t.`type_id`, t.`order`, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
 
-	<select id="get" parameterType="dictDataDO" resultType="dictDataDO">
+	<select id="getData" parameterType="dictDataDO" resultType="dictDataDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`type_id` AS typeId,
@@ -90,79 +83,5 @@
 		 LIMIT 1
 	]]>
 	</select>
-
-	<insert id="insert" parameterType="dictDataDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_dict_data`
-		  (
-			`type_id`,
-			`type_value`,
-			`name`,
-			`value`,
-			`remark`,
-			`order`,
-			`status`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{typeId},
-			#{typeValue},
-			#{name},
-			#{value},
-			#{remark},
-			#{order},
-			#{status},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
-
-	<update id="update0" parameterType="dictDataDO">
-	<![CDATA[
-		UPDATE `tb_dict_data` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`name` = #{name},
-			   t.`value` = #{value},
-			   t.`remark` = #{remark},
-			   t.`order` = #{order},
-			   t.`status` = #{status}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</update>
-
-	<update id="update1" parameterType="dictDataDO">
-	<![CDATA[
-		UPDATE `tb_dict_data` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`type_value` = #{typeValue}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`type_id` = #{typeId}
-	]]>
-	</update>
-
-	<update id="delete" parameterType="dictDataDO">
-	<![CDATA[
-		UPDATE `tb_dict_data` t
-		   SET t.`update_time` = NOW(),
-			   t.`modifier` = #{modifier},
-			   t.`is_deleted` = 1
-		 WHERE t.`is_deleted` = 0
-	]]>
-		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
-		</if>
-		<if test="id == null">
-		<![CDATA[ AND t.`type_id` = #{typeId} ]]>
-		</if>
-	</update>
 
 </mapper>

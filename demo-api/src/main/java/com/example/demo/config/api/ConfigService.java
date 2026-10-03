@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface ConfigService {
 
-    int countConfig(Config config);
+    long countConfig(Config config);
 
     List<Config> listConfigs(Config config);
 

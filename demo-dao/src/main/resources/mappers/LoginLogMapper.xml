@@ -4,30 +4,34 @@
 
 <mapper namespace="com.example.demo.login.dao.mapper.LoginLogMapper">
 
-	<select id="count" parameterType="loginLogDO" resultType="java.lang.Integer">
+	<sql id="queryCondition">
+		<if test="username != null and username != ''">
+		<![CDATA[ AND t.`username` LIKE #{username,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+		</if>
+		<if test="ip != null and ip != ''">
+		<![CDATA[ AND t.`ip` = #{ip} ]]>
+		</if>
+		<if test="status != null and status != ''">
+		<![CDATA[ AND t.`status` = #{status} ]]>
+		</if>
+		<if test="start != null and start != ''">
+		<![CDATA[ AND t.`login_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
+		</if>
+		<if test="end != null and end != ''">
+		<![CDATA[ AND t.`login_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
+		</if>
+	</sql>
+
+	<select id="countLog" parameterType="loginLogDO" resultType="java.lang.Long">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_login_log` t
 		 WHERE t.`is_deleted` = 0
 	]]>
-		<if test="username != null and username != ''">
-		<![CDATA[ AND t.`username` LIKE #{username,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="ip != null and ip != ''">
-		<![CDATA[ AND t.`ip` = #{ip} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`login_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`login_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
+		<include refid="queryCondition"/>
 	</select>
 
-	<select id="list" parameterType="loginLogDO" resultType="loginLogDO">
+	<select id="listLogs" parameterType="loginLogDO" resultType="loginLogDO">
 	<![CDATA[
 		SELECT t.`id`,
 			   t.`username`,
@@ -38,71 +42,12 @@
 			   t.`err_msg` AS errMsg
 		  FROM `tb_login_log` t
 		 WHERE t.`is_deleted` = 0
-  	]]>
-		<if test="username != null and username != ''">
-		<![CDATA[ AND t.`username` LIKE #{username,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
-		</if>
-		<if test="ip != null and ip != ''">
-		<![CDATA[ AND t.`ip` = #{ip} ]]>
-		</if>
-		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
-		</if>
-		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`login_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
-		</if>
-		<if test="end != null and end != ''">
-		<![CDATA[ AND t.`login_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
-		</if>
+	]]>
+		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY ${sort} ${dir}, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	]]>
 	</select>
-
-	<select id="get" parameterType="loginLogDO" resultType="loginLogDO">
-	<![CDATA[
-		SELECT t.`id`,
-			   t.`username`,
-			   t.`ip`,
-			   t.`ip_addr` AS ipAddr,
-			   t.`login_time` AS loginTime,
-			   t.`status`,
-			   t.`err_msg` AS errMsg
-		  FROM `tb_login_log` t
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-	]]>
-	</select>
-
-	<insert id="insert" parameterType="loginLogDO" useGeneratedKeys="true" keyProperty="id">
-	<![CDATA[
-		INSERT
-		INTO `tb_login_log`
-		  (
-			`username`,
-			`ip`,
-			`ip_addr`,
-			`login_time`,
-			`status`,
-			`err_msg`,
-			`is_deleted`,
-			`creator`,
-			`create_time`
-		  )
-		  VALUES
-		  (
-			#{username},
-			#{ip},
-			#{ipAddr},
-			#{loginTime},
-			#{status},
-			#{errMsg},
-			0,
-			#{creator},
-			NOW()
-		  )
-	]]>
-	</insert>
 
 </mapper>

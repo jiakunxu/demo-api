@@ -27,7 +27,7 @@ public class LoginLogController extends BaseController {
     public ListResponse<LoginLog> list(HttpServletRequest request, HttpServletResponse response) {
         LoginLog log = this.getParameter(request, new LoginLog());
 
-        int count = loginLogService.countLog(log);
+        long count = loginLogService.countLog(log);
 
         if (count == 0) {
             return new ListResponse<>(0, List.of());

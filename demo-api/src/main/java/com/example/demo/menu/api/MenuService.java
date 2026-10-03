@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface MenuService {
 
-    int countMenu(BigInteger pid);
+    long countMenu(BigInteger pid);
 
-    int countMenu(String pid, Menu menu);
+    long countMenu(String pid, Menu menu);
 
     List<Menu> listMenus(String pid, Menu menu);
 

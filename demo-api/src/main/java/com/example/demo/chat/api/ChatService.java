@@ -15,7 +15,7 @@ public interface ChatService {
      * @param userId
      * @return
      */
-    int countChat(BigInteger userId);
+    long countChat(BigInteger userId);
 
     /**
      *

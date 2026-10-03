@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface LoginLogService {
 
-    int countLog(LoginLog loginLog);
+    long countLog(LoginLog loginLog);
 
     List<LoginLog> listLogs(LoginLog loginLog);
 

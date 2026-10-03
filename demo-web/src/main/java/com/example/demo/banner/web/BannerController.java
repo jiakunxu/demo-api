@@ -26,7 +26,7 @@ public class BannerController extends BaseController {
     public ListResponse<Banner> list(HttpServletRequest request, HttpServletResponse response) {
         Banner banner = this.getParameter(request, new Banner());
 
-        int count = bannerService.countBanner(banner);
+        long count = bannerService.countBanner(banner);
 
         if (count == 0) {
             return new ListResponse<>(0, null);

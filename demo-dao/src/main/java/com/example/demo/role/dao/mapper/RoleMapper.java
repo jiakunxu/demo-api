@@ -1,10 +1,14 @@
 package com.example.demo.role.dao.mapper;
 
-import com.example.demo.framework.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.role.dao.dataobject.RoleDO;
+
+import java.util.List;
 
 public interface RoleMapper extends BaseMapper<RoleDO> {
 
-    int updateStatus(RoleDO roleDO);
+    long countRole(RoleDO roleDO);
+
+    List<RoleDO> listRoles(RoleDO roleDO);
 
 }

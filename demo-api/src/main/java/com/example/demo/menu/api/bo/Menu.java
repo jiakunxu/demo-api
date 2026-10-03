@@ -2,6 +2,7 @@ package com.example.demo.menu.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class Menu extends BaseBO {
 
     @Serial
@@ -83,6 +85,10 @@ public class Menu extends BaseBO {
      * 正常 停用
      */
     private String            status;
+
+    public Menu(BigInteger id) {
+        this.id = id;
+    }
 
     public Boolean getLeaf() {
         return !Menu.Type.CONTENTS.value.equals(this.type) || this.external;

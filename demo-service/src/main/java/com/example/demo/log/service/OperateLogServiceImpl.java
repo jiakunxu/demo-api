@@ -1,19 +1,17 @@
 package com.example.demo.log.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.framework.annotation.NotBlank;
 import com.example.demo.framework.annotation.NotNull;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.operate.api.OperateLogService;
 import com.example.demo.operate.api.bo.OperateLog;
 import com.example.demo.operate.dao.dataobject.OperateLogDO;
 import com.example.demo.operate.dao.mapper.OperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -24,12 +22,12 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
                                    implements OperateLogService {
 
     @Override
-    public int countLog(OperateLog log) {
+    public long countLog(OperateLog log) {
         if (log == null) {
             return 0;
         }
 
-        return this.count(BeanUtil.copy(log, OperateLogDO.class));
+        return this.baseMapper.countLog(BeanUtil.copy(log, OperateLogDO.class));
     }
 
     @Override
@@ -43,8 +41,8 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
             log.setDir("DESC");
         }
 
-        List<OperateLog> list = BeanUtil.copy(this.list(BeanUtil.copy(log, OperateLogDO.class)),
-            OperateLog.class);
+        List<OperateLog> list = BeanUtil.copy(
+            this.baseMapper.listLogs(BeanUtil.copy(log, OperateLogDO.class)), OperateLog.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -84,7 +82,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
             return null;
         }
 
-        return BeanUtil.copy(this.get(new OperateLogDO(id)), OperateLog.class);
+        return BeanUtil.copy(this.getById(id), OperateLog.class);
     }
 
     @Override
@@ -92,12 +90,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         OperateLogDO logDO = BeanUtil.copy(operateLog, OperateLogDO.class);
         logDO.setCreator(creator);
 
-        try {
-            this.insert(logDO);
-        } catch (Exception e) {
-            log.error("{}", logDO, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息创建失败，请稍后再试");
-        }
+        this.save(logDO);
 
         operateLog.setId(logDO.getId());
 
