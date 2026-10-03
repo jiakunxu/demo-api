@@ -1,6 +1,6 @@
 package com.example.demo.dingtalk.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.dingtalk.api.DingtalkNotifyService;
 import com.example.demo.dingtalk.api.MessageService;
 import com.example.demo.dingtalk.dao.dataobject.DingtalkNotifyDO;

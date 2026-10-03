@@ -1,7 +1,7 @@
 package com.example.demo.user.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.security.api.PermissionService;
 import com.example.demo.security.api.bo.LoginUser;

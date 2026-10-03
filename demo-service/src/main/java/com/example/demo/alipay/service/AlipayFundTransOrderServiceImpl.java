@@ -1,6 +1,6 @@
 package com.example.demo.alipay.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.alipay.api.AlipayFundTransOrderService;
 import com.example.demo.alipay.api.bo.fund.AlipayFundTransOrder;
 import com.example.demo.alipay.dao.dataobject.AlipayFundTransOrderDO;

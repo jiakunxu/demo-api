@@ -1,6 +1,6 @@
 package com.example.demo.bytedance.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.bytedance.api.BytedanceNotifyService;
 import com.example.demo.bytedance.api.MessageService;
 import com.example.demo.bytedance.api.bo.message.Message;

@@ -1,7 +1,7 @@
 package com.example.demo.banner.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.banner.api.BannerService;
 import com.example.demo.banner.api.bo.Banner;
 import com.example.demo.banner.dao.dataobject.BannerDO;

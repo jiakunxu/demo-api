@@ -1,7 +1,7 @@
 package com.example.demo.dict.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.example.demo.cache.api.RedisService;
 import com.example.demo.dict.api.DictDataService;
 import com.example.demo.dict.api.bo.DictData;
