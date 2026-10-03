@@ -1,5 +1,6 @@
 package com.example.demo.alipay.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.payment.common.models.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,12 +9,10 @@ import com.example.demo.alipay.api.FactoryPaymentCommonService;
 import com.example.demo.alipay.api.bo.AlipayTrade;
 import com.example.demo.alipay.dao.dataobject.AlipayTradeDO;
 import com.example.demo.alipay.dao.mapper.AlipayTradeMapper;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.framework.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,14 +95,13 @@ public class AlipayTradeServiceImpl extends ServiceImpl<AlipayTradeMapper, Alipa
     }
 
     @Override
-    public AlipayTrade insertTrade(AlipayTrade trade) {
-        if (trade == null) {
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
-        }
+    public AlipayTrade insertTrade(@NotNull AlipayTrade trade) {
+        AlipayTradeDO tradeDO = new AlipayTradeDO();
+        tradeDO.setOutTradeNo(trade.getOutTradeNo());
+        tradeDO.setTrade(JSON.toJSONString(trade));
+        tradeDO.setCreator("系统");
 
-        AlipayTradeDO alipayTradeDO = BeanUtil.copy(trade, AlipayTradeDO.class);
-
-        this.save(alipayTradeDO);
+        this.save(tradeDO);
 
         return trade;
     }
