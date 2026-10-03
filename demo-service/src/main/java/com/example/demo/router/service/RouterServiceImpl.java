@@ -7,6 +7,7 @@ import com.example.demo.router.api.RouterService;
 import com.example.demo.router.api.bo.Meta;
 import com.example.demo.router.api.bo.Router;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -112,7 +113,7 @@ public class RouterServiceImpl implements RouterService {
         String path = menu.getPath();
 
         if (!root && !menu.getExternal()
-            && StringUtils.startsWithAny(path, "http://", "https://")) {
+            && Strings.CS.startsWithAny(path, "http://", "https://")) {
             return StringUtils.replaceEach(path, new String[] { "http://", "https://" },
                 new String[] { "", "" });
         }
@@ -125,7 +126,7 @@ public class RouterServiceImpl implements RouterService {
             return "/";
         }
 
-        if (root && !menu.getExternal() && StringUtils.startsWithAny(path, "http://", "https://")) {
+        if (root && !menu.getExternal() && Strings.CS.startsWithAny(path, "http://", "https://")) {
             return "/";
         }
 
@@ -165,7 +166,7 @@ public class RouterServiceImpl implements RouterService {
         }
 
         if (StringUtils.isBlank(menu.getComponent()) && !root && !menu.getExternal()
-            && StringUtils.startsWithAny(menu.getPath(), "http://", "https://")) {
+            && Strings.CS.startsWithAny(menu.getPath(), "http://", "https://")) {
             return "InnerLink";
         }
 
