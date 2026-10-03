@@ -9,10 +9,10 @@ import com.example.demo.alipay.api.FactoryPaymentCommonService;
 import com.example.demo.alipay.api.bo.AlipayTrade;
 import com.example.demo.alipay.dao.dataobject.AlipayTradeDO;
 import com.example.demo.alipay.dao.mapper.AlipayTradeMapper;
+import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

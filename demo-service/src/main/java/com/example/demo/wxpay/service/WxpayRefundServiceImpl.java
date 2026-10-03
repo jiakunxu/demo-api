@@ -2,9 +2,7 @@ package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.framework.constant.HttpStatus;
-import com.example.demo.framework.exception.ServiceException;
-import com.example.demo.framework.util.BeanUtil;
+import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.wxpay.api.RefundService;
 import com.example.demo.wxpay.api.WxpayRefundService;
 import com.example.demo.wxpay.api.bo.WxpayRefund;
@@ -148,16 +146,16 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
     }
 
     @Override
-    public WxpayRefund insertRefund(WxpayRefund wxpayRefund) {
-        if (wxpayRefund == null) {
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
-        }
+    public WxpayRefund insertRefund(@NotNull WxpayRefund refund) {
+        WxpayRefundDO refundDO = new WxpayRefundDO();
+        refundDO.setOutTradeNo(refund.getOutTradeNo());
+        refundDO.setOutRefundNo(refund.getOutRefundNo());
+        refundDO.setRefund(JSON.toJSONString(refund));
+        refundDO.setCreator("系统");
 
-        WxpayRefundDO wxpayRefundDO = BeanUtil.copy(wxpayRefund, WxpayRefundDO.class);
+        this.save(refundDO);
 
-        this.save(wxpayRefundDO);
-
-        return wxpayRefund;
+        return refund;
     }
 
 }

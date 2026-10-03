@@ -2,6 +2,7 @@ package com.example.demo.wxpay.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.framework.annotation.NotNull;
 import com.example.demo.framework.util.BeanUtil;
 import com.example.demo.wxpay.api.JsapiService;
 import com.example.demo.wxpay.api.PartnerJsapiService;
@@ -14,7 +15,6 @@ import com.wechat.pay.java.core.notification.Notification;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
