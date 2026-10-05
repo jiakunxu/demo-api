@@ -49,8 +49,10 @@
 		<include refid="queryCondition"/>
 	<![CDATA[
 		 ORDER BY t.`type_id`, t.`order`, t.`id` DESC
-		 LIMIT #{offset}, #{pageSize}
 	]]>
+		<if test="pageNo != null and pageNo > 0 and pageSize != null and pageSize > 0">
+		<![CDATA[ LIMIT #{offset}, #{pageSize} ]]>
+		</if>
 	</select>
 
 	<select id="getData" parameterType="dictDataDO" resultType="dictDataDO">

@@ -48,8 +48,6 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1L);
-        data.setPageSize(99L);
 
         return listDatas(typeId, typeValue, data);
     }
@@ -58,8 +56,6 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String[] typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1L);
-        data.setPageSize(999L);
 
         return listDatas(typeId, typeValue, data);
     }
