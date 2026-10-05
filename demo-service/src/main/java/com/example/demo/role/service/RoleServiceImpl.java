@@ -50,8 +50,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     @Override
     public List<Role> listRoles() {
         Role role = new Role();
-        role.setPageNo(1L);
-        role.setPageSize(99L);
 
         return listRoles(role);
     }
