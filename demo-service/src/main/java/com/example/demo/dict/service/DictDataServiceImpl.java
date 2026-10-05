@@ -48,8 +48,6 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1L);
-        data.setPageSize(99L);
 
         return listDatas(typeId, typeValue, data);
     }
@@ -58,8 +56,6 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
     public List<DictData> listDatas(String typeId, String[] typeValue) {
         DictData data = new DictData();
         data.setStatus(DictData.Status.ENABLE.value);
-        data.setPageNo(1L);
-        data.setPageSize(999L);
 
         return listDatas(typeId, typeValue, data);
     }
@@ -214,7 +210,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
                                @NotBlank String modifier) {
         List<DictData> list = listDatas(typeId.toString(), (String) null);
 
-        if (!CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             for (DictData item : list) {
                 remove(item.getTypeValue() + "&" + item.getValue());
             }
@@ -248,7 +244,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         if (typeId != null) {
             List<DictData> list = listDatas(typeId.toString(), (String) null);
-            if (!CollectionUtils.isEmpty(list)) {
+            if (CollectionUtils.isNotEmpty(list)) {
                 for (DictData item : list) {
                     remove(item.getTypeValue() + "&" + item.getValue());
                 }

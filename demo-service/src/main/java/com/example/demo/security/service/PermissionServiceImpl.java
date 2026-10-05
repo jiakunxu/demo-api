@@ -11,6 +11,7 @@ import com.example.demo.role.api.bo.Role;
 import com.example.demo.security.api.PermissionService;
 import com.example.demo.security.api.bo.Permission;
 import com.example.demo.user.api.UserRoleService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class PermissionServiceImpl implements PermissionService {
     public void validate(@NotNull BigInteger userId, @NotBlank String authority) {
         List<Role> roleList = userRoleService.listRoles(userId, Role.Status.ENABLE.value);
 
-        if (roleList == null || roleList.isEmpty()) {
+        if (CollectionUtils.isEmpty(roleList)) {
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
         }
 
@@ -45,7 +46,7 @@ public class PermissionServiceImpl implements PermissionService {
         List<Menu> menuList = menuService.listMenus(new String[] { Menu.Type.BUTTON.value },
             userId);
 
-        if (menuList == null || menuList.isEmpty()) {
+        if (CollectionUtils.isEmpty(menuList)) {
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
         }
 
@@ -70,7 +71,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         List<Role> roleList = userRoleService.listRoles(userId, Role.Status.ENABLE.value);
 
-        if (roleList != null && !roleList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(roleList)) {
             for (Role role : roleList) {
                 if (RoleService.ROLE_ADMIN.equals(role.getCode())) {
                     isAdmin = true;
@@ -85,7 +86,7 @@ public class PermissionServiceImpl implements PermissionService {
         List<Menu> menuList = isAdmin ? menuService.listMenus(type)
             : menuService.listMenus(type, userId);
 
-        if (menuList != null && !menuList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(menuList)) {
             for (Menu menu : menuList) {
                 if (StringUtils.isBlank(menu.getCode())) {
                     continue;

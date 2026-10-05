@@ -9,6 +9,7 @@ import com.aliyun.teautil.models.RuntimeOptions;
 import com.example.demo.dingtalk.api.WorkflowService;
 import com.example.demo.dingtalk.api.bo.FormValue;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +71,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         List<StartProcessInstanceRequest.StartProcessInstanceRequestFormComponentValues> formComponentValues = new ArrayList<>();
 
-        if (formValueList != null && !formValueList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(formValueList)) {
             for (FormValue formValue : formValueList) {
                 if (StringUtils.isBlank(formValue.getValue())) {
                     continue;

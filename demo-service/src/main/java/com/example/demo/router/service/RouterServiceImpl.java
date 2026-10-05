@@ -6,6 +6,7 @@ import com.example.demo.role.api.RoleService;
 import com.example.demo.router.api.RouterService;
 import com.example.demo.router.api.bo.Meta;
 import com.example.demo.router.api.bo.Router;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class RouterServiceImpl implements RouterService {
 
         boolean isAdmin = false;
 
-        if (authorities != null && !authorities.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(authorities)) {
             for (GrantedAuthority authority : authorities) {
                 if (RoleService.ROLE_ADMIN.equals(authority.getAuthority())) {
                     isAdmin = true;
@@ -46,7 +47,7 @@ public class RouterServiceImpl implements RouterService {
         List<Menu> menuList = isAdmin ? menuService.listMenus(type)
             : menuService.listMenus(type, userId);
 
-        if (menuList == null || menuList.isEmpty()) {
+        if (CollectionUtils.isEmpty(menuList)) {
             return null;
         }
 
