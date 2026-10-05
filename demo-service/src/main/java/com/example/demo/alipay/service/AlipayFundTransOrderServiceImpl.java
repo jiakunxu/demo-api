@@ -23,6 +23,8 @@ public class AlipayFundTransOrderServiceImpl extends
 
         this.save(alipayFundTransOrderDO);
 
+        alipayFundTransOrder.setId(alipayFundTransOrderDO.getId());
+
         return alipayFundTransOrder;
     }
 

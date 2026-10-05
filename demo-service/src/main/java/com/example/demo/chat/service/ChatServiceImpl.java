@@ -116,6 +116,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         try {
             if (this.baseMapper.updateChat(chatDO) != 1) {
                 this.save(chatDO);
+                chat.setId(chatDO.getId());
             }
         } catch (Exception e) {
             log.error("{}", chatDO, e);
