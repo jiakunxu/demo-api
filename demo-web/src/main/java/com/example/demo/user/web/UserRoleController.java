@@ -15,6 +15,7 @@ import com.example.demo.user.api.bo.User;
 import com.example.demo.user.api.bo.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,9 +61,9 @@ public class UserRoleController extends BaseController {
         // TODO
         List<Role> roles = roleService.listRoles();
 
-        if (roles != null && !roles.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(roles)) {
             List<UserRole> userRoleList = userRoleService.listUserRoles(userId);
-            if (userRoleList != null && !userRoleList.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(userRoleList)) {
                 Map<BigInteger, UserRole> map = new HashMap<>();
                 for (UserRole userRole : userRoleList) {
                     map.put(userRole.getRoleId(), userRole);

@@ -14,10 +14,10 @@ import com.example.demo.menu.dao.mapper.MenuMapper;
 import com.example.demo.role.api.RoleMenuService;
 import com.example.demo.tree.api.bo.Tree;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

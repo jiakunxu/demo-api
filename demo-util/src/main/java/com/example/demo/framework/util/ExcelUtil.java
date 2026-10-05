@@ -1,6 +1,7 @@
 package com.example.demo.framework.util;
 
 import com.alibaba.fastjson2.JSON;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -131,7 +132,7 @@ public class ExcelUtil {
             Sheet sheet = workbook.getSheetAt(0);
             int rownum = 2;
 
-            if (dataList != null && !dataList.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(dataList)) {
                 XSSFSheet xssfSheet = workbook.getXSSFWorkbook().getSheetAt(0);
 
                 CellStyle rowStyle = getRowStyle(xssfSheet, rownum);

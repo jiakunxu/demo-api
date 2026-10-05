@@ -214,7 +214,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
                                @NotBlank String modifier) {
         List<DictData> list = listDatas(typeId.toString(), (String) null);
 
-        if (!CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             for (DictData item : list) {
                 remove(item.getTypeValue() + "&" + item.getValue());
             }
@@ -248,7 +248,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         if (typeId != null) {
             List<DictData> list = listDatas(typeId.toString(), (String) null);
-            if (!CollectionUtils.isEmpty(list)) {
+            if (CollectionUtils.isNotEmpty(list)) {
                 for (DictData item : list) {
                     remove(item.getTypeValue() + "&" + item.getValue());
                 }
