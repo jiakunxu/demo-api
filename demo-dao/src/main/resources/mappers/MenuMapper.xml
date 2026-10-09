@@ -5,16 +5,13 @@
 <mapper namespace="com.example.demo.menu.dao.mapper.MenuMapper">
 
 	<select id="countMenu" parameterType="menuDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_menu` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`pid` = #{pid}
-	]]>
 	</select>
 
 	<select id="listMenus" parameterType="menuDO" resultType="menuDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`pid`,
 			   t.`type`,
@@ -32,45 +29,40 @@
 			   t.`create_time` AS createTime
 		  FROM `tb_menu` t
 		 WHERE t.`is_deleted` = 0
-  	]]>
 		<if test="ids != null and ids.size > 0">
-		<![CDATA[ AND t.`id` IN ]]>
+			AND t.`id` IN
 			<foreach collection="ids" item="id" open="(" close=")" separator=",">#{id}</foreach>
 		</if>
 		<if test="pid != null">
-		<![CDATA[ AND t.`pid` = #{pid} ]]>
+			AND t.`pid` = #{pid}
 		</if>
 		<if test="type != null and type != ''">
-		<![CDATA[ AND t.`type` = #{type} ]]>
+			AND t.`type` = #{type}
 		</if>
 		<if test="types != null and types.length > 0">
-		<![CDATA[ AND t.`type` IN ]]>
+			AND t.`type` IN
 			<foreach collection="types" item="type" open="(" close=")" separator=",">#{type}</foreach>
 		</if>
 		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
+			AND t.`status` = #{status}
 		</if>
 		<if test="userId != null">
-		<![CDATA[
-			   AND EXISTS(
-			SELECT 1
-			  FROM `tb_role_menu` p, `tb_user_role` q, `tb_role` k
-			 WHERE t.`id` = p.`menu_id`
-			   AND p.`role_id` = q.`role_id`
-			   AND q.`role_id` = k.`id`
-			   AND p.`is_deleted` = 0
-			   AND q.`is_deleted` = 0
-			   AND k.`is_deleted` = 0
-			   AND k.`status` = 'E'
-			   AND q.`user_id` = #{userId})
-		]]>
+			AND EXISTS(
+		 SELECT 1
+		   FROM `tb_role_menu` p, `tb_user_role` q, `tb_role` k
+		  WHERE t.`id` = p.`menu_id`
+		    AND p.`role_id` = q.`role_id`
+		    AND q.`role_id` = k.`id`
+		    AND p.`is_deleted` = 0
+		    AND q.`is_deleted` = 0
+		    AND k.`is_deleted` = 0
+		    AND k.`status` = 'E'
+		    AND q.`user_id` = #{userId})
 		</if>
-	<![CDATA[
 		 ORDER BY t.`pid`, t.`order`, t.`id` DESC
-	]]>
 	</select>
 
 </mapper>

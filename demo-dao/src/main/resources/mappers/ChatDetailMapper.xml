@@ -5,7 +5,6 @@
 <mapper namespace="com.example.demo.chat.dao.mapper.ChatDetailMapper">
 
 	<select id="listChatDetails" parameterType="chatDetailDO" resultType="chatDetailDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`chat_id` AS chatId,
 			   t.`user_id` AS userId,
@@ -16,20 +15,16 @@
 			   t.`create_time` AS createTime
 		  FROM `tb_chat_detail` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<if test="id != null">
 		<![CDATA[ AND t.`id` <= #{id} ]]>
 		</if>
-	<![CDATA[
 		   AND t.`user_id` = #{userId}
 		   AND t.`friend_id` = #{friendId}
 		 ORDER BY t.`id` DESC
 		LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 	<select id="getChatDetail" parameterType="chatDetailDO" resultType="chatDetailDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`chat_id` AS chatId,
 			   t.`user_id` AS userId,
@@ -42,7 +37,6 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`id` = #{id}
 		   AND t.`user_id` = #{userId}
-	]]>
 	</select>
 
 </mapper>
