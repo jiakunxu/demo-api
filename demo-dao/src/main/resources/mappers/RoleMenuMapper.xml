@@ -5,23 +5,19 @@
 <mapper namespace="com.example.demo.role.dao.mapper.RoleMenuMapper">
 
 	<select id="countRoleMenu" parameterType="roleMenuDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_role_menu` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`menu_id` = #{menuId}
-	]]>
 	</select>
 
 	<select id="listRoleMenus" parameterType="roleMenuDO" resultType="roleMenuDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`role_id` AS roleId,
 			   t.`menu_id` AS menuId
 		  FROM `tb_role_menu` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`role_id` = #{roleId}
-	]]>
 	</select>
 
 </mapper>

@@ -5,19 +5,16 @@
 <mapper namespace="com.example.demo.user.dao.mapper.UserRoleMapper">
 
 	<select id="countUserRole" parameterType="userRoleDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_user_role` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<if test="userId != null">
-		<![CDATA[ AND t.`user_id` = #{userId} ]]>
+			AND t.`user_id` = #{userId}
 		</if>
 		<if test="roleId != null">
-		<![CDATA[ AND t.`role_id` = #{roleId} ]]>
+			AND t.`role_id` = #{roleId}
 		</if>
 		<if test="code != null and code != ''">
-		<![CDATA[
 			   AND EXISTS(
 			SELECT 1
 			  FROM `tb_role` p
@@ -25,10 +22,8 @@
 			   AND p.`is_deleted` = 0
 			   AND p.`status` = 'E'
 			   AND p.`code` = #{code})
-		]]>
 		</if>
 		<if test="codes != null and codes.length > 0">
-		<![CDATA[
 			   AND EXISTS(
 			SELECT 1
 			  FROM `tb_role` p
@@ -36,79 +31,65 @@
 			   AND p.`is_deleted` = 0
 			   AND p.`status` = 'E'
 			   AND p.`code` IN
-		]]>
 			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
-		<![CDATA[ ) ]]>
+			)
 		</if>
 	</select>
 
 	<select id="listUserRoles" parameterType="userRoleDO" resultType="userRoleDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
 			   t.`role_id` AS roleId
 		  FROM `tb_user_role` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
-	]]>
 		<if test="status != null and status != ''">
-		<![CDATA[
 			   AND EXISTS(
 			SELECT 1
 			  FROM `tb_role` p
 			 WHERE t.`role_id` = p.`id`
 			   AND p.`is_deleted` = 0
 			   AND p.`status` = #{status})
-		]]>
 		</if>
 	</select>
 
 	<select id="countUser" parameterType="userDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_user` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`corp_id` = #{corpId}
-	]]>
 		<if test="enabled != null">
-		<![CDATA[ AND t.`is_enabled` = #{enabled} ]]>
+			AND t.`is_enabled` = #{enabled}
 		</if>
 		<if test="exists == true">
-		<![CDATA[
 			   AND EXISTS(
-		]]>
 		</if>
 		<if test="exists == false">
-		<![CDATA[
 			   AND NOT EXISTS(
-		]]>
 		</if>
-		<![CDATA[
 			SELECT 1
 			  FROM `tb_user_role` p, `tb_role` q
 			 WHERE t.`id` = p.`user_id`
 			   AND q.`id` = p.`role_id`
 			   AND p.`is_deleted` = 0
 			   AND q.`is_deleted` = 0
-		]]>
 		<if test="roleId != null">
-		<![CDATA[ AND p.`role_id` = #{roleId} ]]>
+			AND p.`role_id` = #{roleId}
 		</if>
 		<if test="codes != null and codes.length > 0">
-		<![CDATA[ AND q.`code` IN ]]>
+			AND q.`code` IN
 			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 		</if>
-		<![CDATA[ ) ]]>
+		)
 		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="mobile != null and mobile != ''">
-		<![CDATA[ AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 	</select>
 
 	<select id="listUsers" parameterType="userDO" resultType="userDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`,
 			   t.`nickname`,
@@ -119,46 +100,37 @@
 		  FROM `tb_user` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`corp_id` = #{corpId}
-	]]>
 		<if test="enabled != null">
-		<![CDATA[ AND t.`is_enabled` = #{enabled} ]]>
+			AND t.`is_enabled` = #{enabled}
 		</if>
 		<if test="exists == true">
-		<![CDATA[
 			   AND EXISTS(
-		]]>
 		</if>
 		<if test="exists == false">
-		<![CDATA[
 			   AND NOT EXISTS(
-		]]>
 		</if>
-		<![CDATA[
 			SELECT 1
 			  FROM `tb_user_role` p, `tb_role` q
 			 WHERE t.`id` = p.`user_id`
 			   AND q.`id` = p.`role_id`
 			   AND p.`is_deleted` = 0
 			   AND q.`is_deleted` = 0
-		]]>
 		<if test="roleId != null">
-		<![CDATA[ AND p.`role_id` = #{roleId} ]]>
+			AND p.`role_id` = #{roleId}
 		</if>
 		<if test="codes != null and codes.length > 0">
-		<![CDATA[ AND q.`code` IN ]]>
+			AND q.`code` IN
 			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 		</if>
-		<![CDATA[ ) ]]>
+		)
 		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="mobile != null and mobile != ''">
-		<![CDATA[ AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
-	<![CDATA[
 		 ORDER BY t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 </mapper>

@@ -6,16 +6,16 @@
 
 	<sql id="queryCondition">
 		<if test="name != null and name != ''">
-		<![CDATA[ AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="key != null and key != ''">
-		<![CDATA[ AND t.`key` LIKE #{key,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`key` LIKE #{key,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="system != null">
-		<![CDATA[ AND t.`is_system` = #{system} ]]>
+			AND t.`is_system` = #{system}
 		</if>
 		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`create_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
+			AND t.`create_time` >= DATE_FORMAT(#{start},'%Y-%m-%d')
 		</if>
 		<if test="end != null and end != ''">
 		<![CDATA[ AND t.`create_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
@@ -23,16 +23,13 @@
 	</sql>
 
 	<select id="countConfig" parameterType="configDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<include refid="queryCondition"/>
 	</select>
 
 	<select id="listConfigs" parameterType="configDO" resultType="configDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`,
 			   t.`key`,
@@ -42,16 +39,12 @@
 			   t.`create_time` AS createTime
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
-  	]]>
 		<include refid="queryCondition"/>
-	<![CDATA[
 		 ORDER BY t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 	<select id="getConfig" parameterType="configDO" resultType="configDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`,
 			   t.`key`,
@@ -60,12 +53,11 @@
 			   t.`is_system` AS `system`
 		  FROM `tb_config` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<if test="id != null">
-		<![CDATA[ AND t.`id` = #{id} ]]>
+			AND t.`id` = #{id}
 		</if>
 		<if test="key != null and key != ''">
-		<![CDATA[ AND t.`key` = #{key} ]]>
+			AND t.`key` = #{key}
 		</if>
 	</select>
 

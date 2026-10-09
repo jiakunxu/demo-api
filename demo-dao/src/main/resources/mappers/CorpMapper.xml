@@ -5,20 +5,16 @@
 <mapper namespace="com.example.demo.corp.dao.mapper.CorpMapper">
 
 	<select id="countCorp" parameterType="corpDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(1)
 		  FROM `tb_corp` t
 		 WHERE t.`is_deleted`= 0
-	]]>
 	</select>
 
 	<select id="listCorps" parameterType="corpDO" resultType="corpDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`name`
 		  FROM `tb_corp` t
 		 WHERE t.`is_deleted`= 0
-	]]>
 	</select>
 
 </mapper>

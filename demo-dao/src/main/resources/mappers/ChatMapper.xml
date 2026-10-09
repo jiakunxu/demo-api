@@ -5,17 +5,14 @@
 <mapper namespace="com.example.demo.chat.dao.mapper.ChatMapper">
 
 	<select id="countChat" parameterType="chatDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_chat` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
 		   AND t.`unread` > 0
-	]]>
 	</select>
 
 	<select id="listChats" parameterType="chatDO" resultType="chatDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
 			   t.`friend_id` AS friendId,
@@ -27,11 +24,9 @@
 		   AND t.`user_id` = #{userId}
 		 ORDER BY t.`chat_time` DESC, t.`id` DESC
 		LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 	<select id="getChat" parameterType="chatDO" resultType="chatDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
 			   t.`friend_id` AS friendId,
@@ -42,11 +37,9 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
 		   AND t.`friend_id` = #{friendId}
-	]]>
 	</select>
 
 	<update id="updateChat" parameterType="chatDO">
-	<![CDATA[
 		UPDATE `tb_chat` t
 		   SET t.`update_time` = NOW(),
 			   t.`modifier` = #{modifier},
@@ -56,11 +49,9 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
 		   AND t.`friend_id` = #{friendId}
-	]]>
 	</update>
 
 	<update id="updateUnread" parameterType="chatDO">
-	<![CDATA[
 		UPDATE `tb_chat` t
 		   SET t.`update_time` = NOW(),
 			   t.`modifier` = #{modifier},
@@ -68,7 +59,6 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`id` = #{id}
 		   AND t.`user_id` = #{userId}
-	]]>
 	</update>
 
 </mapper>

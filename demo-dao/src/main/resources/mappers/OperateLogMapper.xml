@@ -6,16 +6,16 @@
 
 	<sql id="queryCondition">
 		<if test="clazz != null and clazz != ''">
-		<![CDATA[ AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`clazz` LIKE #{clazz,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="operator != null and operator != ''">
-		<![CDATA[ AND t.`operator` LIKE #{operator,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler} ]]>
+			AND t.`operator` LIKE #{operator,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 		<if test="status != null and status != ''">
-		<![CDATA[ AND t.`status` = #{status} ]]>
+			AND t.`status` = #{status}
 		</if>
 		<if test="start != null and start != ''">
-		<![CDATA[ AND t.`operate_time` >= DATE_FORMAT(#{start},'%Y-%m-%d') ]]>
+			AND t.`operate_time` >= DATE_FORMAT(#{start},'%Y-%m-%d')
 		</if>
 		<if test="end != null and end != ''">
 		<![CDATA[ AND t.`operate_time` < DATE_ADD(DATE_FORMAT(#{end},'%Y-%m-%d'),interval 1 DAY) ]]>
@@ -23,16 +23,13 @@
 	</sql>
 
 	<select id="countLog" parameterType="operateLogDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<include refid="queryCondition"/>
 	</select>
 
 	<select id="listLogs" parameterType="operateLogDO" resultType="operateLogDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`clazz`,
 			   t.`request_uri` AS requestUri,
@@ -49,12 +46,9 @@
 			   t.`err_msg` AS errMsg
 		  FROM `tb_operate_log` t
 		 WHERE t.`is_deleted` = 0
-	]]>
 		<include refid="queryCondition"/>
-	<![CDATA[
 		 ORDER BY ${sort} ${dir}, t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 </mapper>

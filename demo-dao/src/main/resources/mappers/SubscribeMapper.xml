@@ -5,7 +5,6 @@
 <mapper namespace="com.example.demo.subscribe.dao.mapper.SubscribeMapper">
 
 	<select id="countSubscribe0" parameterType="subscribeDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_subscribe` t
 		 WHERE t.`is_deleted` = 0
@@ -13,11 +12,9 @@
 		   AND t.`app_id` = #{appId}
 		   AND t.`scene` = #{scene}
 		   AND t.`scene_id` = #{sceneId}
-	]]>
 	</select>
 
 	<select id="countSubscribe1" parameterType="subscribeDO" resultType="java.lang.Long">
-	<![CDATA[
 		SELECT COUNT(*)
 		  FROM `tb_subscribe` t,
 			   `tb_tunnel` p
@@ -27,11 +24,9 @@
 		   AND t.`user_id` = #{userId}
 		   AND t.`scene` = #{scene}
 		   AND t.`scene_id` = #{sceneId}
-	]]>
 	</select>
 
 	<select id="listSubscribes" parameterType="subscribeDO" resultType="tunnelDO">
-	<![CDATA[
 		SELECT p.`id`,
 			   p.`tunnel_id` AS tunnelId,
 			   p.`host`
@@ -44,11 +39,9 @@
 		   AND t.`scene_id` = #{sceneId}
 		 ORDER BY p.`id`
 		LIMIT #{offset}, #{pageSize}
-	]]>
 	</select>
 
 	<select id="getSubscribe" parameterType="subscribeDO" resultType="subscribeDO">
-	<![CDATA[
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
 			   t.`app_id` AS appId,
@@ -61,7 +54,6 @@
 		   AND t.`scene` = #{scene}
 		   AND t.`scene_id` = #{sceneId}
 		LIMIT 1
-	]]>
 	</select>
 
 </mapper>
