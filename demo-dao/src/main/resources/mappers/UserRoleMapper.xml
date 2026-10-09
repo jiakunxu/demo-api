@@ -15,23 +15,23 @@
 			AND t.`role_id` = #{roleId}
 		</if>
 		<if test="code != null and code != ''">
-			   AND EXISTS(
-			SELECT 1
-			  FROM `tb_role` p
-			 WHERE t.`role_id` = p.`id`
-			   AND p.`is_deleted` = 0
-			   AND p.`status` = 'E'
-			   AND p.`code` = #{code})
+		   AND EXISTS(
+		SELECT 1
+		  FROM `tb_role` p
+		 WHERE t.`role_id` = p.`id`
+		   AND p.`is_deleted` = 0
+		   AND p.`status` = 'E'
+		   AND p.`code` = #{code})
 		</if>
 		<if test="codes != null and codes.length > 0">
-			   AND EXISTS(
-			SELECT 1
-			  FROM `tb_role` p
-			 WHERE t.`role_id` = p.`id`
-			   AND p.`is_deleted` = 0
-			   AND p.`status` = 'E'
-			   AND p.`code` IN
-			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
+		   AND EXISTS(
+		SELECT 1
+		  FROM `tb_role` p
+		 WHERE t.`role_id` = p.`id`
+		   AND p.`is_deleted` = 0
+		   AND p.`status` = 'E'
+		   AND p.`code` IN
+		<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 			)
 		</if>
 	</select>
@@ -44,12 +44,12 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
 		<if test="status != null and status != ''">
-			   AND EXISTS(
-			SELECT 1
-			  FROM `tb_role` p
-			 WHERE t.`role_id` = p.`id`
-			   AND p.`is_deleted` = 0
-			   AND p.`status` = #{status})
+		   AND EXISTS(
+		SELECT 1
+		  FROM `tb_role` p
+		 WHERE t.`role_id` = p.`id`
+		   AND p.`is_deleted` = 0
+		   AND p.`status` = #{status})
 		</if>
 	</select>
 
@@ -62,10 +62,10 @@
 			AND t.`is_enabled` = #{enabled}
 		</if>
 		<if test="exists == true">
-			   AND EXISTS(
+			AND EXISTS(
 		</if>
 		<if test="exists == false">
-			   AND NOT EXISTS(
+			AND NOT EXISTS(
 		</if>
 			SELECT 1
 			  FROM `tb_user_role` p, `tb_role` q
@@ -80,7 +80,7 @@
 			AND q.`code` IN
 			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 		</if>
-		)
+			)
 		<if test="name != null and name != ''">
 			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
@@ -104,10 +104,10 @@
 			AND t.`is_enabled` = #{enabled}
 		</if>
 		<if test="exists == true">
-			   AND EXISTS(
+			AND EXISTS(
 		</if>
 		<if test="exists == false">
-			   AND NOT EXISTS(
+			AND NOT EXISTS(
 		</if>
 			SELECT 1
 			  FROM `tb_user_role` p, `tb_role` q
@@ -122,7 +122,7 @@
 			AND q.`code` IN
 			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 		</if>
-		)
+			)
 		<if test="name != null and name != ''">
 			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
