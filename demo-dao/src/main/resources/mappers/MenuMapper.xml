@@ -50,17 +50,17 @@
 			AND t.`status` = #{status}
 		</if>
 		<if test="userId != null">
-			   AND EXISTS(
-			SELECT 1
-			  FROM `tb_role_menu` p, `tb_user_role` q, `tb_role` k
-			 WHERE t.`id` = p.`menu_id`
-			   AND p.`role_id` = q.`role_id`
-			   AND q.`role_id` = k.`id`
-			   AND p.`is_deleted` = 0
-			   AND q.`is_deleted` = 0
-			   AND k.`is_deleted` = 0
-			   AND k.`status` = 'E'
-			   AND q.`user_id` = #{userId})
+			AND EXISTS(
+		 SELECT 1
+		   FROM `tb_role_menu` p, `tb_user_role` q, `tb_role` k
+		  WHERE t.`id` = p.`menu_id`
+		    AND p.`role_id` = q.`role_id`
+		    AND q.`role_id` = k.`id`
+		    AND p.`is_deleted` = 0
+		    AND q.`is_deleted` = 0
+		    AND k.`is_deleted` = 0
+		    AND k.`status` = 'E'
+		    AND q.`user_id` = #{userId})
 		</if>
 		 ORDER BY t.`pid`, t.`order`, t.`id` DESC
 	</select>

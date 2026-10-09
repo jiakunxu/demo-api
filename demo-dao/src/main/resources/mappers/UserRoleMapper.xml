@@ -15,23 +15,23 @@
 			AND t.`role_id` = #{roleId}
 		</if>
 		<if test="code != null and code != ''">
-		   AND EXISTS(
-		SELECT 1
-		  FROM `tb_role` p
-		 WHERE t.`role_id` = p.`id`
-		   AND p.`is_deleted` = 0
-		   AND p.`status` = 'E'
-		   AND p.`code` = #{code})
+			AND EXISTS(
+		 SELECT 1
+		   FROM `tb_role` p
+		  WHERE t.`role_id` = p.`id`
+		    AND p.`is_deleted` = 0
+		    AND p.`status` = 'E'
+		    AND p.`code` = #{code})
 		</if>
 		<if test="codes != null and codes.length > 0">
-		   AND EXISTS(
-		SELECT 1
-		  FROM `tb_role` p
-		 WHERE t.`role_id` = p.`id`
-		   AND p.`is_deleted` = 0
-		   AND p.`status` = 'E'
-		   AND p.`code` IN
-		<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
+			AND EXISTS(
+		 SELECT 1
+		   FROM `tb_role` p
+		  WHERE t.`role_id` = p.`id`
+		    AND p.`is_deleted` = 0
+		    AND p.`status` = 'E'
+		    AND p.`code` IN
+			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
 			)
 		</if>
 	</select>
@@ -44,12 +44,12 @@
 		 WHERE t.`is_deleted` = 0
 		   AND t.`user_id` = #{userId}
 		<if test="status != null and status != ''">
-		   AND EXISTS(
-		SELECT 1
-		  FROM `tb_role` p
-		 WHERE t.`role_id` = p.`id`
-		   AND p.`is_deleted` = 0
-		   AND p.`status` = #{status})
+			AND EXISTS(
+		 SELECT 1
+		   FROM `tb_role` p
+		  WHERE t.`role_id` = p.`id`
+		    AND p.`is_deleted` = 0
+		    AND p.`status` = #{status})
 		</if>
 	</select>
 
@@ -67,12 +67,12 @@
 		<if test="exists == false">
 			AND NOT EXISTS(
 		</if>
-			SELECT 1
-			  FROM `tb_user_role` p, `tb_role` q
-			 WHERE t.`id` = p.`user_id`
-			   AND q.`id` = p.`role_id`
-			   AND p.`is_deleted` = 0
-			   AND q.`is_deleted` = 0
+		 SELECT 1
+		   FROM `tb_user_role` p, `tb_role` q
+		  WHERE t.`id` = p.`user_id`
+		    AND q.`id` = p.`role_id`
+		    AND p.`is_deleted` = 0
+		    AND q.`is_deleted` = 0
 		<if test="roleId != null">
 			AND p.`role_id` = #{roleId}
 		</if>
@@ -109,12 +109,12 @@
 		<if test="exists == false">
 			AND NOT EXISTS(
 		</if>
-			SELECT 1
-			  FROM `tb_user_role` p, `tb_role` q
-			 WHERE t.`id` = p.`user_id`
-			   AND q.`id` = p.`role_id`
-			   AND p.`is_deleted` = 0
-			   AND q.`is_deleted` = 0
+		 SELECT 1
+		   FROM `tb_user_role` p, `tb_role` q
+		  WHERE t.`id` = p.`user_id`
+		    AND q.`id` = p.`role_id`
+		    AND p.`is_deleted` = 0
+		    AND q.`is_deleted` = 0
 		<if test="roleId != null">
 			AND p.`role_id` = #{roleId}
 		</if>
