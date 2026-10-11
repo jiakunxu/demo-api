@@ -141,9 +141,9 @@ public class CaptchaServiceImpl extends DefaultTextCreator implements CaptchaSer
 
     private void remove(String key) {
         try {
-            redisService.remove(RedisService.CACHE_KEY_CAPTCHA + key);
+            redisService.remove(key);
         } catch (Exception e) {
-            log.error("{}", RedisService.CACHE_KEY_CAPTCHA + key, e);
+            log.error("{}", key, e);
         }
     }
 
