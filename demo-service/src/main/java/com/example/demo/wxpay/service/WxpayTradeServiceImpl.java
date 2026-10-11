@@ -175,7 +175,7 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
         tradeDO.setTrade(JSON.toJSONString(trade));
         tradeDO.setCreator("系统");
 
-        this.save(BeanUtil.copy(trade, WxpayTradeDO.class));
+        this.save(tradeDO);
 
         return trade;
     }
