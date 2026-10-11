@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.util.Map;
 
 @Service("com.example.demo.dingtalk.manager.ossService")
@@ -18,7 +18,7 @@ public class OssServiceImpl implements OssService {
         HttpURLConnection connection;
 
         try {
-            connection = (HttpURLConnection) new URL(resourceUrl).openConnection();
+            connection = (HttpURLConnection) URI.create(resourceUrl).toURL().openConnection();
 
             if (headers != null) {
                 for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -37,7 +37,7 @@ public class OssServiceImpl implements OssService {
         }
 
         try (OutputStream out = connection.getOutputStream()) {
-            IOUtils.copy(new URL(fileUrl), out);
+            IOUtils.copy(URI.create(fileUrl).toURL(), out);
             out.flush();
             if (connection.getResponseCode() != 200) {
                 throw new RuntimeException("上传失败");
