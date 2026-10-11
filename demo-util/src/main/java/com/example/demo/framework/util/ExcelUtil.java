@@ -45,7 +45,8 @@ public class ExcelUtil {
     public static <T> List<T> read(InputStream in, Class<T> clazz,
                                    List<String> props) throws IOException, InstantiationException,
                                                        IllegalAccessException,
-                                                       InvocationTargetException {
+                                                       InvocationTargetException,
+                                                       NoSuchMethodException {
         if (props == null) {
             return null;
         }
@@ -70,7 +71,7 @@ public class ExcelUtil {
                     continue;
                 }
 
-                T object = clazz.newInstance();
+                T object = clazz.getDeclaredConstructor().newInstance();
 
                 for (String prop : props) {
                     Object obj = object;
@@ -102,7 +103,8 @@ public class ExcelUtil {
                         if (setMethod == null) {
                             break;
                         }
-                        sub = setMethod.getParameterTypes()[0].newInstance();
+                        sub = setMethod.getParameterTypes()[0].getDeclaredConstructor()
+                            .newInstance();
                         setMethod.invoke(obj, sub);
                         obj = sub;
                     }
