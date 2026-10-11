@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @author JiakunXu
  */
 @Slf4j
-@Service
+@Service("com.example.demo.mq.manager.producerService")
 public class ProducerServiceImpl implements ProducerService {
 
     @Autowired

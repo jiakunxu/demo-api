@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Service("com.example.demo.mqtt.manager.producerService")
 public class ProducerServiceImpl implements ProducerService {
 
     @Autowired
