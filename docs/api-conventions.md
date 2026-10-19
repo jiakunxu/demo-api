@@ -20,7 +20,10 @@
 | GET/表单与 BO 实例 | ServletRequestDataBinder 绑定，startDate/endDate 映射到 start/end；数字字符串转换 pageNo/pageSize | 绑定错误、数值范围、越界和允许修改字段 |
 | JSON 与 Class | Content-Type 合适时读取 UTF-8 JSON；BaseBO 的二项 dateRange 映射日期；解析失败通常记录日志后返回空对象 | 坏 JSON 与真正空请求的区别，不能宣称统一返回 400 |
 | JSON 数组 | 非 JSON 返回空数组；读取路径主要捕获 IOException | 语法错误与空列表的异常行为不同于 Class 路径 |
-| 排序方向 | ascending/descending 映射 ASC/DESC，其他值保留 | 这不是 SQL 排序白名单 |
+| 排序字段（GET/表单与 BO 路径） | sort 经 SqlUtil.escapeOrderBySql 检查字符及最大 500 字符长度 | 字符限制不等于业务字段白名单 |
+| 排序方向（GET/表单与 BO 路径） | ascending/descending 映射 ASC/DESC，其他值（含缺失）清空 sort 和 dir | 排序字段先校验，非法 sort 不会因随后清空而免于报错 |
+
+2026-10-18 核对：[SqlUtil](../demo-util/src/main/java/com/example/demo/framework/util/SqlUtil.java) 的排序检查允许字母、数字、下划线、空格、逗号和点；null/空字符串原样返回，非法字符或超长值抛出 RuntimeException。该路径没有调用 filterKeyword，也不验证字段是否属于业务允许范围。JSON 等其他解析入口不能直接套用上述表单路径的限制。
 
 `getRemoteAddr` 优先取 X-Forwarded-For，不能假定它一定可信或只有一个 IP；受信代理策略属于入口部署契约。新增输入校验需显式实施并回归，不能写文档即认为现有解析已安全。
 

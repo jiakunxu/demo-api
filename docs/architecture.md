@@ -75,6 +75,8 @@ flowchart LR
 
 ## 事务、缓存和消息边界
 
+具体 Redis 键、TTL、读写/失效入口，以及 MQ/MQTT 路由、消息结构、重复和重试现状见 [缓存与消息契约](cache-and-messaging.md)。
+
 Service 编排数据库事务，Manager 处理外部协议；本地事务不涵盖 Redis、MQ 和 HTTP。[TransactionUtil](../demo-util/src/main/java/com/example/demo/framework/util/TransactionUtil.java) 提供提交后同步回调，无持久化和重试保证。ChatDetail 在事务中写记录并发送消息的现状需要在一致性改动中专项核查，详见 [持久化](persistence.md)。
 
 [RedisConfigurer](../demo-web/src/main/java/com/example/demo/framework/config/RedisConfigurer.java) 设置默认 Fastjson 序列化，不假定 key 是普通字符串字节。认证缓存异常与字典缓存降级不是相同策略。修改 TTL、键或序列化须考虑旧缓存及消费者兼容。

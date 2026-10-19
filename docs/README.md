@@ -13,6 +13,7 @@
 | CRUD、DO、SQL、事务 | [持久化规则](persistence.md) | 审计、ID、批量、软删除与真实 SQL |
 | POM、BOM、SDK 和插件升级 | [依赖管理](dependencies.md) | 声明来源、解析、兼容、迁移与下游验证 |
 | 配置消费者 | [配置说明](configuration.md) | 键名、用途、类型和消费位置，不核查 YAML 取值 |
+| Redis、MQ、MQTT 与推送 | [缓存与消息契约](cache-and-messaging.md) | 键格式、TTL、失效、消息路由与结构、重复和重试边界 |
 | 跨多个编码领域 | [编码规则导航](coding-standards.md) | 选择专项规则及检查顺序 |
 | 添加或运行测试 | [测试指南](testing.md) | 测试范围、运行方法、结果解释 |
 | CI、GitHub Actions、合并检查 | [持续集成指南](ci.md) | 工作流现状、待建设门禁、报告、权限与排障 |
@@ -41,6 +42,7 @@
 | database | DO/父类、Mapper、Service、经验证脚本与实例结构证据 | 字段、约束、索引、迁移或验证状态改变 |
 | persistence | Service、DO、BaseQuery、Mapper/XML、事务工具 | CRUD、SQL、分页、审计或事务改变 |
 | configuration | YAML 键结构、Java @Value、日志引用 | 键名、类型、默认表达式或消费者改变 |
+| cache-and-messaging | Redis 常量及调用方、MQ/MQTT 生产者和消费者 | 键、TTL、失效入口、topic/tag/group、消息结构或失败处理改变 |
 | dependencies | 根/模块 POM、Wrapper、官方资料与实际解析 | 版本、BOM、scope、排除项或插件改变 |
 | ci | 工作流文件、POM、测试布局与远程运行证据 | 触发条件、检查名、权限、报告和分支规则改变 |
 | testing | 测试 POM、辅助设施、样例和实际运行 | 工具、命令、验证范围改变 |

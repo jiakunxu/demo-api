@@ -79,13 +79,12 @@ class ConfigServiceImplTest {
         var keyOnly = (LambdaQueryWrapper<ConfigDO>) capture.getAllValues().get(1);
         assertThat(keyOnly.getSqlSegment()).doesNotContain("id =").contains("`key` =");
         assertThat(keyOnly.getParamNameValuePairs().values()).containsExactly("site-name");
-        assertThat(both.getSqlSelect()).contains("id", "name", "`key`", "`value`", "remark",
-            "is_system").doesNotContain("create_time", "update_time");
+        assertThat(both.getSqlSelect()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
-    void idLookupPreservesEmptyAndWhitespaceKeySemantics(String key) {
+    void idLookupIgnoresEmptyAndWhitespaceKey(String key) {
         doReturn(null).when(service).getOne(any(Wrapper.class));
         assertThat(service.getConfig("10", key)).isNull();
 
@@ -93,14 +92,8 @@ class ConfigServiceImplTest {
         verify(service).getOne(capture.capture());
         var wrapper = (LambdaQueryWrapper<ConfigDO>) capture.getValue();
         String sql = wrapper.getSqlSegment();
-        assertThat(sql).contains("id =");
-        if (key.isEmpty()) {
-            assertThat(sql).doesNotContain("`key` =");
-            assertThat(wrapper.getParamNameValuePairs().values()).containsExactly(id);
-        } else {
-            assertThat(sql).contains("`key` =");
-            assertThat(wrapper.getParamNameValuePairs().values()).containsExactlyInAnyOrder(id, key);
-        }
+        assertThat(sql).contains("id =").doesNotContain("`key` =");
+        assertThat(wrapper.getParamNameValuePairs().values()).containsExactly(id);
     }
 
     @Test

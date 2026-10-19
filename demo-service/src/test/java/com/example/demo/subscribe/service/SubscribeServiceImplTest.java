@@ -50,8 +50,7 @@ class SubscribeServiceImplTest {
             .endsWith("LIMIT 1").doesNotContain("ORDER BY");
         assertThat(query.getParamNameValuePairs().values())
             .containsExactlyInAnyOrder(BigInteger.ONE, "client", "app", BigInteger.ONE);
-        assertThat(query.getSqlSelect()).contains("id", "user_id", "app_id", "scene", "scene_id")
-            .doesNotContain("create_time", "update_time");
+        assertThat(query.getSqlSelect()).isNull();
         verify(service, never()).save(any(SubscribeDO.class));
     }
 

@@ -27,6 +27,7 @@
 | 数据库表结构、建表、迁移 | [数据库指南](docs/database.md)、[持久化规则](docs/persistence.md)、[测试指南](docs/testing.md) |
 | Service CRUD、DO、Mapper、分页、事务、批量 | [持久化规则](docs/persistence.md)、[测试指南](docs/testing.md) |
 | 外部平台、支付、缓存、消息、文件、WebSocket/SSE | [安全规则](docs/security.md)、[工程现状](docs/engineering-roadmap.md) |
+| Redis、MQ/MQTT、消息推送与缓存失效 | [缓存与消息契约](docs/cache-and-messaging.md) |
 | 模块边界、调用流程、公共基础对象 | [架构](docs/architecture.md)，并编译受影响消费者 |
 | POM、版本、构建和启动 | [依赖管理](docs/dependencies.md)、[开发环境](docs/development.md)、[配置](docs/configuration.md)、[测试](docs/testing.md)、[运行手册](docs/runbook.md) |
 | 添加或运行测试 | [测试指南](docs/testing.md) |

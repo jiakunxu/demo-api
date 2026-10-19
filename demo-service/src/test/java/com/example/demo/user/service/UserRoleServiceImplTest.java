@@ -170,7 +170,7 @@ class UserRoleServiceImplTest {
     }
 
     @Test
-    void readsRolesInOrderAndPassesEnabledStatus() {
+    void deduplicatesRoleIdsAndReturnsBatchResultWithRequestedStatus() {
         when(mapper.listUserRoles(any()))
             .thenReturn(List.of(row(101, 1), row(102, 2), row(103, 1)));
         Role first = new Role(); Role second = new Role();
@@ -178,7 +178,7 @@ class UserRoleServiceImplTest {
         second.setId(BigInteger.TWO);
         List<BigInteger> ids = List.of(BigInteger.ONE, BigInteger.TWO);
         when(roles.listRoles(ids)).thenReturn(List.of(second, first));
-        assertThat(service.listRoles(user, "enable")).containsExactly(first, second, first);
+        assertThat(service.listRoles(user, "enable")).containsExactly(second, first);
         verify(roles).listRoles(ids);
         verifyNoMoreInteractions(roles);
         var capture = ArgumentCaptor.forClass(UserRoleDO.class);
@@ -198,15 +198,16 @@ class UserRoleServiceImplTest {
     }
 
     @Test
-    void missingRoleInBatchIsRejected() {
+    void missingRoleInBatchReturnsOnlyExistingRoles() {
         when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
         Role first = new Role();
         first.setId(BigInteger.ONE);
         when(roles.listRoles(List.of(BigInteger.ONE, BigInteger.TWO)))
             .thenReturn(List.of(first));
 
-        assertThatThrownBy(() -> service.listRoles(user, "enable"))
-            .isInstanceOf(ServiceException.class).hasMessage("角色不存在");
+        assertThat(service.listRoles(user, "enable")).containsExactly(first);
+        verify(roles).listRoles(List.of(BigInteger.ONE, BigInteger.TWO));
+        verifyNoMoreInteractions(roles);
     }
 
     @Test

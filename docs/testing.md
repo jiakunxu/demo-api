@@ -2,7 +2,7 @@
 
 状态：已核查测试设施与项目规范。维护于 2026-10-13。运行命令均从仓库根目录执行，选择范围以本次改动为准。本项目协作默认 YAML 配置项完整、地址和账号有效；测试不以核查 YAML 取值为前置步骤。
 
-自动检查的触发、门禁、报告保留及权限见 [持续集成指南](ci.md)；该指南包含待实施方案，不代表 CI 已启用。
+自动检查的触发、门禁、报告保留及权限见 [持续集成指南](ci.md)。已有 CodeQL 与 Dependency Review 工作流；专门单元测试任务和覆盖率门槛尚未建设，工作流存在不代表远程执行成功。
 
 ## 现有设施和边界
 
@@ -17,6 +17,25 @@
 | 数据库集成 | 尚无完整隔离测试体系 | SQL、DDL、约束、默认值、并发仍需专门验证 |
 
 [ServiceTestSupport](../demo-service/src/test/java/com/example/demo/support/ServiceTestSupport.java) 设置 baseMapper 并初始化 MyBatis TableInfo，它创建的配置不是应用 YAML 自动装配的替代品。[TransactionProbe](../demo-service/src/test/java/com/example/demo/support/TransactionProbe.java) 用真实 Spring advice 统计提交/回滚，不是数据库事务实现。
+
+## 当前测试范围与已知空白
+
+以下为 2026-10-18 的源码与测试布局核对结果，不是覆盖率报告，也不表示本次执行了测试。通过数量和失败详情以每次实际运行报告为准。
+
+| 范围 | 当前状态与限制 |
+| --- | --- |
+| demo-util | framework.util 包已有多项工具测试；SqlUtil 尚无对应测试，排序字符、长度边界和关键字检查仍需验证 |
+| demo-manager | 已有实现类对应测试；CaptchaServiceImpl.getText 经 getCaptcha 间接执行，但现有用例未校验算式与答案一致，也未确定性覆盖各运算分支 |
+| demo-service | 已有主要业务实现测试；ValidateAspectTest 位于 role/service 测试包，不应因包位置不同认定缺失；占位功能见工程现状 |
+| demo-web | 当前未发现模块内测试；BaseController 请求绑定、排序/分页及 TokenAuthenticationFilter 认证上下文和刷新行为尚缺专项测试 |
+| demo-dao / demo-open / demo-task | 当前未发现模块内测试；Service 中的 Mapper mock 不证明 DAO SQL 正确 |
+| start | ApplicationTests 为全应用上下文测试，可能初始化外部组件，与纯单元测试分开报告 |
+
+[UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
+
+[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 当前静态初始化设置 crypto.policy=limited；[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 要求初始化不改变 JVM 策略。当原策略为 unlimited 时，该检查失败并阻止类内测试正常执行；初始化错误不能解读为全部加解密用例已执行。
+
+当前未配置 JaCoCo 采集和报告，不能从测试通过数量推算行或分支覆盖率。功能缺口见 [工程现状](engineering-roadmap.md)，不因本页记录而自动实施。
 
 ## 运行命令
 

@@ -139,7 +139,7 @@ class ChatDetailServiceImplTest {
     }
 
     @Test
-    void detailLookupPreservesOwnerScopeAndSelectedFields() {
+    void detailLookupPreservesOwnerScopeAndUsesDefaultProjection() {
         BigInteger id = BigInteger.valueOf(99);
         ChatDetailDO row = new ChatDetailDO();
         row.setId(id);
@@ -160,8 +160,7 @@ class ChatDetailServiceImplTest {
         assertThat(wrapper.getSqlSegment()).contains("id =", "AND", "user_id =")
             .doesNotContain("LIMIT", "ORDER BY");
         assertThat(wrapper.getParamNameValuePairs().values()).containsExactlyInAnyOrder(id, user);
-        assertThat(wrapper.getSqlSelect()).contains("id", "chat_id", "user_id", "friend_id",
-            "`from`", "type", "content", "create_time").doesNotContain("update_time");
+        assertThat(wrapper.getSqlSelect()).isNull();
         verifyNoInteractions(producer);
     }
 

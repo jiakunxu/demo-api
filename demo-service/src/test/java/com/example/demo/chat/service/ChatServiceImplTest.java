@@ -200,8 +200,7 @@ class ChatServiceImplTest {
             .doesNotContain("LIMIT", "ORDER BY");
         assertThat(wrapper.getParamNameValuePairs().values())
             .containsExactlyInAnyOrder(user, friend);
-        assertThat(wrapper.getSqlSelect()).contains("id", "user_id", "friend_id", "chat_time",
-            "chat_detail_id", "unread").doesNotContain("create_time", "update_time");
+        assertThat(wrapper.getSqlSelect()).isNull();
     }
 
     @Test

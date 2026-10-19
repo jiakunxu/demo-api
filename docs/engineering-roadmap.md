@@ -12,7 +12,18 @@
 | [日志 SQL](../demo-dao/src/main/resources/mappers/OperateLogMapper.xml)及 [登录日志 SQL](../demo-dao/src/main/resources/mappers/LoginLogMapper.xml) | 使用动态 sort/dir 拼接，非空条件无法防注入 | 追踪输入，建立允许列名/方向映射和回归测试 |
 | [ChatDetailServiceImpl](../demo-service/src/main/java/com/example/demo/chat/service/ChatDetailServiceImpl.java) | 事务中发送消息，数据库和消息不是同一回滚边界 | 验证发送失败、回滚、重复和提交时序 |
 
+2026-10-18 补充核对：
+
+| 位置 | 现状与影响 | 验收方向 |
+| --- | --- | --- |
+| [AlipayServiceImpl](../demo-service/src/main/java/com/example/demo/alipay/service/AlipayServiceImpl.java) | query、close、refund、queryRefund 返回 null，pay 的测试不能证明这些功能可用 | 明确查询、关闭、退款契约后实现并隔离平台测试 |
+| [DingtalkNotifyServiceImpl](../demo-service/src/main/java/com/example/demo/dingtalk/service/DingtalkNotifyServiceImpl.java) | notify 返回空 Map | 明确验签、解密、事件处理和响应契约 |
+| [BytedanceNotifyServiceImpl](../demo-service/src/main/java/com/example/demo/bytedance/service/BytedanceNotifyServiceImpl.java) | verify 返回空字符串，notify 返回 null | 明确验证与通知处理契约后实现并测试 |
+| [DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) | 静态初始化修改 JVM 全局加密策略，与初始化不改策略的测试契约冲突 | 评估旧 JCE 反射处理在 JDK 25 的必要性；修复后验证固定加解密向量及策略保持 |
+
 上述检查不代表全仓库安全审计；其他未实现接口应在涉及它们的任务中进一步确认。
+
+测试范围及空白见 [测试指南](testing.md#当前测试范围与已知空白)：SqlUtil、Web 参数与认证入口缺少专项测试，验证码运算缺少确定性分支验证。CorpRoleServiceImpl 没有自定义业务逻辑，不为增加测试数量重复验证框架继承方法。
 
 ## 当前基础设施边界
 

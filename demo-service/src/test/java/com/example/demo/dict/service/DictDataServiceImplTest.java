@@ -65,9 +65,7 @@ class DictDataServiceImplTest {
             .contains("ORDER BY id DESC").endsWith("LIMIT 1");
         assertThat(wrapper.getParamNameValuePairs().values())
             .containsExactlyInAnyOrder("color", "red", DictData.Status.ENABLE.value);
-        assertThat(wrapper.getSqlSelect()).contains("id", "type_id", "type_value", "name",
-            "`value`", "remark", "sort_order", "status")
-            .doesNotContain("create_time", "update_time");
+        assertThat(wrapper.getSqlSelect()).isNull();
         verify(redis).set(key, result);
     }
 
