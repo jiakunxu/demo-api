@@ -17,7 +17,21 @@ java -version
 
 最后一条执行 Service 及其上游模块测试，不包含 `start` 的全应用测试。若受限环境不能挂载 Mockito agent，按 [测试指南](docs/testing.md) 使用临时参数。启动需要外部配置及服务，参见 [开发环境](docs/development.md)。
 
-## 文档入口
+## 模块入口
+
+| 模块 | 阅读内容 |
+| --- | --- |
+| [demo-api](demo-api/README.md) | 接口、BO 与公共契约 |
+| [demo-dao](demo-dao/README.md) | DO、Mapper、XML 与数据库验证 |
+| [demo-util](demo-util/README.md) | 通用工具及转换、事务回调语义 |
+| [demo-manager](demo-manager/README.md) | 平台 SDK、缓存、消息与连接能力 |
+| [demo-service](demo-service/README.md) | 业务编排、权限、事务与测试参考 |
+| [demo-web](demo-web/README.md) | HTTP、认证过滤器、响应及 Web 配置 |
+| [demo-open](demo-open/README.md) | 对外契约和 assembly 组装边界 |
+| [demo-task](demo-task/README.md) | XXL-JOB 执行器及任务入口 |
+| [start](start/README.md) | 应用装配、打包、启动与上下文测试 |
+
+## 专项文档
 
 - [文档导航](docs/README.md)：按工作类型选择阅读材料。
 - [AGENTS.md](AGENTS.md)：Codex 在本仓库的长期规则。
