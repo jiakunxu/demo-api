@@ -1,6 +1,6 @@
 package com.example.demo.framework.dataobject;
 
-import com.alibaba.fastjson2.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.example.demo.framework.query.BaseQuery;
 import lombok.Getter;
@@ -22,14 +22,16 @@ public class BaseDO extends BaseQuery {
     @TableField("is_deleted")
     private Boolean           deleted;
 
-    @JSONField(serialize = false)
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private String            createBy;
 
+    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NEVER)
     private Date              createTime;
 
-    @JSONField(serialize = false)
+    @TableField(insertStrategy = FieldStrategy.NEVER)
     private String            updateBy;
 
+    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NEVER)
     private Date              updateTime;
 
 }

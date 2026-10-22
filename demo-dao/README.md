@@ -1,6 +1,6 @@
 # demo-dao：持久化模型与 SQL
 
-维护于 2026-10-20。事实来源为本模块 POM、DO、Mapper 和 XML。
+维护于 2026-10-22。事实来源为本模块 POM、DO、Mapper 和 XML。
 
 ## 职责与边界
 
@@ -29,6 +29,8 @@ DO 不能完整证明实际字段长度、默认值、唯一键和索引；这�
 - count 返回 long，COUNT resultType 使用 java.lang.Long；更新影响行数仍为 int。
 - 自定义 SQL 显式保留软删除与用户/企业范围，不能假定自动追加。
 - 审计字段使用 createBy/updateBy 对应 create_by/update_by；排序列使用 sort_order。
+- BaseDO 通过 NEVER 排除创建人的实体更新、更新人的实体插入及两个时间字段的实体插入/更新；时间维护依赖数据库机制，详见 [字段策略](../docs/persistence.md#basedo-插入与更新策略)。
+- 字段策略不限制手写 SQL 或显式 Wrapper.set，也不控制 JSON；BaseDO 原有审计人 JSON 排除注解已移除。
 - BaseQuery.getOffset 在分页参数缺失时返回 null，不负责校验非法页码和溢出。
 - count/list 可以共享过滤片段；不共用 list/get 的 SELECT 投影。
 - 参数使用绑定，动态排序采用允许列名和方向映射；CDATA、缩进规则见持久化文档。

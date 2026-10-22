@@ -1,6 +1,6 @@
 # 数据库结构、建表与演进指南
 
-维护于 2026-10-17。适用于 demo 项目的数据库结构说明、建表基线、字段映射、索引设计、数据迁移及验证。当前按表名字母顺序收录 `tb_dict_data`、`tb_dict_type`、`tb_login_log`、`tb_menu`、`tb_operate_log`、`tb_role`、`tb_role_menu` 的源码信息与建表草案；其他表尚未补充，不调整实际数据库结构。
+维护于 2026-10-22。适用于 demo 项目的数据库结构说明、建表基线、字段映射、索引设计、数据迁移及验证。当前按表名字母顺序收录 `tb_dict_data`、`tb_dict_type`、`tb_login_log`、`tb_menu`、`tb_operate_log`、`tb_role`、`tb_role_menu` 的源码信息与建表草案；其他表尚未补充，不调整实际数据库结构。
 
 **当前状态：源码已核对，真实数据库结构未读取，文中建表草案未执行。** 本文不代表已有完整数据库基线或自动迁移能力。默认 YAML 配置项完整、地址和账号有效，不核查、评价或改写其中取值。
 
@@ -140,7 +140,7 @@ SHOW INDEX FROM `tb_role_menu`;
 - 按类型编码和值获取数据的 Service 请求启用状态 E，并通过 Redis 缓存；缓存不是数据库唯一性保证。
 - insertData 设置 typeId、createBy，保存后回填 ID；没有在此方法内给 typeValue/name/value/status 提供完整字段校验。
 - 单条更新清除 DO 的 typeId/typeValue，保留原类型归属；类型变更有专门的批量更新路径。
-- BaseDO 的 JSONField(serialize=false) 是序列化约束，不意味着对应审计字段不是数据库列。
+- BaseDO 审计字段均为数据库列；2026-10-22 的字段写入策略仅控制实体生成的 INSERT/UPDATE，不改变列定义或查询投影。createBy/updateBy 的 JSONField(serialize=false) 已移除，不能再依赖该注解隐藏审计人。详细策略见 [持久化规则](persistence.md#basedo-插入与更新策略)。
 
 ### 6.4 排序字段命名与映射
 
@@ -307,7 +307,7 @@ CREATE TABLE `tb_dict_type` (
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 9.3 查询、写入与关联行为
 
@@ -394,7 +394,7 @@ IP 当前直接取 X-Forwarded-For 或 remoteAddr，可能是代理链文本；V
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：ids、types、userId、roleCodes；BO 派生的 leaf 也不建列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：ids、types、userId、roleCodes；BO 派生的 leaf 也不建列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 10.3 查询、写入与关联行为
 
@@ -492,7 +492,7 @@ is_external/is_cached/is_hidden 的 0 默认值为草案选择；需要结合客
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 11.3 查询、写入与关联行为
 
@@ -581,7 +581,7 @@ CREATE TABLE `tb_operate_log` (
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：BO 的 menuIds；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：BO 的 menuIds；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 12.3 查询、写入与关联行为
 
@@ -659,7 +659,7 @@ idx_role_code 是按编码精确查询的候选非唯一索引；idx_role_sort �
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：DO 的 ids；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：DO 的 ids；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 13.3 查询、写入与关联行为
 
@@ -714,6 +714,8 @@ CREATE TABLE `tb_role_menu` (
 ## 14. 约束、索引和默认值的设计边界
 
 ### 14.1 默认值和空值
+
+BaseDO 的 createTime/updateTime 已同时配置 insertStrategy=NEVER、updateStrategy=NEVER，updateBy 配置 insertStrategy=NEVER，createBy 配置 updateStrategy=NEVER。普通实体插入不会提交这两个时间列和 update_by，普通实体更新不会提交创建人和这两个时间列。对应时间默认值及自动更新时间必须由实际数据库机制支持；本页 DDL 仍为草案，本次没有修改或验证真实表结构。手写 SQL 和 Wrapper 显式 SET 的规则另见 [持久化规则](persistence.md#basedo-插入与更新策略)。
 
 tb_dict_data 草案设置 is_deleted=0、sort_order=0、status='E'；tb_dict_type 草案设置 is_deleted=0，暂不设置默认状态。两表 create_time/update_time 初始化为数据库当前时间。自动更新时间不是完整审计轨迹，也不保证每次无实际变化的 UPDATE 都改变时间。
 
