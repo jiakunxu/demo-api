@@ -36,10 +36,10 @@ class ArticleServiceImplTest {
     @Test
     void countUsesLongAndPreservesSearchCriteria() {
         Article query = new Article(); query.setSearch("needle");
-        when(mapper.countArticle(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countArticle(query)).isEqualTo(3000000000L);
         var capture = ArgumentCaptor.forClass(ArticleDO.class);
-        verify(mapper).countArticle(capture.capture());
+        verify(mapper).count(capture.capture());
         assertThat(capture.getValue().getSearch()).isEqualTo("needle");
     }
 
@@ -47,10 +47,10 @@ class ArticleServiceImplTest {
     void listMapsIdentifiersAndPreservesPagination() {
         Article query = new Article(); query.setPageNo(2L); query.setPageSize(20L);
         ArticleDO row = new ArticleDO(); row.setId(id);
-        when(mapper.listArticles(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listArticles(query)).extracting(Article::getId).containsExactly(id);
         var capture = ArgumentCaptor.forClass(ArticleDO.class);
-        verify(mapper).listArticles(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
     }
@@ -58,7 +58,7 @@ class ArticleServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void missingRowsProduceEmptyList(boolean nullList) {
-        when(mapper.listArticles(any())).thenReturn(nullList ? null : List.of());
+        when(mapper.list(any())).thenReturn(nullList ? null : List.of());
         assertThat(service.listArticles(new Article())).isEmpty();
     }
 

@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface UserRoleMapper extends BaseMapper<UserRoleDO> {
 
-    long countUserRole(UserRoleDO userRoleDO);
+    long count(UserRoleDO userRoleDO);
 
-    List<UserRoleDO> listUserRoles(UserRoleDO userRoleDO);
+    List<UserRoleDO> list(UserRoleDO userRoleDO);
 
     long countUser(UserDO userDO);
 

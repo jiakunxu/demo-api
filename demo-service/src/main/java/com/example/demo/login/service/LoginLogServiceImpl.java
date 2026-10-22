@@ -27,7 +27,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
             return 0;
         }
 
-        return this.baseMapper.countLog(BeanUtil.copy(log, LoginLogDO.class));
+        return this.baseMapper.count(BeanUtil.copy(log, LoginLogDO.class));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
         }
 
         List<LoginLog> list = BeanUtil
-            .copy(this.baseMapper.listLogs(BeanUtil.copy(log, LoginLogDO.class)), LoginLog.class);
+            .copy(this.baseMapper.list(BeanUtil.copy(log, LoginLogDO.class)), LoginLog.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

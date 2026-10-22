@@ -49,7 +49,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setRoleId(roleId);
 
-        return this.baseMapper.countUserRole(userRoleDO);
+        return this.baseMapper.count(userRoleDO);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserId(userId);
         userRoleDO.setCode(roleCode);
 
-        return this.baseMapper.countUserRole(userRoleDO);
+        return this.baseMapper.count(userRoleDO);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserId(userId);
         userRoleDO.setCodes(roleCode);
 
-        return this.baseMapper.countUserRole(userRoleDO);
+        return this.baseMapper.count(userRoleDO);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setUserId(userId);
 
-        List<UserRole> list = BeanUtil.copy(this.baseMapper.listUserRoles(userRoleDO),
+        List<UserRole> list = BeanUtil.copy(this.baseMapper.list(userRoleDO),
             UserRole.class);
 
         if (CollectionUtils.isEmpty(list)) {
@@ -116,7 +116,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userRoleDO.setUserId(userId);
         userRoleDO.setStatus(status);
 
-        List<UserRole> userRoleList = BeanUtil.copy(this.baseMapper.listUserRoles(userRoleDO),
+        List<UserRole> userRoleList = BeanUtil.copy(this.baseMapper.list(userRoleDO),
             UserRole.class);
 
         if (CollectionUtils.isEmpty(userRoleList)) {

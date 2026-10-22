@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface MenuMapper extends BaseMapper<MenuDO> {
 
-    long countMenu(MenuDO menuDO);
+    long count(MenuDO menuDO);
 
-    List<MenuDO> listMenus(MenuDO menuDO);
+    List<MenuDO> list(MenuDO menuDO);
 
 }

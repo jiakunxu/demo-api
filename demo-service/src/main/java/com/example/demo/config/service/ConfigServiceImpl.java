@@ -30,7 +30,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
             return 0;
         }
 
-        return this.baseMapper.countConfig(BeanUtil.copy(config, ConfigDO.class));
+        return this.baseMapper.count(BeanUtil.copy(config, ConfigDO.class));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
         }
 
         List<Config> list = BeanUtil
-            .copy(this.baseMapper.listConfigs(BeanUtil.copy(config, ConfigDO.class)), Config.class);
+            .copy(this.baseMapper.list(BeanUtil.copy(config, ConfigDO.class)), Config.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

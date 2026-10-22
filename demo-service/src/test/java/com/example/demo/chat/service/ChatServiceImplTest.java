@@ -97,7 +97,7 @@ class ChatServiceImplTest {
     @Test
     void listConvertsPaginationAndEnrichesFriendAndLatestMessage() {
         ChatDO row = new ChatDO(); row.setFriendId(friend); row.setChatDetailId(BigInteger.valueOf(99));
-        when(mapper.listChats(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         User friendUser = new User(); ChatDetail detail = new ChatDetail();
         friendUser.setId(friend);
         detail.setId(row.getChatDetailId());
@@ -109,7 +109,7 @@ class ChatServiceImplTest {
         assertThat(result.getFirst().getFriend()).isSameAs(friendUser);
         assertThat(result.getFirst().getChatDetail()).isSameAs(detail);
         var capture = ArgumentCaptor.forClass(ChatDO.class);
-        verify(mapper).listChats(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
         assertThat(capture.getValue().getUserId()).isEqualTo(user);
@@ -129,7 +129,7 @@ class ChatServiceImplTest {
         third.setId(BigInteger.valueOf(103));
         third.setFriendId(friend);
         third.setChatDetailId(first.getChatDetailId());
-        when(mapper.listChats(any())).thenReturn(List.of(first, second, third));
+        when(mapper.list(any())).thenReturn(List.of(first, second, third));
         User firstFriend = new User(); firstFriend.setId(friend);
         User secondFriend = new User(); secondFriend.setId(BigInteger.TWO);
         ChatDetail firstDetail = new ChatDetail(); firstDetail.setId(first.getChatDetailId());
@@ -158,7 +158,7 @@ class ChatServiceImplTest {
         ChatDO missing = new ChatDO();
         missing.setFriendId(friend);
         missing.setChatDetailId(BigInteger.valueOf(99));
-        when(mapper.listChats(any())).thenReturn(List.of(missing, new ChatDO()));
+        when(mapper.list(any())).thenReturn(List.of(missing, new ChatDO()));
         when(users.listUsers(List.of(friend))).thenReturn(List.of());
         when(details.listChatDetails(user, List.of(missing.getChatDetailId())))
             .thenReturn(List.of());
@@ -188,7 +188,7 @@ class ChatServiceImplTest {
 
     @Test
     void countUsesLongAndGetByPairIncludesBothIdentifiers() {
-        when(mapper.countChat(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countChat(user)).isEqualTo(3000000000L);
         ChatDO row = new ChatDO(); row.setId(BigInteger.valueOf(99));
         doReturn(row).when(service).getOne(any(Wrapper.class));

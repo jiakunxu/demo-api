@@ -39,7 +39,7 @@ class RoleMenuServiceImplTest {
 
     @Test
     void differenceUpdateRetainsExistingAddsOnlyNewAndDeletesOnlyRemovedRows() {
-        when(mapper.listRoleMenus(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
         var result = service.updateRoleMenus(roleId, new BigInteger[] {BigInteger.TWO, BigInteger.valueOf(3)}, "editor");
         assertThat(result).extracting(RoleMenu::getMenuId).containsExactly(BigInteger.TWO, BigInteger.valueOf(3));
         ArgumentCaptor<Collection<RoleMenuDO>> batch = ArgumentCaptor.captor();
@@ -59,7 +59,7 @@ class RoleMenuServiceImplTest {
 
     @Test
     void unchangedSelectionDoesNotWriteDatabase() {
-        when(mapper.listRoleMenus(any())).thenReturn(List.of(row(101, 1)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         service.updateRoleMenus(roleId, new BigInteger[] {BigInteger.ONE}, "editor");
         verify(service, never()).saveBatch(anyCollection());
         verify(service, never()).update(any(Wrapper.class));
@@ -68,7 +68,7 @@ class RoleMenuServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void clearingSelectionDeletesAllPreviousRelations(boolean nullSelection) {
-        when(mapper.listRoleMenus(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
         assertThat(service.updateRoleMenus(roleId, nullSelection ? null : new BigInteger[0], "editor")).isEmpty();
         verify(service, never()).saveBatch(anyCollection());
         verify(service).update(any(Wrapper.class));
@@ -97,7 +97,7 @@ class RoleMenuServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void springProxyCommitsSuccessfulUpdateAndRollsBackDeletionFailure(boolean success) {
-        when(mapper.listRoleMenus(any())).thenReturn(List.of(row(101, 1)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         doReturn(success).when(service).update(any(Wrapper.class));
         var transactions = new TransactionProbe();
         RoleMenuServiceImpl proxy = transactions.wrap(service);
@@ -113,13 +113,13 @@ class RoleMenuServiceImplTest {
         assertThat(service.listRoleMenus((BigInteger) null)).isEmpty();
         assertThat(service.listRoleMenus(" ")).isEmpty();
         verifyNoInteractions(mapper);
-        when(mapper.countRoleMenu(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countRoleMenu(BigInteger.ONE)).isEqualTo(3000000000L);
     }
 
     @Test
     void stringLookupReturnsMenuIdsInMapperOrder() {
-        when(mapper.listRoleMenus(any())).thenReturn(List.of(row(101, 2), row(102, 1)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 2), row(102, 1)));
         assertThat(service.listRoleMenus("10")).containsExactly(BigInteger.TWO, BigInteger.ONE);
     }
 

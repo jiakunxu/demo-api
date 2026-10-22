@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface RoleMenuMapper extends BaseMapper<RoleMenuDO> {
 
-    long countRoleMenu(RoleMenuDO roleMenuDO);
+    long count(RoleMenuDO roleMenuDO);
 
-    List<RoleMenuDO> listRoleMenus(RoleMenuDO roleMenuDO);
+    List<RoleMenuDO> list(RoleMenuDO roleMenuDO);
 
 }

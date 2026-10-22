@@ -127,10 +127,10 @@ class ChatDetailServiceImplTest {
     @Test
     void messageQueriesAreScopedToUserFriendAndPagination() {
         ChatDetailDO row = new ChatDetailDO(); row.setId(BigInteger.valueOf(99));
-        when(mapper.listChatDetails(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listChatDetails(user, "99", "1", "2", "20")).extracting(ChatDetail::getId).containsExactly(row.getId());
         var capture = ArgumentCaptor.forClass(ChatDetailDO.class);
-        verify(mapper).listChatDetails(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getUserId()).isEqualTo(user);
         assertThat(capture.getValue().getFriendId()).isEqualTo(friend);
         assertThat(capture.getValue().getId()).isEqualTo(row.getId());

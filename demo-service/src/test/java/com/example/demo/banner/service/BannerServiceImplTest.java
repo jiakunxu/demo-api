@@ -36,10 +36,10 @@ class BannerServiceImplTest {
     @Test
     void countUsesLongAndPreservesSearchCriteria() {
         Banner query = new Banner(); query.setSearch("needle");
-        when(mapper.countBanner(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countBanner(query)).isEqualTo(3000000000L);
         var capture = ArgumentCaptor.forClass(BannerDO.class);
-        verify(mapper).countBanner(capture.capture());
+        verify(mapper).count(capture.capture());
         assertThat(capture.getValue().getSearch()).isEqualTo("needle");
     }
 
@@ -47,10 +47,10 @@ class BannerServiceImplTest {
     void listMapsIdentifiersAndPreservesPagination() {
         Banner query = new Banner(); query.setPageNo(2L); query.setPageSize(20L);
         BannerDO row = new BannerDO(); row.setId(id);
-        when(mapper.listBanners(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listBanners(query)).extracting(Banner::getId).containsExactly(id);
         var capture = ArgumentCaptor.forClass(BannerDO.class);
-        verify(mapper).listBanners(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
     }
@@ -58,7 +58,7 @@ class BannerServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void missingRowsProduceEmptyList(boolean nullList) {
-        when(mapper.listBanners(any())).thenReturn(nullList ? null : List.of());
+        when(mapper.list(any())).thenReturn(nullList ? null : List.of());
         assertThat(service.listBanners(new Banner())).isEmpty();
     }
 

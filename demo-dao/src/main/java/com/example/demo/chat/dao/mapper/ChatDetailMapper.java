@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface ChatDetailMapper extends BaseMapper<ChatDetailDO> {
 
-    List<ChatDetailDO> listChatDetails(ChatDetailDO chatDetailDO);
+    List<ChatDetailDO> list(ChatDetailDO chatDetailDO);
 
 }

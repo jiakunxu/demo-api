@@ -34,10 +34,10 @@ class CorpServiceImplTest {
     @Test
     void countUsesLongAndPreservesSearchCriteria() {
         Corp query = new Corp(); query.setSearch("needle");
-        when(mapper.countCorp(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countCorp(query)).isEqualTo(3000000000L);
         var capture = ArgumentCaptor.forClass(CorpDO.class);
-        verify(mapper).countCorp(capture.capture());
+        verify(mapper).count(capture.capture());
         assertThat(capture.getValue().getSearch()).isEqualTo("needle");
     }
 
@@ -45,10 +45,10 @@ class CorpServiceImplTest {
     void listMapsIdentifiersAndPreservesPagination() {
         Corp query = new Corp(); query.setPageNo(2L); query.setPageSize(20L);
         CorpDO row = new CorpDO(); row.setId(id);
-        when(mapper.listCorps(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listCorps(query)).extracting(Corp::getId).containsExactly(id);
         var capture = ArgumentCaptor.forClass(CorpDO.class);
-        verify(mapper).listCorps(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
     }
@@ -56,7 +56,7 @@ class CorpServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void missingRowsProduceEmptyList(boolean nullList) {
-        when(mapper.listCorps(any())).thenReturn(nullList ? null : List.of());
+        when(mapper.list(any())).thenReturn(nullList ? null : List.of());
         assertThat(service.listCorps(new Corp())).isEmpty();
     }
 

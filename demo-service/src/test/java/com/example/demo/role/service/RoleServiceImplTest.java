@@ -38,12 +38,12 @@ class RoleServiceImplTest {
 
     @Test
     void listsAllRolesWithoutArbitraryPaginationAndCountsRemainLong() {
-        when(mapper.countRole(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countRole(new Role())).isEqualTo(3000000000L);
         RoleDO row = new RoleDO(); row.setId(id);
-        when(mapper.listRoles(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listRoles()).extracting(Role::getId).containsExactly(id);
-        verify(mapper).listRoles(argThat(query -> query.getPageNo() == null && query.getPageSize() == null));
+        verify(mapper).list(argThat(query -> query.getPageNo() == null && query.getPageSize() == null));
         assertThat(service.countRole(null)).isZero(); assertThat(service.listRoles((Role) null)).isEmpty();
         assertThat(service.getRole(" ")).isNull(); assertThat(service.getRoleId(" ")).isNull();
     }

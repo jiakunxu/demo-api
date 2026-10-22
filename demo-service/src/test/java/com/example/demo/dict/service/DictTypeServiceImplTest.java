@@ -81,10 +81,10 @@ class DictTypeServiceImplTest {
 
     @Test
     void largeCountAndMapperRowsAreConverted() {
-        when(mapper.countType(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countType(new DictType())).isEqualTo(3000000000L);
         DictTypeDO row = new DictTypeDO(); row.setId(id);
-        when(mapper.listTypes(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listTypes(new DictType())).extracting(DictType::getId).containsExactly(id);
     }
 

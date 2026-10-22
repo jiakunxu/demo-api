@@ -96,7 +96,7 @@ class DictDataServiceImplTest {
         service.listDatas("1", "color");
         service.listDatas(null, new String[] {"color", "size"});
         var queries = ArgumentCaptor.forClass(DictDataDO.class);
-        verify(mapper, times(2)).listDatas(queries.capture());
+        verify(mapper, times(2)).list(queries.capture());
         for (DictDataDO query : queries.getAllValues()) {
             assertThat(query.getStatus()).isEqualTo(DictData.Status.ENABLE.value);
             assertThat(query.getPageNo()).isNull(); assertThat(query.getPageSize()).isNull();
@@ -119,10 +119,10 @@ class DictDataServiceImplTest {
 
     @Test
     void countRemainsLongAndListMapsRows() {
-        when(mapper.countData(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countData("1", "color", new DictData())).isEqualTo(3000000000L);
         DictDataDO row = new DictDataDO(); row.setId(id);
-        when(mapper.listDatas(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listDatas("1", "color")).extracting(DictData::getId).containsExactly(id);
     }
 
