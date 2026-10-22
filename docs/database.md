@@ -667,7 +667,7 @@ idx_role_code 是按编码精确查询的候选非唯一索引；idx_role_sort �
 - String roleId 重载返回 menuId 列表，沿用 Mapper 返回顺序，没有额外排序或去重保证。
 - updateRoleMenus 为事务方法：保留已有选择，saveBatch 新增关系，将取消选择的关系按可信 roleId 与记录 IDs 软删除；null 或空 menuIds 表示清空选择，不是忽略更新。
 - 批量插入设置 roleId/createBy，并从保存后的 DO 转换返回，初次插入路径可返回生成 ID；已有关系的差异更新路径返回新构造的输入列表，不能保证每个返回元素都带关系 ID。
-- deleteRoleMenu 至少需要 roleId/menuId 之一，同时存在时保留两者条件，仅设置软删除与 updateBy；更新失败抛业务异常。
+- deleteRoleMenu 返回 void，至少需要 roleId/menuId 之一，同时存在时保留两者条件，仅设置软删除与 updateBy。按当前幂等删除约定，update 返回 false（零影响行）仍正常返回，不要求调用方检查结果；持久化层抛出的异常继续向上传播。
 - 本 Service 未逐个验证角色/菜单存在性、输入重复或空元素，也未单独刷新角色缓存；不能假定所有调用路径都自动解决这些约束。主要写入方是 RoleService，RoleMenuController 当前提供读取入口。
 
 ### 13.4 建表草案与索引依据

@@ -14,9 +14,9 @@ public interface RoleService {
 
     long countRole(Role role);
 
-    List<Role> listRoles(Role role);
-
     List<Role> listRoles();
+
+    List<Role> listRoles(Role role);
 
     List<Role> listRoles(List<BigInteger> ids);
 

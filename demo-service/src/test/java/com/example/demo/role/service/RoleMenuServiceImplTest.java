@@ -123,15 +123,26 @@ class RoleMenuServiceImplTest {
         assertThat(service.listRoleMenus("10")).containsExactly(BigInteger.TWO, BigInteger.ONE);
     }
 
-    @Test
-    void deleteRequiresScopeAndRetainsBothRoleAndMenuConstraints() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void deleteRequiresScopeAndRetainsBothRoleAndMenuConstraints(boolean changed) {
+        doReturn(changed).when(service).update(any(Wrapper.class));
         assertThatThrownBy(() -> service.deleteRoleMenu(null, null, "editor")).hasMessage("参数信息不能为空");
-        service.deleteRoleMenu(roleId, BigInteger.ONE, "editor");
+        assertThatCode(() -> service.deleteRoleMenu(roleId, BigInteger.ONE, "editor"))
+            .doesNotThrowAnyException();
         ArgumentCaptor<Wrapper<RoleMenuDO>> capture = ArgumentCaptor.captor();
         verify(service).update(capture.capture());
         var wrapper = (LambdaUpdateWrapper<RoleMenuDO>) capture.getValue();
         assertThat(wrapper.getSqlSegment()).contains("role_id", "menu_id");
         assertThat(wrapper.getSqlSet()).contains("deleted", "update_by");
         assertThat(wrapper.getParamNameValuePairs().values()).contains(roleId, BigInteger.ONE, true, "editor");
+    }
+
+    @Test
+    void deletionPropagatesPersistenceExceptions() {
+        var failure = new org.springframework.dao.DataAccessResourceFailureException("offline");
+        doThrow(failure).when(service).update(any(Wrapper.class));
+        assertThatThrownBy(() -> service.deleteRoleMenu(roleId, BigInteger.ONE, "editor"))
+            .isSameAs(failure);
     }
 }
