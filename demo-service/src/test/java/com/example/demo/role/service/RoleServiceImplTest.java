@@ -1,6 +1,7 @@
 package com.example.demo.role.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.demo.role.api.RoleMenuService;
 import com.example.demo.role.api.bo.*;
 import com.example.demo.role.dao.dataobject.RoleDO;
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigInteger;
 import java.util.List;
@@ -139,9 +141,29 @@ class RoleServiceImplTest {
 
     @Test
     void statusUpdateClearsCacheEvenWhenInvalidationFails() {
-        doReturn(true).when(service).updateById(any(RoleDO.class));
+        doReturn(true).when(service).update(any(Wrapper.class));
         doThrow(new RuntimeException("offline")).when(redis).remove(key);
-        assertThat(service.updateRole(id, "disabled", "editor").getStatus()).isEqualTo("disabled");
+        Role result = service.updateRole(id, "disabled", "editor");
+        assertThat(result.getId()).isEqualTo(id);
+        assertThat(result.getStatus()).isEqualTo("disabled");
+        ArgumentCaptor<Wrapper<RoleDO>> capture = ArgumentCaptor.captor();
+        verify(service).update(capture.capture());
+        var wrapper = (LambdaUpdateWrapper<RoleDO>) capture.getValue();
+        assertThat(wrapper.getSqlSegment()).contains("id =");
+        assertThat(wrapper.getSqlSet()).contains("status=", "update_by=")
+            .doesNotContain("remark", "create_by", "create_time", "update_time");
+        assertThat(wrapper.getParamNameValuePairs().values())
+            .containsExactlyInAnyOrder(id, "disabled", "editor");
+        verify(redis).remove(key);
+        verifyNoInteractions(menus);
+    }
+
+    @Test
+    void failedStatusUpdateDoesNotInvalidateCache() {
+        doReturn(false).when(service).update(any(Wrapper.class));
+        assertThatThrownBy(() -> service.updateRole(id, "disabled", "editor"))
+            .isInstanceOf(ServiceException.class);
+        verifyNoInteractions(menus, redis);
     }
 
     @Test

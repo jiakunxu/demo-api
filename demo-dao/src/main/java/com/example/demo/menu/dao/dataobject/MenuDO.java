@@ -1,9 +1,6 @@
 package com.example.demo.menu.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +37,7 @@ public class MenuDO extends BaseDO {
     /**
      * icon
      */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String            icon;
 
     /**
@@ -50,22 +48,25 @@ public class MenuDO extends BaseDO {
     /**
      * 路由地址
      */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String            path;
 
     /**
      * 组件路径
      */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String            component;
 
     /**
      * 路由参数
      */
-    @TableField("`query`")
+    @TableField(value = "`query`", updateStrategy = FieldStrategy.ALWAYS)
     private String            query;
 
     /**
      * 权限
      */
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String            code;
 
     /**
