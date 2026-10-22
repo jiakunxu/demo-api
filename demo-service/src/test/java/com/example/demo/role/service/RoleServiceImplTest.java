@@ -179,9 +179,25 @@ class RoleServiceImplTest {
         doReturn(true).when(service).update(any(Wrapper.class));
         when(menus.listRoleMenus(id)).thenReturn(hasMenus ? List.of(new RoleMenu()) : List.of());
         assertThat(service.deleteRole(id, "editor").getId()).isEqualTo(id);
+        ArgumentCaptor<Wrapper<RoleDO>> capture = ArgumentCaptor.captor();
+        verify(service).update(capture.capture());
+        var wrapper = (LambdaUpdateWrapper<RoleDO>) capture.getValue();
+        assertThat(wrapper.getSqlSegment()).contains("id =");
+        assertThat(wrapper.getSqlSet()).contains("is_deleted=", "update_by=")
+            .doesNotContain("remark", "status", "create_by", "create_time", "update_time");
+        assertThat(wrapper.getParamNameValuePairs().values())
+            .containsExactlyInAnyOrder(id, true, "editor");
         if (hasMenus) verify(menus).deleteRoleMenu(id, null, "editor");
         else verify(menus, never()).deleteRoleMenu(any(), any(), anyString());
         verify(redis).remove(key);
+    }
+
+    @Test
+    void failedDeletionDoesNotRemoveMenusOrInvalidateCache() {
+        doReturn(false).when(service).update(any(Wrapper.class));
+        assertThatThrownBy(() -> service.deleteRole(id, "editor"))
+            .isInstanceOf(ServiceException.class);
+        verifyNoInteractions(menus, redis);
     }
 
 }

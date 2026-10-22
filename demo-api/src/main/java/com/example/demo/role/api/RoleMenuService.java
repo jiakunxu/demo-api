@@ -15,6 +15,6 @@ public interface RoleMenuService {
 
     List<RoleMenu> updateRoleMenus(BigInteger roleId, BigInteger[] menuIds, String updateBy);
 
-    RoleMenu deleteRoleMenu(BigInteger roleId, BigInteger menuId, String updateBy);
+    void deleteRoleMenu(BigInteger roleId, BigInteger menuId, String updateBy);
 
 }

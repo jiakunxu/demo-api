@@ -49,8 +49,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
         RoleMenuDO roleMenuDO = new RoleMenuDO();
         roleMenuDO.setRoleId(roleId);
 
-        List<RoleMenu> list = BeanUtil.copy(this.baseMapper.list(roleMenuDO),
-            RoleMenu.class);
+        List<RoleMenu> list = BeanUtil.copy(this.baseMapper.list(roleMenuDO), RoleMenu.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -106,21 +105,21 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
     @Transactional(rollbackFor = RuntimeException.class)
     public List<RoleMenu> updateRoleMenus(@NotNull BigInteger roleId, BigInteger[] menuIds,
                                           @NotBlank String updateBy) {
-        List<RoleMenu> roleMenuList = new ArrayList<>();
+        List<RoleMenu> roleMenus = new ArrayList<>();
 
         if (menuIds != null) {
             for (BigInteger menuId : menuIds) {
                 RoleMenu roleMenu = new RoleMenu();
                 roleMenu.setMenuId(menuId);
 
-                roleMenuList.add(roleMenu);
+                roleMenus.add(roleMenu);
             }
         }
 
         List<RoleMenu> list0 = listRoleMenus(roleId);
 
         if (CollectionUtils.isEmpty(list0)) {
-            return insertRoleMenus(roleId, roleMenuList, updateBy);
+            return insertRoleMenus(roleId, roleMenus, updateBy);
         }
 
         Map<BigInteger, RoleMenu> map = new HashMap<>(list0.size());
@@ -131,7 +130,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
 
         List<RoleMenu> list1 = new ArrayList<>();
 
-        for (RoleMenu roleMenu : roleMenuList) {
+        for (RoleMenu roleMenu : roleMenus) {
             if (map.containsKey(roleMenu.getMenuId())) {
                 map.remove(roleMenu.getMenuId());
             } else {
@@ -153,32 +152,21 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
             }
         }
 
-        return roleMenuList;
+        return roleMenus;
     }
 
     @Override
-    public RoleMenu deleteRoleMenu(BigInteger roleId, BigInteger menuId,
-                                   @NotBlank String updateBy) {
+    public void deleteRoleMenu(BigInteger roleId, BigInteger menuId, @NotBlank String updateBy) {
         if (roleId == null && menuId == null) {
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
         }
-
-        RoleMenuDO roleMenuDO = new RoleMenuDO();
-        roleMenuDO.setRoleId(roleId);
-        roleMenuDO.setMenuId(menuId);
-        roleMenuDO.setUpdateBy(updateBy);
 
         var updateWrapper = Wrappers.<RoleMenuDO> lambdaUpdate()
             .eq(roleId != null, RoleMenuDO::getRoleId, roleId)
             .eq(menuId != null, RoleMenuDO::getMenuId, menuId).set(RoleMenuDO::getDeleted, true)
             .set(RoleMenuDO::getUpdateBy, updateBy);
 
-        if (!this.update(updateWrapper)) {
-            log.error("{}", roleMenuDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-        }
-
-        return BeanUtil.copy(roleMenuDO, RoleMenu.class);
+        this.update(updateWrapper);
     }
 
 }
