@@ -36,6 +36,11 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLogDO>
             return List.of();
         }
 
+        if (StringUtils.isAnyBlank(log.getSort(), log.getDir())) {
+            log.setSort("id");
+            log.setDir("DESC");
+        }
+
         List<LoginLog> list = BeanUtil
             .copy(this.baseMapper.list(BeanUtil.copy(log, LoginLogDO.class)), LoginLog.class);
 

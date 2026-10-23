@@ -49,7 +49,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         }
 
         for (OperateLog item : list) {
-            if ("anonymous".equals(item.getOperator())) {
+            if (!"anonymous".equals(item.getOperator())) {
                 item.setOperator("");
             }
         }
@@ -69,7 +69,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
             return null;
         }
 
-        if ("anonymous".equals(log.getOperator())) {
+        if (!"anonymous".equals(log.getOperator())) {
             log.setOperator("");
         }
 
