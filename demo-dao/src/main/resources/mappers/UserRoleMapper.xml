@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.user.dao.mapper.UserRoleMapper">
 
-	<select id="countUserRole" parameterType="userRoleDO" resultType="java.lang.Long">
+	<select id="count" parameterType="userRoleDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_user_role` t
 		 WHERE t.`is_deleted` = 0
@@ -36,7 +36,7 @@
 		</if>
 	</select>
 
-	<select id="listUserRoles" parameterType="userRoleDO" resultType="userRoleDO">
+	<select id="list" parameterType="userRoleDO" resultType="userRoleDO">
 		SELECT t.`id`,
 			   t.`user_id` AS userId,
 			   t.`role_id` AS roleId

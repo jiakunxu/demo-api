@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface ConfigMapper extends BaseMapper<ConfigDO> {
 
-    long countConfig(ConfigDO configDO);
+    long count(ConfigDO configDO);
 
-    List<ConfigDO> listConfigs(ConfigDO configDO);
+    List<ConfigDO> list(ConfigDO configDO);
 
 }

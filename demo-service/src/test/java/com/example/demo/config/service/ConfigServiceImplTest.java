@@ -36,10 +36,10 @@ class ConfigServiceImplTest {
     @Test
     void countUsesLongAndPreservesSearchCriteria() {
         Config query = new Config(); query.setSearch("needle");
-        when(mapper.countConfig(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countConfig(query)).isEqualTo(3000000000L);
         var capture = ArgumentCaptor.forClass(ConfigDO.class);
-        verify(mapper).countConfig(capture.capture());
+        verify(mapper).count(capture.capture());
         assertThat(capture.getValue().getSearch()).isEqualTo("needle");
     }
 
@@ -47,10 +47,10 @@ class ConfigServiceImplTest {
     void listMapsIdentifiersAndPreservesPagination() {
         Config query = new Config(); query.setPageNo(2L); query.setPageSize(20L);
         ConfigDO row = new ConfigDO(); row.setId(id);
-        when(mapper.listConfigs(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listConfigs(query)).extracting(Config::getId).containsExactly(id);
         var capture = ArgumentCaptor.forClass(ConfigDO.class);
-        verify(mapper).listConfigs(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
     }
@@ -58,7 +58,7 @@ class ConfigServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void missingRowsProduceEmptyList(boolean nullList) {
-        when(mapper.listConfigs(any())).thenReturn(nullList ? null : List.of());
+        when(mapper.list(any())).thenReturn(nullList ? null : List.of());
         assertThat(service.listConfigs(new Config())).isEmpty();
     }
 

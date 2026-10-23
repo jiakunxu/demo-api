@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.chat.dao.mapper.ChatDetailMapper">
 
-	<select id="listChatDetails" parameterType="chatDetailDO" resultType="chatDetailDO">
+	<select id="list" parameterType="chatDetailDO" resultType="chatDetailDO">
 		SELECT t.`id`,
 			   t.`chat_id` AS chatId,
 			   t.`user_id` AS userId,

@@ -33,10 +33,10 @@ class OperateLogServiceImplTest {
     @Test
     void countUsesLongAndPreservesSearchCriteria() {
         OperateLog query = new OperateLog(); query.setSearch("needle");
-        when(mapper.countLog(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countLog(query)).isEqualTo(3000000000L);
         var capture = ArgumentCaptor.forClass(OperateLogDO.class);
-        verify(mapper).countLog(capture.capture());
+        verify(mapper).count(capture.capture());
         assertThat(capture.getValue().getSearch()).isEqualTo("needle");
     }
 
@@ -44,10 +44,10 @@ class OperateLogServiceImplTest {
     void listMapsIdentifiersAndPreservesPagination() {
         OperateLog query = new OperateLog(); query.setPageNo(2L); query.setPageSize(20L);
         OperateLogDO row = new OperateLogDO(); row.setId(id);
-        when(mapper.listLogs(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listLogs(query)).extracting(OperateLog::getId).containsExactly(id);
         var capture = ArgumentCaptor.forClass(OperateLogDO.class);
-        verify(mapper).listLogs(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getPageNo()).isEqualTo(2L);
         assertThat(capture.getValue().getPageSize()).isEqualTo(20L);
     }
@@ -55,7 +55,7 @@ class OperateLogServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void missingRowsProduceEmptyList(boolean nullList) {
-        when(mapper.listLogs(any())).thenReturn(nullList ? null : List.of());
+        when(mapper.list(any())).thenReturn(nullList ? null : List.of());
         assertThat(service.listLogs(new OperateLog())).isEmpty();
     }
 
@@ -87,10 +87,10 @@ class OperateLogServiceImplTest {
     @Test
     void defaultSortAndAnonymousDisplayAreNormalized() {
         OperateLogDO row = new OperateLogDO(); row.setOperator("anonymous");
-        when(mapper.listLogs(any())).thenReturn(List.of(row));
+        when(mapper.list(any())).thenReturn(List.of(row));
         assertThat(service.listLogs(new OperateLog()).getFirst().getOperator()).isEmpty();
         var capture = ArgumentCaptor.forClass(OperateLogDO.class);
-        verify(mapper).listLogs(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getSort()).isEqualTo("id");
         assertThat(capture.getValue().getDir()).isEqualTo("DESC");
         doReturn(row).when(service).getById(id);

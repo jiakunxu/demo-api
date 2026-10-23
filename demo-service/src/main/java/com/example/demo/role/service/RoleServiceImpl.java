@@ -44,7 +44,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return 0;
         }
 
-        return this.baseMapper.countRole(BeanUtil.copy(role, RoleDO.class));
+        return this.baseMapper.count(BeanUtil.copy(role, RoleDO.class));
     }
 
     @Override
@@ -55,12 +55,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     }
 
     @Override
-    public List<Role> listRoles(List<BigInteger> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
+    public List<Role> listRoles(Role role) {
+        if (role == null) {
             return List.of();
         }
 
-        List<Role> list = BeanUtil.copy(this.listByIds(ids), Role.class);
+        List<Role> list = BeanUtil.copy(this.baseMapper.list(BeanUtil.copy(role, RoleDO.class)),
+            Role.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -70,13 +71,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     }
 
     @Override
-    public List<Role> listRoles(Role role) {
-        if (role == null) {
+    public List<Role> listRoles(List<BigInteger> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
             return List.of();
         }
 
-        List<Role> list = BeanUtil
-            .copy(this.baseMapper.listRoles(BeanUtil.copy(role, RoleDO.class)), Role.class);
+        List<Role> list = BeanUtil.copy(this.listByIds(ids), Role.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -168,9 +168,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         RoleDO roleDO = BeanUtil.copy(role, RoleDO.class);
         roleDO.setUpdateBy(updateBy);
 
-        if (!this.updateById(roleDO)) {
-            log.error("{}", roleDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+        try {
+            if (!this.updateById(roleDO)) {
+                log.error("{}", roleDO);
+                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+            }
+        } catch (DuplicateKeyException e) {
+            log.error("{}", roleDO, e);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "编号已存在");
         }
 
         roleMenuService.updateRoleMenus(role.getId(), role.getMenuIds(), updateBy);
@@ -183,19 +188,17 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     @Override
     public Role updateRole(@NotNull BigInteger id, @NotBlank String status,
                            @NotBlank String updateBy) {
-        RoleDO roleDO = new RoleDO();
-        roleDO.setId(id);
-        roleDO.setStatus(status);
-        roleDO.setUpdateBy(updateBy);
+        var updateWrapper = Wrappers.<RoleDO> lambdaUpdate().eq(RoleDO::getId, id)
+            .set(RoleDO::getStatus, status).set(RoleDO::getUpdateBy, updateBy);
 
-        if (!this.updateById(roleDO)) {
-            log.error("{}", roleDO);
+        if (!this.update(updateWrapper)) {
+            log.error("{},{},{}", id, status, updateBy);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
         remove(id);
 
-        return BeanUtil.copy(roleDO, Role.class);
+        return new Role(id, status);
     }
 
     @Override
@@ -205,15 +208,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "已关联用户，请先调整用户角色");
         }
 
-        RoleDO roleDO = new RoleDO();
-        roleDO.setId(id);
-        roleDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<RoleDO> lambdaUpdate().eq(RoleDO::getId, id)
             .set(RoleDO::getDeleted, true).set(RoleDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {
-            log.error("{}", roleDO);
+            log.error("{},{}", id, updateBy);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
@@ -223,7 +222,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
 
         remove(id);
 
-        return BeanUtil.copy(roleDO, Role.class);
+        return new Role(id);
     }
 
     private void remove(BigInteger id) {

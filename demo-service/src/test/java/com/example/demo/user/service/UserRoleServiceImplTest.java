@@ -48,7 +48,7 @@ class UserRoleServiceImplTest {
 
     @Test
     void differenceUpdateValidatesUserAndRefreshesPermissionsAfterWrites() {
-        when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
         service.updateUserRole(corp, user, new String[] {"2", "3"}, "editor");
         ArgumentCaptor<Collection<UserRoleDO>> batch = ArgumentCaptor.captor();
         verify(service).saveBatch(batch.capture());
@@ -65,7 +65,7 @@ class UserRoleServiceImplTest {
         assertThat(wrapper.getParamNameValuePairs().values()).contains(BigInteger.valueOf(101), true, "editor").doesNotContain(BigInteger.valueOf(102));
         var sequence = inOrder(users, mapper, service);
         sequence.verify(users).validate(corp, user);
-        sequence.verify(mapper).listUserRoles(any());
+        sequence.verify(mapper).list(any());
         sequence.verify(service).saveBatch(anyCollection());
         sequence.verify(service).update(any(Wrapper.class));
         sequence.verify(users).refreshToken(corp, user, "editor");
@@ -73,7 +73,7 @@ class UserRoleServiceImplTest {
 
     @Test
     void unchangedRolesDoNotWriteButStillRefreshToken() {
-        when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         service.updateUserRole(corp, user, new String[] {"1"}, "editor");
         verify(service, never()).saveBatch(anyCollection());
         verify(service, never()).update(any(Wrapper.class));
@@ -92,7 +92,7 @@ class UserRoleServiceImplTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void initialAssignmentAndClearingHaveDifferentWritePaths(boolean existing) {
-        if (existing) when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1)));
+        if (existing) when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         service.updateUserRole(corp, user, existing ? null : new String[] {"1", "2"}, "editor");
         if (existing) { verify(service).update(any(Wrapper.class));
         verify(service, never()).saveBatch(anyCollection());
@@ -103,7 +103,7 @@ class UserRoleServiceImplTest {
 
     @Test
     void failedDeletionRollsBackThroughSpringAdviceAndDoesNotRefreshToken() {
-        when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         doReturn(false).when(service).update(any(Wrapper.class));
         var transactions = new TransactionProbe();
         assertThatThrownBy(() -> transactions.wrap(service).updateUserRole(corp, user, null, "editor")).isInstanceOf(ServiceException.class);
@@ -163,7 +163,7 @@ class UserRoleServiceImplTest {
         assertThat(service.countUserRole(user, " ")).isZero();
         assertThat(service.countUserRole(user, new String[0])).isZero();
         verifyNoInteractions(mapper);
-        when(mapper.countUserRole(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countUserRole(BigInteger.ONE)).isEqualTo(3000000000L);
         assertThat(service.countUserRole(user, "admin")).isEqualTo(3000000000L);
         assertThat(service.countUserRole(user, new String[] {"admin", "user"})).isEqualTo(3000000000L);
@@ -171,7 +171,7 @@ class UserRoleServiceImplTest {
 
     @Test
     void deduplicatesRoleIdsAndReturnsBatchResultWithRequestedStatus() {
-        when(mapper.listUserRoles(any()))
+        when(mapper.list(any()))
             .thenReturn(List.of(row(101, 1), row(102, 2), row(103, 1)));
         Role first = new Role(); Role second = new Role();
         first.setId(BigInteger.ONE);
@@ -182,7 +182,7 @@ class UserRoleServiceImplTest {
         verify(roles).listRoles(ids);
         verifyNoMoreInteractions(roles);
         var capture = ArgumentCaptor.forClass(UserRoleDO.class);
-        verify(mapper).listUserRoles(capture.capture());
+        verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getUserId()).isEqualTo(user);
         assertThat(capture.getValue().getStatus()).isEqualTo("enable");
         assertThat(service.listUserRoles("10")).hasSize(3);
@@ -192,14 +192,14 @@ class UserRoleServiceImplTest {
     void missingUserOrRelationsAvoidRoleQueries() {
         assertThat(service.listRoles(null, "enable")).isEmpty();
         verifyNoInteractions(mapper, roles);
-        when(mapper.listUserRoles(any())).thenReturn(List.of());
+        when(mapper.list(any())).thenReturn(List.of());
         assertThat(service.listRoles(user, "enable")).isEmpty();
         verifyNoInteractions(roles);
     }
 
     @Test
     void missingRoleInBatchReturnsOnlyExistingRoles() {
-        when(mapper.listUserRoles(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1), row(102, 2)));
         Role first = new Role();
         first.setId(BigInteger.ONE);
         when(roles.listRoles(List.of(BigInteger.ONE, BigInteger.TWO)))

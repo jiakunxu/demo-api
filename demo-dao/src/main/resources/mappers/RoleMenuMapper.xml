@@ -4,14 +4,14 @@
 
 <mapper namespace="com.example.demo.role.dao.mapper.RoleMenuMapper">
 
-	<select id="countRoleMenu" parameterType="roleMenuDO" resultType="java.lang.Long">
+	<select id="count" parameterType="roleMenuDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_role_menu` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`menu_id` = #{menuId}
 	</select>
 
-	<select id="listRoleMenus" parameterType="roleMenuDO" resultType="roleMenuDO">
+	<select id="list" parameterType="roleMenuDO" resultType="roleMenuDO">
 		SELECT t.`id`,
 			   t.`role_id` AS roleId,
 			   t.`menu_id` AS menuId

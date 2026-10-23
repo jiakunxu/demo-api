@@ -1,6 +1,6 @@
 # 数据库结构、建表与演进指南
 
-维护于 2026-10-17。适用于 demo 项目的数据库结构说明、建表基线、字段映射、索引设计、数据迁移及验证。当前按表名字母顺序收录 `tb_dict_data`、`tb_dict_type`、`tb_login_log`、`tb_menu`、`tb_operate_log`、`tb_role`、`tb_role_menu` 的源码信息与建表草案；其他表尚未补充，不调整实际数据库结构。
+维护于 2026-10-22。适用于 demo 项目的数据库结构说明、建表基线、字段映射、索引设计、数据迁移及验证。当前按表名字母顺序收录 `tb_dict_data`、`tb_dict_type`、`tb_login_log`、`tb_menu`、`tb_operate_log`、`tb_role`、`tb_role_menu` 的源码信息与建表草案；其他表尚未补充，不调整实际数据库结构。
 
 **当前状态：源码已核对，真实数据库结构未读取，文中建表草案未执行。** 本文不代表已有完整数据库基线或自动迁移能力。默认 YAML 配置项完整、地址和账号有效，不核查、评价或改写其中取值。
 
@@ -140,7 +140,7 @@ SHOW INDEX FROM `tb_role_menu`;
 - 按类型编码和值获取数据的 Service 请求启用状态 E，并通过 Redis 缓存；缓存不是数据库唯一性保证。
 - insertData 设置 typeId、createBy，保存后回填 ID；没有在此方法内给 typeValue/name/value/status 提供完整字段校验。
 - 单条更新清除 DO 的 typeId/typeValue，保留原类型归属；类型变更有专门的批量更新路径。
-- BaseDO 的 JSONField(serialize=false) 是序列化约束，不意味着对应审计字段不是数据库列。
+- BaseDO 审计字段均为数据库列；2026-10-22 的字段写入策略仅控制实体生成的 INSERT/UPDATE，不改变列定义或查询投影。createBy/updateBy 的 JSONField(serialize=false) 已移除，不能再依赖该注解隐藏审计人。详细策略见 [持久化规则](persistence.md#basedo-插入与更新策略)。
 
 ### 6.4 排序字段命名与映射
 
@@ -193,7 +193,7 @@ CREATE TABLE `tb_dict_data` (
 | --- | --- |
 | [DictTypeDO](../demo-dao/src/main/java/com/example/demo/dict/dao/dataobject/DictTypeDO.java) | @TableName 指向 tb_dict_type；自增 ID、业务字段及继承的 BaseDO 字段 |
 | [DictType](../demo-api/src/main/java/com/example/demo/dict/api/bo/DictType.java) | 对外业务对象；当前没有状态枚举 |
-| [DictTypeMapper](../demo-dao/src/main/java/com/example/demo/dict/dao/mapper/DictTypeMapper.java) / [XML](../demo-dao/src/main/resources/mappers/DictTypeMapper.xml) | long countType、列表投影、过滤、排序与固定分页 |
+| [DictTypeMapper](../demo-dao/src/main/java/com/example/demo/dict/dao/mapper/DictTypeMapper.java) / [XML](../demo-dao/src/main/resources/mappers/DictTypeMapper.xml) | long count、列表投影、过滤、排序与固定分页 |
 | [DictTypeServiceImpl](../demo-service/src/main/java/com/example/demo/dict/service/DictTypeServiceImpl.java) | CRUD、缓存、关联数据同步及事务编排 |
 | [DictTypeController](../demo-web/src/main/java/com/example/demo/dict/web/DictTypeController.java) | /system/dict/type 下的 list/get/save/update/delete，要求 dict:crud 权限 |
 | [DictTypeServiceImplTest](../demo-service/src/test/java/com/example/demo/dict/service/DictTypeServiceImplTest.java) | mock/spy 验证计数、转换、ID 回填、关联更新删除、缓存失效与事务 advice |
@@ -223,8 +223,8 @@ CREATE TABLE `tb_dict_data` (
 
 - count/list 共享 queryCondition，显式过滤 is_deleted=0。name、value 使用 WildcardTypeHandler 包含式模糊匹配；status 为精确匹配。
 - start 为创建时间起始日（含），end 为结束日的次日之前（不含）；日期格式、会话时区仍需真实 MySQL 验证。
-- listTypes 按 id 降序，始终添加 LIMIT offset, pageSize；它目前没有字典数据表的可选分页判断，调用者必须提供有效分页。BaseQuery 任一分页参数为 null 时 offset 为 null，不能将此接口描述为支持不传分页查全量。
-- listTypes 只投影 id/name/value/remark/status/create_time，不包含全部审计字段。count 返回 long，XML resultType 为 java.lang.Long。
+- Mapper list 按 id 降序，始终添加 LIMIT offset, pageSize；它目前没有字典数据表的可选分页判断，调用者必须提供有效分页。BaseQuery 任一分页参数为 null 时 offset 为 null，不能将此接口描述为支持不传分页查全量。
+- Mapper list 只投影 id/name/value/remark/status/create_time，不包含全部审计字段。count 返回 long，XML resultType 为 java.lang.Long。
 - getType 的两个重载使用 MyBatis-Plus getOne；ID 与编码同时存在时按两者共同匹配，不附加 status 条件。正常记录过滤依赖项目 MyBatis-Plus 逻辑删除配置，不由此表 XML 提供。
 - getType(String, String) 先查 Redis，键为 CACHE_KEY_DICT_TYPE 加 id + "@" + value；缺失记录不缓存。BigInteger 重载直接查询数据库。按编码查到多行时，getOne 可能抛多结果异常，不能据此推断已经存在唯一键。
 - insertType 设置 createBy，调用 save 后将生成的 ID 回填原 BO；方法没有逐字段校验 name/value/status，不额外设置数据库默认字段。
@@ -307,11 +307,11 @@ CREATE TABLE `tb_dict_type` (
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 9.3 查询、写入与关联行为
 
-- countLog/listLogs 共享 username、ip、status 和 login_time 日期区间条件，并过滤 is_deleted=0；结束日为小于次日，计数使用 long / java.lang.Long。
+- Mapper count/list 共享 username、ip、status 和 login_time 日期区间条件，并过滤 is_deleted=0；结束日为小于次日，计数使用 long / java.lang.Long。
 - 列表固定 LIMIT offset,pageSize，排序为 ${sort} ${dir}, id DESC。LoginLogServiceImpl 不补默认排序，也没有排序白名单；当前无界/非法分页与可控 SQL 拼接风险应单独修复，不能因文档或索引存在就认为已经解决。BaseQuery.search 虽可传递，但此 XML 没有使用它。
 - getLog 使用 MyBatis-Plus getById；insertLog 返回 void，设置 createBy、save 后回填传入 BO 的 ID。该 Service 未提供日志更新、删除或清理接口。
 - LoginServiceImpl.handle 构造账号、IP、loginTime、S/F 状态及错误消息并发送 login.log.save 消息；不能由生产端发送推断已完成消费落库，也不能推断消息必达/幂等。
@@ -394,11 +394,11 @@ IP 当前直接取 X-Forwarded-For 或 remoteAddr，可能是代理链文本；V
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：ids、types、userId、roleCodes；BO 派生的 leaf 也不建列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：ids、types、userId、roleCodes；BO 派生的 leaf 也不建列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 10.3 查询、写入与关联行为
 
-- countMenu 只统计指定 pid 的未删除记录；listMenus 还可按 ids、pid、type/types、name、status、userId 过滤，因此不能将此 count 当成全部列表筛选条件的等价计数。
+- Mapper count 只统计指定 pid 的未删除记录；Mapper list 还可按 ids、pid、type/types、name、status、userId 过滤，因此不能将此 count 当成全部列表筛选条件的等价计数。
 - 列表不分页，按 pid、sort_order 升序、id 降序。userId 非空时使用 EXISTS 关联 tb_role_menu、tb_user_role、tb_role，过滤三者软删除并要求角色状态 E；SQL 未额外检查用户角色 status。
 - 按 type/types 查询的 Service 重载设置菜单启用状态 E；普通列表及树重载没有统一加启用状态。树从 pid=0 递归，不保证所有过滤后的节点都可连到根；当前没有写入时防环校验。
 - getMenu 使用 getById。insertMenu 使用参数 pid、createBy 并回填 ID；updateMenu 使用参数 ID 与 updateBy，失败抛业务异常。
@@ -492,16 +492,16 @@ is_external/is_cached/is_hidden 的 0 默认值为草案选择；需要结合客
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：无额外业务查询列；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 11.3 查询、写入与关联行为
 
-- countLog/listLogs 按 clazz、operator 包含式匹配、status 精确匹配及 operate_time 日期区间筛选，显式过滤软删除，计数使用 long / java.lang.Long；search 不是当前 SQL 的过滤条件。
+- Mapper count/list 按 clazz、operator 包含式匹配、status 精确匹配及 operate_time 日期区间筛选，显式过滤软删除，计数使用 long / java.lang.Long；search 不是当前 SQL 的过滤条件。
 - 列表固定分页，排序直接使用 ${sort} ${dir}, id DESC；Service 在 sort 或 dir 任一为空白时统一补 id DESC，但没有白名单，传入非空值仍存在可控 SQL 拼接风险。
 - listLogs 和 getLog(String) 将 operator=anonymous 显示为空字符串，getLog(BigInteger) 不做此显示转换；数据库原值不会因此更新。
 - insertLog 返回 void，设置 createBy、save 后回填原 BO 的 ID。当前 Service 没有公开更新、删除或保留期清理方法。
 - LogAspect 依据 @Log 组装 operateTime、clazz、请求文本和 S/F；当前发送语句被注释，不能声称注解操作日志已自动落库。requestParams 可能是 JSON、表单或查询字符串，不适合直接推导成 JSON 数据库类型。
-- order_no 仅在 OperateLogDO 中存在，BO 无 orderNo 且 listLogs 未投影该列；草案包含该列以满足 DO 的持久化映射，不宣称当前业务已填写或返回它。
+- order_no 仅在 OperateLogDO 中存在，BO 无 orderNo 且 Mapper list 未投影该列；草案包含该列以满足 DO 的持久化映射，不宣称当前业务已填写或返回它。
 
 ### 11.4 建表草案与索引依据
 
@@ -581,12 +581,12 @@ CREATE TABLE `tb_operate_log` (
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：BO 的 menuIds；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：BO 的 menuIds；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 12.3 查询、写入与关联行为
 
-- countRole/listRoles 共享 code、name、status、create_time 区间过滤及软删除条件；count 另有 id 条件，list 不按 id 过滤。code/name 为包含式 LIKE。
-- listRoles 按 sort_order 升序、id 降序；仅正数 pageNo/pageSize 同时存在才分页。无参重载查询全部业务列表；按 ID 集合重载使用 listByIds，不保证输入顺序或 XML 排序。
+- Mapper count/list 共享 code、name、status、create_time 区间过滤及软删除条件；count 另有 id 条件，list 不按 id 过滤。code/name 为包含式 LIKE。
+- Mapper list 按 sort_order 升序、id 降序；仅正数 pageNo/pageSize 同时存在才分页。Service 的无参重载查询全部业务列表；按 ID 集合重载使用 listByIds，不保证输入顺序或 XML 排序。
 - getRole(String) 直接 getById；getRole(BigInteger) 使用 CACHE_KEY_ROLE + id 缓存，数据库缺失时抛“角色不存在”。getRoleId(code) 用 getOne 精确匹配编码，不按启用状态筛选。
 - insertRole 在事务内保存、回填 ID、同步角色菜单；捕获 DuplicateKeyException 转为“编号已存在”，但捕获异常不能证明原库存在 code 唯一键，也可能包含其他唯一约束冲突。
 - updateRole(完整对象) 在事务内更新角色、同步菜单并清理缓存；状态重载更新状态并清理缓存。deleteRole 拒绝仍关联用户的角色，成功软删除后按需软删除角色菜单并清理缓存。
@@ -659,15 +659,15 @@ idx_role_code 是按编码精确查询的候选非唯一索引；idx_role_sort �
 | update_by | String updateBy | VARCHAR(100) DEFAULT NULL | 更新人，新记录可为空 |
 | update_time | Date updateTime | DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 草案由数据库维护；非事件发生时间 |
 
-排除：DO 的 ids；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。审计字段的 JSON 序列化排除不影响数据库列。
+排除：DO 的 ids；所有 BaseQuery 查询参数和 serialVersionUID 都不建列。BaseDO 的字段写入策略不改变数据库列定义；当前没有原有的审计人 JSON 序列化排除注解。
 
 ### 13.3 查询、写入与关联行为
 
-- countRoleMenu 按 menu_id 统计未删除关系；listRoleMenus 按 role_id 查询未删除关系，只投影 id/role_id/menu_id，无分页、无 ORDER BY。不同方法服务于不同范围，不能用同一计数证明任意列表总量。
+- Mapper count 按 menu_id 统计未删除关系；Mapper list 按 role_id 查询未删除关系，只投影 id/role_id/menu_id，无分页、无 ORDER BY。不同方法服务于不同范围，不能用同一计数证明任意列表总量。
 - String roleId 重载返回 menuId 列表，沿用 Mapper 返回顺序，没有额外排序或去重保证。
 - updateRoleMenus 为事务方法：保留已有选择，saveBatch 新增关系，将取消选择的关系按可信 roleId 与记录 IDs 软删除；null 或空 menuIds 表示清空选择，不是忽略更新。
 - 批量插入设置 roleId/createBy，并从保存后的 DO 转换返回，初次插入路径可返回生成 ID；已有关系的差异更新路径返回新构造的输入列表，不能保证每个返回元素都带关系 ID。
-- deleteRoleMenu 至少需要 roleId/menuId 之一，同时存在时保留两者条件，仅设置软删除与 updateBy；更新失败抛业务异常。
+- deleteRoleMenu 返回 void，至少需要 roleId/menuId 之一，同时存在时保留两者条件，仅设置软删除与 updateBy。按当前幂等删除约定，update 返回 false（零影响行）仍正常返回，不要求调用方检查结果；持久化层抛出的异常继续向上传播。
 - 本 Service 未逐个验证角色/菜单存在性、输入重复或空元素，也未单独刷新角色缓存；不能假定所有调用路径都自动解决这些约束。主要写入方是 RoleService，RoleMenuController 当前提供读取入口。
 
 ### 13.4 建表草案与索引依据
@@ -714,6 +714,8 @@ CREATE TABLE `tb_role_menu` (
 ## 14. 约束、索引和默认值的设计边界
 
 ### 14.1 默认值和空值
+
+BaseDO 的 createTime/updateTime 已同时配置 insertStrategy=NEVER、updateStrategy=NEVER，updateBy 配置 insertStrategy=NEVER，createBy 配置 updateStrategy=NEVER。普通实体插入不会提交这两个时间列和 update_by，普通实体更新不会提交创建人和这两个时间列。对应时间默认值及自动更新时间必须由实际数据库机制支持；本页 DDL 仍为草案，本次没有修改或验证真实表结构。手写 SQL 和 Wrapper 显式 SET 的规则另见 [持久化规则](persistence.md#basedo-插入与更新策略)。
 
 tb_dict_data 草案设置 is_deleted=0、sort_order=0、status='E'；tb_dict_type 草案设置 is_deleted=0，暂不设置默认状态。两表 create_time/update_time 初始化为数据库当前时间。自动更新时间不是完整审计轨迹，也不保证每次无实际变化的 UPDATE 都改变时间。
 

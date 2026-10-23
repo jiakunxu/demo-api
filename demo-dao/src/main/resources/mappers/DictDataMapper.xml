@@ -23,14 +23,14 @@
 		</if>
 	</sql>
 
-	<select id="countData" parameterType="dictDataDO" resultType="java.lang.Long">
+	<select id="count" parameterType="dictDataDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_dict_data` t
 		 WHERE t.`is_deleted` = 0
 		<include refid="queryCondition"/>
 	</select>
 
-	<select id="listDatas" parameterType="dictDataDO" resultType="dictDataDO">
+	<select id="list" parameterType="dictDataDO" resultType="dictDataDO">
 		SELECT t.`id`,
 			   t.`type_id` AS typeId,
 			   t.`type_value` AS typeValue,

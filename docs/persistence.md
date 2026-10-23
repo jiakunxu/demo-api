@@ -1,6 +1,6 @@
 # 持久化、CRUD、SQL 与事务
 
-状态：项目规则与源码现状。维护于 2026-10-13。修改 Service/DO/Mapper 前必读。数据库 DDL、默认值、约束及隔离级别须结合实际数据库确认，不能从 Java 类推断完整 schema。
+状态：项目规则与源码现状。维护于 2026-10-22。修改 Service/DO/Mapper 前必读。数据库 DDL、默认值、约束及隔离级别须结合实际数据库确认，不能从 Java 类推断完整 schema。
 
 ## Service 与 CRUD 规则
 
@@ -11,6 +11,7 @@
 - 普通保存无需包裹通用 `try/catch`；数据库异常交由既有异常处理。确需将唯一键冲突转换为业务提示时捕获 `DuplicateKeyException` 等具体异常；外部 SDK 边界的异常转换按 Manager 契约处理。
 - 更新以方法参数中的可信 ID/业务范围为准，审计人来自可信调用上下文。禁止生成没有有效 WHERE 限制的更新/删除。
 - `updateById` / `update` 返回 false 时，按已有业务约定处理未更新记录，不能无条件返回成功；批量或幂等操作的零影响行是否正常应单独判断。
+- `RoleMenuService.deleteRoleMenu` 当前返回 void，零影响行视为幂等删除成功；仍要求有效的角色/菜单范围，数据库异常继续传播。该约定不自动适用于其他更新、删除方法。
 - 软删除通常设置 `deleted=true` 和 `updateBy`，保留原范围条件。不要用物理删除替换；也不要在带 `@TableLogic`/全局逻辑删除配置的实体上假设任意自定义 XML 自动过滤删除数据。
 - 能用 MyBatis-Plus `getById` / lambda wrapper 表达且语义一致的简单操作可复用；涉及 join、归属过滤、特别排序或聚合时保留自定义 SQL。
 - 多条同类独立插入可先构造 DO 集合再 `saveBatch`，处理空集合、批量大小、事务失败以及需要时的 ID 回填映射。不能将依赖前一条生成 ID、不同实体或交错外部副作用的循环机械批量化。
@@ -56,7 +57,31 @@
 
 ## 核对实际映射
 
-[BaseDO](../demo-dao/src/main/java/com/example/demo/framework/dataobject/BaseDO.java) 的 deleted 映射 is_deleted，审计字段映射 create_by/update_by 且 JSON serialize=false。后者会影响通过 JSON 的 BO/DO 转换路径。主键与 TableName 在各业务 DO 中定义，不是 BaseDO 自动定义所有主键。
+[BaseDO](../demo-dao/src/main/java/com/example/demo/framework/dataobject/BaseDO.java) 的 deleted 映射 is_deleted，审计字段按下划线映射为 create_by/update_by。主键与 TableName 在各业务 DO 中定义，不是 BaseDO 自动定义所有主键。
+
+### BaseDO 插入与更新策略
+
+2026-10-22 核对，当前继承字段策略如下。表中“跟随全局”表示该方向没有在字段上显式配置，不代表必定写入或必定忽略 null。
+
+| Java 属性 / 数据库列 | insertStrategy | updateStrategy | 对实体自动生成 SQL 的影响 |
+| --- | --- | --- | --- |
+| deleted / is_deleted | 跟随全局 | 跟随全局 | 本次未增加写入策略，逻辑删除另受应用配置及具体方法影响 |
+| createBy / create_by | 跟随全局 | NEVER | 创建时按全局规则写入；实体更新不覆盖创建人 |
+| createTime / create_time | NEVER | NEVER | 插入和更新均省略该字段，即使 DO 中已赋值 |
+| updateBy / update_by | NEVER | 跟随全局 | 插入不写更新人；更新按全局规则处理，调用方仍需提供可信审计人 |
+| updateTime / update_time | NEVER | NEVER | 插入和更新均省略该字段，即使 DO 中已赋值 |
+
+使用范围与约束：
+
+- NEVER 表示从对应方向的实体字段 SQL 中排除，不是“仅在值为 null 时忽略”。当前 BaseDO 没有配置 FieldFill，也未发现项目 MetaObjectHandler，不能宣称由 MyBatis-Plus 自动补齐时间或审计人。
+- 通常的 save/saveBatch、updateById，以及 update(entity, wrapper) 中实体生成的 SET 部分按字段策略处理。不同方向彼此独立，insertStrategy 不限制查询或更新，updateStrategy 不限制插入或查询。
+- 手写 XML/注解 SQL 和 Wrapper 显式 set/setSql 不自动受这些实体字段策略限制。例如 ChatMapper.xml 仍显式设置 update_time=NOW()、update_by。策略不是数据库权限或不可变约束，新增显式写入仍需审查。
+- create_time 的默认时间、update_time 的初始值和自动更新时间需要数据库默认值、ON UPDATE 或其他已确认机制提供；NEVER 本身不生成 DDL，也不会自动把数据库时间回填 DO/BO。实际 DDL 未验证时不能宣称时间已正确维护。
+- 插入即使设置 updateBy 也不会经实体策略写入 update_by。创建人须由可信参数设置，更新人须由可信更新上下文设置，不能把字段策略当作参数授权校验。
+- BaseDO 已移除 createBy/updateBy 的 JSONField(serialize=false)。TableField 写入策略不控制 JSON 序列化；DO 被直接序列化或通过 BeanUtil 的 JSON 路径转换时，应按目标类型和其他序列化规则重新核对字段暴露。现有 BaseBO 未定义 createBy/updateBy，不代表所有目标对象都不会接收这些字段。
+
+验证时分别检查生成 INSERT 的列、实体 UPDATE 的 SET、Wrapper 显式 SET 和自定义 XML。设置非空审计时间也应验证 NEVER 字段被省略；真实时间默认值、自动更新与保存后重新查询的结果需在隔离 MySQL 验证。Mapper mock 或只断言 DO 的字段值不能证明生成 SQL 遵守策略。
+
 
 [BaseQuery](../demo-dao/src/main/java/com/example/demo/framework/query/BaseQuery.java) 将查询附加字段标为 exist=false；offset 由 getter 计算，不能通过设置 offset 取代页码规则。当前 getter 不验证负值、上限或乘法溢出，公开输入约束应在相应业务入口实现。
 

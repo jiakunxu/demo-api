@@ -5,6 +5,7 @@
 | 工作类型 | 阅读入口 | 作用 |
 | --- | --- | --- |
 | 首次进入项目 | [根 README](../README.md)、[开发环境](development.md) | 技术基线、构建与启动前提 |
+| 进入具体模块 | [模块入口](../README.md#模块入口) | 各模块职责、依赖、关键代码、注意事项和验证命令 |
 | Codex 协作 | [AGENTS.md](../AGENTS.md)、[Codex 工作流](codex-workflow.md) | 长期规则与任务上下文 |
 | 修改模块边界、数据流程 | [架构说明](architecture.md) | 依赖方向和关键行为 |
 | Java、对象与注解 | [Java 约定](java-conventions.md)、[代码风格](code-style.md) | 类型、转换、代理、异常和书写规范 |

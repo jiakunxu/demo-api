@@ -28,9 +28,9 @@ class SortOrderMappingTest {
 
     static Stream<Arguments> entities() {
         return Stream.of(
-            Arguments.of(Menu.class, MenuDO.class, "menu", "Menu", "listMenus"),
-            Arguments.of(Role.class, RoleDO.class, "role", "Role", "listRoles"),
-            Arguments.of(DictData.class, DictDataDO.class, "dict", "DictData", "listDatas"));
+            Arguments.of(Menu.class, MenuDO.class, "menu", "Menu", "list"),
+            Arguments.of(Role.class, RoleDO.class, "role", "Role", "list"),
+            Arguments.of(DictData.class, DictDataDO.class, "dict", "DictData", "list"));
     }
 
     @ParameterizedTest

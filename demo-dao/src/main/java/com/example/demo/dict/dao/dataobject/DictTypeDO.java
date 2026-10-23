@@ -1,9 +1,6 @@
 package com.example.demo.dict.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.framework.dataobject.BaseDO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +28,7 @@ public class DictTypeDO extends BaseDO {
     @TableField("`value`")
     private String            value;
 
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private String            remark;
 
     private String            status;

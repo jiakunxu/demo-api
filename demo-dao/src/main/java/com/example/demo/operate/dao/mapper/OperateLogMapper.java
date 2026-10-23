@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface OperateLogMapper extends BaseMapper<OperateLogDO> {
 
-    long countLog(OperateLogDO operateLogDO);
+    long count(OperateLogDO operateLogDO);
 
-    List<OperateLogDO> listLogs(OperateLogDO operateLogDO);
+    List<OperateLogDO> list(OperateLogDO operateLogDO);
 
 }

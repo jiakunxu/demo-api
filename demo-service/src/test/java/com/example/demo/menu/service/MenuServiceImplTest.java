@@ -37,12 +37,12 @@ class MenuServiceImplTest {
 
     @Test
     void treeBuildsNestedChildrenAndFiltersRequestedIdentifiers() {
-        when(mapper.listMenus(any())).thenReturn(List.of(row(1, 0), row(2, 1), row(3, 2), row(4, 0)));
+        when(mapper.list(any())).thenReturn(List.of(row(1, 0), row(2, 1), row(3, 2), row(4, 0)));
         List<Tree> trees = service.listMenus(List.of(BigInteger.ONE, BigInteger.TWO));
         assertThat(trees).hasSize(2);
         assertThat(trees.getFirst().getChildren()).hasSize(1);
         assertThat(trees.getFirst().getChildren().getFirst().getChildren()).hasSize(1);
-        verify(mapper).listMenus(argThat(query -> query.getIds().equals(List.of(BigInteger.ONE, BigInteger.TWO))));
+        verify(mapper).list(argThat(query -> query.getIds().equals(List.of(BigInteger.ONE, BigInteger.TWO))));
         assertThat(service.listMenus()).hasSize(2);
     }
 
@@ -50,18 +50,18 @@ class MenuServiceImplTest {
     void typeQueriesUseEnabledStatusAndOptionalUserScope() {
         service.listMenus(new String[] {"menu"}); service.listMenus(new String[] {"button"}, id);
         var capture = ArgumentCaptor.forClass(MenuDO.class);
-        verify(mapper, times(2)).listMenus(capture.capture());
+        verify(mapper, times(2)).list(capture.capture());
         assertThat(capture.getAllValues()).extracting(MenuDO::getStatus).containsOnly(Menu.Status.ENABLE.value);
         assertThat(capture.getAllValues().get(1).getUserId()).isEqualTo(id);
     }
 
     @Test
     void parentAndNameQueriesPreserveFiltersAndCountsRemainLong() {
-        when(mapper.countMenu(any())).thenReturn(3000000000L);
+        when(mapper.count(any())).thenReturn(3000000000L);
         assertThat(service.countMenu(id)).isEqualTo(3000000000L);
         assertThat(service.countMenu("10", new Menu())).isEqualTo(3000000000L);
         service.listMenus("10", new Menu()); service.listMenus("needle", "enable");
-        var capture = ArgumentCaptor.forClass(MenuDO.class); verify(mapper, times(2)).listMenus(capture.capture());
+        var capture = ArgumentCaptor.forClass(MenuDO.class); verify(mapper, times(2)).list(capture.capture());
         assertThat(capture.getAllValues().getFirst().getPid()).isEqualTo(id);
         assertThat(capture.getAllValues().get(1).getName()).isEqualTo("needle");
         assertThat(capture.getAllValues().get(1).getStatus()).isEqualTo("enable");
@@ -96,7 +96,7 @@ class MenuServiceImplTest {
     @ParameterizedTest
     @ValueSource(strings = {"children", "roles", "none", "write failed"})
     void deletionRejectsReferencedMenusAndFailedWrites(String reason) {
-        when(mapper.countMenu(any())).thenReturn(reason.equals("children") ? 1L : 0L);
+        when(mapper.count(any())).thenReturn(reason.equals("children") ? 1L : 0L);
         when(roles.countRoleMenu(id)).thenReturn(reason.equals("roles") ? 1L : 0L);
         doReturn(reason.equals("none")).when(service).update(any(Wrapper.class));
         if (reason.equals("none")) assertThat(service.deleteMenu(id, "editor").getId()).isEqualTo(id);

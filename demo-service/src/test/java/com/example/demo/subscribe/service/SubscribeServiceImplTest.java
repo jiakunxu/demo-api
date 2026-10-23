@@ -30,8 +30,8 @@ class SubscribeServiceImplTest {
 
     @Test
     void countOverloadsUseCorrectMapperAndLongValues() {
-        when(mapper.countSubscribe0(any())).thenReturn(3000000000L);
-        when(mapper.countSubscribe1(any())).thenReturn(3000000001L);
+        when(mapper.count0(any())).thenReturn(3000000000L);
+        when(mapper.count1(any())).thenReturn(3000000001L);
         assertThat(service.countSubscribe(BigInteger.ONE, "client", "app", "1")).isEqualTo(3000000000L);
         assertThat(service.countSubscribe(BigInteger.ONE, "app", "1")).isEqualTo(3000000001L);
         assertThat(service.countSubscribe(null, "app", "1")).isZero();
@@ -90,12 +90,12 @@ class SubscribeServiceImplTest {
     void publishesAcrossFullAndPartialPagesThenStops() {
         List<TunnelDO> first = IntStream.range(0, 20).mapToObj(i -> { TunnelDO tunnel = new TunnelDO(); tunnel.setTunnelId("tunnel-" + i); return tunnel; }).toList();
         TunnelDO last = new TunnelDO(); last.setTunnelId("last");
-        when(mapper.listSubscribes(any())).thenReturn(first, List.of(last));
+        when(mapper.list(any())).thenReturn(first, List.of(last));
         service.sendMessage("app", "1", new Message("event", "payload"));
         verify(producer, times(21)).send(eq("topic"), eq("web.socket"), any(byte[].class), anyString());
         verify(producer).send(eq("topic"), eq("web.socket"), any(byte[].class), eq("last"));
         var queries = ArgumentCaptor.forClass(SubscribeDO.class);
-        verify(mapper, times(2)).listSubscribes(queries.capture());
+        verify(mapper, times(2)).list(queries.capture());
         assertThat(queries.getAllValues()).extracting(SubscribeDO::getPageNo).containsExactly(1L, 2L);
         assertThat(queries.getAllValues()).extracting(SubscribeDO::getPageSize).containsOnly(20L);
     }

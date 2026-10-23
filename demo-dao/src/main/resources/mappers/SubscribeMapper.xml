@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.demo.subscribe.dao.mapper.SubscribeMapper">
 
-	<select id="countSubscribe0" parameterType="subscribeDO" resultType="java.lang.Long">
+	<select id="count0" parameterType="subscribeDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_subscribe` t
 		 WHERE t.`is_deleted` = 0
@@ -14,7 +14,7 @@
 		   AND t.`scene_id` = #{sceneId}
 	</select>
 
-	<select id="countSubscribe1" parameterType="subscribeDO" resultType="java.lang.Long">
+	<select id="count1" parameterType="subscribeDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_subscribe` t,
 			   `tb_tunnel` p
@@ -26,7 +26,7 @@
 		   AND t.`scene_id` = #{sceneId}
 	</select>
 
-	<select id="listSubscribes" parameterType="subscribeDO" resultType="tunnelDO">
+	<select id="list" parameterType="subscribeDO" resultType="tunnelDO">
 		SELECT p.`id`,
 			   p.`tunnel_id` AS tunnelId,
 			   p.`host`

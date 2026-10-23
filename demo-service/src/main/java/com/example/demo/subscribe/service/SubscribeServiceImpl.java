@@ -45,7 +45,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribeDO.setScene(scene);
         subscribeDO.setSceneId(new BigInteger(sceneId));
 
-        return this.baseMapper.countSubscribe0(subscribeDO);
+        return this.baseMapper.count0(subscribeDO);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribeDO.setScene(scene);
         subscribeDO.setSceneId(new BigInteger(sceneId));
 
-        return this.baseMapper.countSubscribe1(subscribeDO);
+        return this.baseMapper.count1(subscribeDO);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         subscribe.setSceneId(new BigInteger(sceneId));
 
         List<Tunnel> list = BeanUtil.copy(
-            this.baseMapper.listSubscribes(BeanUtil.copy(subscribe, SubscribeDO.class)),
+            this.baseMapper.list(BeanUtil.copy(subscribe, SubscribeDO.class)),
             Tunnel.class);
 
         if (CollectionUtils.isEmpty(list)) {

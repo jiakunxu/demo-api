@@ -22,7 +22,7 @@
 		</if>
 	</sql>
 
-	<select id="countRole" parameterType="roleDO" resultType="java.lang.Long">
+	<select id="count" parameterType="roleDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_role` t
 		 WHERE t.`is_deleted` = 0
@@ -32,7 +32,7 @@
 		<include refid="queryCondition"/>
 	</select>
 
-	<select id="listRoles" parameterType="roleDO" resultType="roleDO">
+	<select id="list" parameterType="roleDO" resultType="roleDO">
 		SELECT t.`id`,
 			   t.`code`,
 			   t.`name`,
