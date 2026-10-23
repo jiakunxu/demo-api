@@ -168,9 +168,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         RoleDO roleDO = BeanUtil.copy(role, RoleDO.class);
         roleDO.setUpdateBy(updateBy);
 
-        if (!this.updateById(roleDO)) {
-            log.error("{}", roleDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+        try {
+            if (!this.updateById(roleDO)) {
+                log.error("{}", roleDO);
+                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+            }
+        } catch (DuplicateKeyException e) {
+            log.error("{}", roleDO, e);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "编号已存在");
         }
 
         roleMenuService.updateRoleMenus(role.getId(), role.getMenuIds(), updateBy);
