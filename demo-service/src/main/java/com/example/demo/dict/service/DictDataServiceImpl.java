@@ -231,9 +231,9 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         }
 
         if (id != null) {
-            DictData dictData = getData(id);
-            if (dictData != null) {
-                remove(dictData.getTypeValue() + "&" + dictData.getValue());
+            DictData data = getData(id);
+            if (data != null) {
+                remove(data.getTypeValue() + "&" + data.getValue());
             }
         }
 
