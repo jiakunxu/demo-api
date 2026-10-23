@@ -146,10 +146,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
                 .eq(RoleMenuDO::getRoleId, roleId).set(RoleMenuDO::getDeleted, true)
                 .set(RoleMenuDO::getUpdateBy, updateBy);
 
-            if (!this.update(updateWrapper)) {
-                log.error("{},{}", ids, updateBy);
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-            }
+            this.update(updateWrapper);
         }
 
         return roleMenus;

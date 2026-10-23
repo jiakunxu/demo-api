@@ -216,17 +216,12 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             }
         }
 
-        DictDataDO dataDO = new DictDataDO();
-        dataDO.setTypeId(typeId);
-        dataDO.setTypeValue(typeValue);
-        dataDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate().eq(DictDataDO::getTypeId, typeId)
             .set(DictDataDO::getTypeValue, typeValue).set(DictDataDO::getUpdateBy, updateBy);
 
         this.update(updateWrapper);
 
-        return BeanUtil.copy(dataDO, DictData.class);
+        return new DictData(typeId, typeValue);
     }
 
     @Override
@@ -251,21 +246,13 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             }
         }
 
-        DictDataDO dataDO = new DictDataDO();
-        dataDO.setId(id);
-        dataDO.setTypeId(typeId);
-        dataDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate()
             .eq(id != null, DictDataDO::getId, id).eq(id == null, DictDataDO::getTypeId, typeId)
             .set(DictDataDO::getDeleted, true).set(DictDataDO::getUpdateBy, updateBy);
 
-        if (!this.update(updateWrapper)) {
-            log.error("{}", dataDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-        }
+        this.update(updateWrapper);
 
-        return BeanUtil.copy(dataDO, DictData.class);
+        return new DictData(id, typeId);
     }
 
     private void remove(String key) {
