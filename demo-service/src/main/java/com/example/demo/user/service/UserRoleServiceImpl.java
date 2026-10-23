@@ -96,8 +96,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setUserId(userId);
 
-        List<UserRole> list = BeanUtil.copy(this.baseMapper.list(userRoleDO),
-            UserRole.class);
+        List<UserRole> list = BeanUtil.copy(this.baseMapper.list(userRoleDO), UserRole.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -278,18 +277,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         insertUserRole(userId, list1, updateBy);
 
-        for (Map.Entry<BigInteger, UserRole> m : map.entrySet()) {
-            UserRoleDO userRoleDO = BeanUtil.copy(m.getValue(), UserRoleDO.class);
-            userRoleDO.setUpdateBy(updateBy);
-
-            var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate()
-                .eq(UserRoleDO::getId, userRoleDO.getId()).set(UserRoleDO::getDeleted, true)
+        if (!map.isEmpty()) {
+            List<BigInteger> ids = map.values().stream().map(UserRole::getId).toList();
+            var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().in(UserRoleDO::getId, ids)
+                .eq(UserRoleDO::getUserId, userId).set(UserRoleDO::getDeleted, true)
                 .set(UserRoleDO::getUpdateBy, updateBy);
 
-            if (!this.update(updateWrapper)) {
-                log.error("{}", userRoleDO);
-                throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-            }
+            this.update(updateWrapper);
         }
 
         userService.refreshToken(corpId, userId, updateBy);
@@ -336,23 +330,15 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userService.validate(corpId, userId);
         // TODO roleService.validate(corpId, roleId);
 
-        UserRoleDO userRoleDO = new UserRoleDO();
-        userRoleDO.setUserId(userId);
-        userRoleDO.setRoleId(roleId);
-        userRoleDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().eq(UserRoleDO::getUserId, userId)
             .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
             .set(UserRoleDO::getUpdateBy, updateBy);
 
-        if (!this.update(updateWrapper)) {
-            log.error("{}", userRoleDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-        }
+        this.update(updateWrapper);
 
         userService.refreshToken(corpId, userId, updateBy);
 
-        return BeanUtil.copy(userRoleDO, UserRole.class);
+        return new UserRole(userId, roleId);
     }
 
     @Override
@@ -374,23 +360,15 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             list.add(new BigInteger(userId));
         }
 
-        UserRoleDO userRoleDO = new UserRoleDO();
-        userRoleDO.setRoleId(roleId);
-        userRoleDO.setUserIds(list.toArray(new BigInteger[0]));
-        userRoleDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().in(UserRoleDO::getUserId, list)
             .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
             .set(UserRoleDO::getUpdateBy, updateBy);
 
-        if (!this.update(updateWrapper)) {
-            log.error("{}", userRoleDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
-        }
+        this.update(updateWrapper);
 
         userService.refreshToken(corpId, list.toArray(new BigInteger[0]), updateBy);
 
-        return BeanUtil.copy(userRoleDO, UserRole.class);
+        return new UserRole(null, roleId);
     }
 
 }
