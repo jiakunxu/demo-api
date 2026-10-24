@@ -192,9 +192,6 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         DictDataDO dataDO = BeanUtil.copy(data, DictDataDO.class);
         dataDO.setUpdateBy(updateBy);
 
-        dataDO.setTypeId(null);
-        dataDO.setTypeValue(null);
-
         if (!this.updateById(dataDO)) {
             log.error("{}", dataDO);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
