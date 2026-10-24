@@ -135,7 +135,7 @@ class DictDataServiceImplTest {
     }
 
     @Test
-    void updateKeepsTypeOwnershipAndInvalidatesOldCacheKey() {
+    void updateCopiesInputAndInvalidatesOldCacheKey() {
         doReturn(before()).when(service).getData(id);
         doReturn(true).when(service).updateById(any(DictDataDO.class));
         DictData changed = new DictData();
@@ -145,7 +145,8 @@ class DictDataServiceImplTest {
         assertThat(service.updateData(id, changed, "editor")).isSameAs(changed);
         var rows = ArgumentCaptor.forClass(DictDataDO.class);
         verify(service).updateById(rows.capture());
-        assertThat(rows.getValue().getTypeId()).isNull(); assertThat(rows.getValue().getTypeValue()).isNull();
+        assertThat(rows.getValue().getTypeId()).isEqualTo(BigInteger.valueOf(99));
+        assertThat(rows.getValue().getTypeValue()).isEqualTo("forged");
         assertThat(rows.getValue().getId()).isEqualTo(id);
         assertThat(rows.getValue().getUpdateBy()).isEqualTo("editor");
         verify(redis).remove(key);
