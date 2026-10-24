@@ -23,8 +23,10 @@ public class DictDataDO extends BaseDO {
     @TableId(type = IdType.AUTO)
     private BigInteger        id;
 
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private BigInteger        typeId;
 
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private String            typeValue;
 
     private String            name;

@@ -26,19 +26,19 @@ public class DictTypeController extends BaseController {
     @PreAuthorize("hasAuthority('dict:crud')")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ListResponse<DictType> list(HttpServletRequest request, HttpServletResponse response) {
-        DictType dictType = this.getParameter(request, new DictType());
+        DictType type = this.getParameter(request, new DictType());
 
-        dictType.setName(this.getParameter(request, "name"));
-        dictType.setValue(this.getParameter(request, "value"));
-        dictType.setStatus(this.getParameter(request, "status"));
+        type.setName(this.getParameter(request, "name"));
+        type.setValue(this.getParameter(request, "value"));
+        type.setStatus(this.getParameter(request, "status"));
 
-        long count = dictTypeService.countType(dictType);
+        long count = dictTypeService.countType(type);
 
         if (count == 0) {
             return new ListResponse<>(0, List.of());
         }
 
-        return new ListResponse<>(count, dictTypeService.listTypes(dictType));
+        return new ListResponse<>(count, dictTypeService.listTypes(type));
     }
 
     @PreAuthorize("hasAuthority('dict:crud')")
@@ -53,8 +53,8 @@ public class DictTypeController extends BaseController {
     @PreAuthorize("hasAuthority('dict:crud')")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ObjectResponse<DictType> save(HttpServletRequest request, HttpServletResponse response) {
-        DictType dictType = this.getParameter(request, DictType.class);
-        return new ObjectResponse<>(dictTypeService.insertType(dictType, this.getUser().getName()));
+        DictType type = this.getParameter(request, DictType.class);
+        return new ObjectResponse<>(dictTypeService.insertType(type, this.getUser().getName()));
     }
 
     @Log(module = "", desc = "")
@@ -62,9 +62,9 @@ public class DictTypeController extends BaseController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ObjectResponse<DictType> update(HttpServletRequest request,
                                            HttpServletResponse response) {
-        DictType dictType = this.getParameter(request, DictType.class);
+        DictType type = this.getParameter(request, DictType.class);
         return new ObjectResponse<>(
-            dictTypeService.updateType(dictType.getId(), dictType, this.getUser().getName()));
+            dictTypeService.updateType(type.getId(), type, this.getUser().getName()));
     }
 
     @Log(module = "", desc = "")
@@ -72,9 +72,9 @@ public class DictTypeController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public ObjectResponse<DictType> delete(HttpServletRequest request,
                                            HttpServletResponse response) {
-        DictType dictType = this.getParameter(request, DictType.class);
+        DictType type = this.getParameter(request, DictType.class);
         return new ObjectResponse<>(
-            dictTypeService.deleteType(dictType.getId(), this.getUser().getName()));
+            dictTypeService.deleteType(type.getId(), this.getUser().getName()));
     }
 
 }

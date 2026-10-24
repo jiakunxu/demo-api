@@ -112,8 +112,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return null;
         }
 
-        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery()
-            .eq(id != null, DictTypeDO::getId, id)
+        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery().eq(id != null, DictTypeDO::getId, id)
             .eq(StringUtils.isNotEmpty(value), DictTypeDO::getValue, value);
 
         return BeanUtil.copy(this.getOne(queryWrapper), DictType.class);
@@ -169,10 +168,6 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
         }
 
-        DictTypeDO typeDO = new DictTypeDO();
-        typeDO.setId(id);
-        typeDO.setUpdateBy(updateBy);
-
         var updateWrapper = Wrappers.<DictTypeDO> lambdaUpdate().eq(DictTypeDO::getId, id)
             .set(DictTypeDO::getDeleted, true).set(DictTypeDO::getUpdateBy, updateBy);
 
@@ -187,7 +182,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         remove(id + "@null");
         remove("null@" + before.getValue());
 
-        return BeanUtil.copy(typeDO, DictType.class);
+        return new DictType(id);
     }
 
     private void remove(String key) {

@@ -1,5 +1,7 @@
 package com.example.demo.wxpay.dao.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,7 @@ public class WxpayProfitSharingDO implements Serializable {
     /**
      * 微信分账单号
      */
+    @TableId(type = IdType.INPUT)
     private String            orderId;
 
     private String            mchid;

@@ -37,6 +37,16 @@ public class DictData extends BaseBO {
 
     private String[]          typeValues;
 
+    public DictData(BigInteger id, BigInteger typeId) {
+        this.id = id;
+        this.typeId = typeId;
+    }
+
+    public DictData(BigInteger typeId, String typeValue) {
+        this.typeId = typeId;
+        this.typeValue = typeValue;
+    }
+
     public DictData(String name, String value) {
         this.name = name;
         this.value = value;

@@ -2,6 +2,7 @@ package com.example.demo.support;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.demo.config.dao.dataobject.ConfigDO;
 import com.example.demo.dict.dao.dataobject.DictDataDO;
 import com.example.demo.dict.dao.dataobject.DictTypeDO;
@@ -10,11 +11,13 @@ import com.example.demo.menu.dao.dataobject.MenuDO;
 import com.example.demo.role.dao.dataobject.RoleDO;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.reflection.SystemMetaObject;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -77,6 +80,45 @@ class NullableUpdateMappingTest {
             assertThat(SystemMetaObject.forObject(entity).getValue(field))
                 .isEqualTo("updated-" + field);
         }
+    }
+
+    @Test
+    void entityUpdateExcludesNonNullDictionaryTypeFields() {
+        DictDataDO entity = new DictDataDO();
+        entity.setId(BigInteger.TEN);
+        entity.setTypeId(BigInteger.valueOf(99));
+        entity.setTypeValue("forged");
+        entity.setName("updated-name");
+
+        BoundSql boundSql = updateSql(
+            new UpdateCase(DictDataTestMapper.class, DictDataDO.class, List.of()), entity);
+
+        assertThat(boundSql.getSql()).contains("name=?", "id=?")
+            .doesNotContain("type_id", "type_value");
+        assertThat(boundSql.getParameterMappings()).noneSatisfy(mapping ->
+            assertThat(mapping.getProperty()).isIn("et.typeId", "et.typeValue"));
+    }
+
+    @Test
+    void explicitWrapperCanStillRenameDictionaryType() {
+        var configuration = new MybatisConfiguration();
+        configuration.addMapper(DictDataTestMapper.class);
+        var wrapper = Wrappers.<DictDataDO>lambdaUpdate()
+            .eq(DictDataDO::getTypeId, BigInteger.ONE)
+            .set(DictDataDO::getTypeValue, "new-color")
+            .set(DictDataDO::getUpdateBy, "editor");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("et", null);
+        parameters.put("ew", wrapper);
+
+        BoundSql boundSql = configuration
+            .getMappedStatement(DictDataTestMapper.class.getName() + ".update")
+            .getBoundSql(parameters);
+
+        assertThat(boundSql.getSql()).contains("type_value=?", "update_by=?", "type_id = ?")
+            .doesNotContain("remark");
+        assertThat(wrapper.getParamNameValuePairs().values())
+            .containsExactlyInAnyOrder(BigInteger.ONE, "new-color", "editor");
     }
 
     private BoundSql updateSql(UpdateCase testCase, BaseDO entity) {

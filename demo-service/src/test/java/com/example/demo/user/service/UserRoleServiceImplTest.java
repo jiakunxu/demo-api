@@ -60,7 +60,7 @@ class UserRoleServiceImplTest {
         ArgumentCaptor<Wrapper<UserRoleDO>> capture = ArgumentCaptor.captor();
         verify(service).update(capture.capture());
         var wrapper = (LambdaUpdateWrapper<UserRoleDO>) capture.getValue();
-        assertThat(wrapper.getSqlSegment()).contains("id");
+        assertThat(wrapper.getSqlSegment()).contains("id IN", "user_id =");
         assertThat(wrapper.getSqlSet()).contains("deleted", "update_by");
         assertThat(wrapper.getParamNameValuePairs().values()).contains(BigInteger.valueOf(101), true, "editor").doesNotContain(BigInteger.valueOf(102));
         var sequence = inOrder(users, mapper, service);
@@ -69,6 +69,25 @@ class UserRoleServiceImplTest {
         sequence.verify(service).saveBatch(anyCollection());
         sequence.verify(service).update(any(Wrapper.class));
         sequence.verify(users).refreshToken(corp, user, "editor");
+    }
+
+    @Test
+    void removesMultipleObsoleteRolesInOneScopedUpdate() {
+        when(mapper.list(any()))
+            .thenReturn(List.of(row(101, 1), row(102, 2), row(103, 3)));
+
+        service.updateUserRole(corp, user, new String[] {"2"}, "editor");
+
+        ArgumentCaptor<Wrapper<UserRoleDO>> capture = ArgumentCaptor.captor();
+        verify(service).update(capture.capture());
+        var wrapper = (LambdaUpdateWrapper<UserRoleDO>) capture.getValue();
+        assertThat(wrapper.getSqlSegment()).contains("id IN", "user_id =");
+        assertThat(wrapper.getSqlSet()).contains("is_deleted=", "update_by=");
+        assertThat(wrapper.getParamNameValuePairs().values())
+            .containsExactlyInAnyOrder(BigInteger.valueOf(101), BigInteger.valueOf(103),
+                user, true, "editor");
+        verify(service, never()).saveBatch(anyCollection());
+        verify(users).refreshToken(corp, user, "editor");
     }
 
     @Test
