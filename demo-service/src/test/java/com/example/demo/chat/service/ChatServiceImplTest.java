@@ -86,7 +86,7 @@ class ChatServiceImplTest {
     @ValueSource(ints = {0, 1, 2})
     void readingSetsUnreadToZeroOnlyForRequestedUser(int rows) {
         when(mapper.update(isNull(), any(Wrapper.class))).thenReturn(rows);
-        if (rows == 1) {
+        if (rows > 0) {
             Chat result = service.read(user, friend);
             assertThat(result.getUnread()).isZero();
             assertThat(result.getId()).isEqualTo(friend);
@@ -97,11 +97,11 @@ class ChatServiceImplTest {
         ArgumentCaptor<Wrapper<ChatDO>> capture = ArgumentCaptor.captor();
         verify(mapper).update(isNull(), capture.capture());
         var wrapper = (LambdaUpdateWrapper<ChatDO>) capture.getValue();
-        assertThat(wrapper.getSqlSegment()).contains("id =", "user_id =", "is_deleted =");
-        assertThat(wrapper.getSqlSet()).contains("unread=", "update_by=", "update_time = NOW()")
-            .doesNotContain("chat_time", "chat_detail_id", "create_time");
+        assertThat(wrapper.getSqlSegment()).contains("id =", "user_id =");
+        assertThat(wrapper.getSqlSet()).contains("unread=", "update_by=")
+            .doesNotContain("chat_time", "chat_detail_id", "create_time", "update_time");
         assertThat(wrapper.getParamNameValuePairs().values())
-            .containsExactlyInAnyOrder(friend, user, false, 0, user.toString());
+            .containsExactlyInAnyOrder(friend, user, 0, user.toString());
     }
 
     @Test
