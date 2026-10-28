@@ -47,7 +47,9 @@ public class TokenServiceImpl implements TokenService {
             return null;
         }
 
-        UserDetails user = redisService.get(getKey(token));
+        String key = getKey(token);
+
+        UserDetails user = redisService.get(key);
 
         if (user == null) {
             return null;
@@ -72,7 +74,7 @@ public class TokenServiceImpl implements TokenService {
                 return null;
             }
 
-            redisService.set(getKey(token), user);
+            redisService.set(key, user);
 
             refreshTokenService.set(user);
         }

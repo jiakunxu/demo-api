@@ -103,7 +103,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         try {
             role = redisService.get(key);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_ROLE + "{}", key, e);
+            log.error("{}", key, e);
         }
 
         if (role != null) {

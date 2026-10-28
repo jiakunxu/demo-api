@@ -21,11 +21,4 @@ public interface ChatMapper extends BaseMapper<ChatDO> {
      */
     int updateChat(ChatDO chatDO);
 
-    /**
-     *
-     * @param chatDO
-     * @return
-     */
-    int updateUnread(ChatDO chatDO);
-
 }

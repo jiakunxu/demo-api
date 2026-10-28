@@ -2,6 +2,7 @@ package com.example.demo.chat.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.demo.chat.api.*;
 import com.example.demo.chat.api.bo.*;
 import com.example.demo.chat.dao.mapper.ChatMapper;
@@ -82,16 +83,32 @@ class ChatServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1})
+    @ValueSource(ints = {0, 1, 2})
     void readingSetsUnreadToZeroOnlyForRequestedUser(int rows) {
-        when(mapper.updateUnread(any())).thenReturn(rows);
-        if (rows == 1) assertThat(service.read(user, friend).getUnread()).isZero();
-        else assertThatThrownBy(() -> service.read(user, friend)).hasMessage("信息不存在");
-        var capture = ArgumentCaptor.forClass(ChatDO.class);
-        verify(mapper).updateUnread(capture.capture());
-        assertThat(capture.getValue().getId()).isEqualTo(friend);
-        assertThat(capture.getValue().getUserId()).isEqualTo(user);
-        assertThat(capture.getValue().getUnread()).isZero();
+        when(mapper.update(isNull(), any(Wrapper.class))).thenReturn(rows);
+        if (rows > 0) {
+            Chat result = service.read(user, friend);
+            assertThat(result.getUnread()).isZero();
+            assertThat(result.getId()).isEqualTo(friend);
+            assertThat(result.getUserId()).isEqualTo(user);
+        } else {
+            assertThatThrownBy(() -> service.read(user, friend)).hasMessage("信息不存在");
+        }
+        ArgumentCaptor<Wrapper<ChatDO>> capture = ArgumentCaptor.captor();
+        verify(mapper).update(isNull(), capture.capture());
+        var wrapper = (LambdaUpdateWrapper<ChatDO>) capture.getValue();
+        assertThat(wrapper.getSqlSegment()).contains("id =", "user_id =");
+        assertThat(wrapper.getSqlSet()).contains("unread=", "update_by=")
+            .doesNotContain("chat_time", "chat_detail_id", "create_time", "update_time");
+        assertThat(wrapper.getParamNameValuePairs().values())
+            .containsExactlyInAnyOrder(friend, user, 0, user.toString());
+    }
+
+    @Test
+    void readingRequiresBothUserAndChatId() {
+        assertThatThrownBy(() -> service.read(null, friend)).hasMessage("参数信息不能为空");
+        assertThatThrownBy(() -> service.read(user, null)).hasMessage("参数信息不能为空");
+        verifyNoInteractions(mapper);
     }
 
     @Test

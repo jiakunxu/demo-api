@@ -65,14 +65,14 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return null;
         }
 
-        String key = id + "@" + value;
+        String key = RedisService.CACHE_KEY_DICT_TYPE + id + "@" + value;
 
         DictType type = null;
 
         try {
-            type = redisService.get(RedisService.CACHE_KEY_DICT_TYPE + key);
+            type = redisService.get(key);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_DICT_TYPE + "{}", key, e);
+            log.error("{}", key, e);
         }
 
         if (type != null) {
@@ -98,9 +98,9 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         }
 
         try {
-            redisService.set(RedisService.CACHE_KEY_DICT_TYPE + key, type);
+            redisService.set(key, type);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_DICT_TYPE + key, e);
+            log.error("{}", key, e);
         }
 
         return type;

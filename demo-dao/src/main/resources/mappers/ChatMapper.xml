@@ -38,14 +38,4 @@
 		   AND t.`friend_id` = #{friendId}
 	</update>
 
-	<update id="updateUnread" parameterType="chatDO">
-		UPDATE `tb_chat` t
-		   SET t.`update_time` = NOW(),
-			   t.`update_by` = #{updateBy},
-			   t.`unread` = #{unread}
-		 WHERE t.`is_deleted` = 0
-		   AND t.`id` = #{id}
-		   AND t.`user_id` = #{userId}
-	</update>
-
 </mapper>

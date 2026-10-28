@@ -26,14 +26,14 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String getToken(String appId, String appSecret,
                            String grantType) throws RuntimeException {
-        String key = appId + "&" + appSecret + "&" + grantType;
+        String key = RedisService.CACHE_KEY_TT_TOKEN + appId + "&" + appSecret + "&" + grantType;
 
         String token = null;
 
         try {
-            token = redisService.get(RedisService.CACHE_KEY_TT_TOKEN + key);
+            token = redisService.get(key);
         } catch (ServiceException e) {
-            log.error("{}", RedisService.CACHE_KEY_TT_TOKEN + key, e);
+            log.error("{}", key, e);
         }
 
         if (StringUtils.isNotBlank(token)) {
@@ -45,10 +45,9 @@ public class TokenServiceImpl implements TokenService {
         token = accessToken.getAccessToken();
 
         try {
-            redisService.set(RedisService.CACHE_KEY_TT_TOKEN + key, token,
-                accessToken.getExpiresIn() - 5 * 60);
+            redisService.set(key, token, accessToken.getExpiresIn() - 5 * 60);
         } catch (ServiceException e) {
-            log.error("{}", RedisService.CACHE_KEY_TT_TOKEN + key, e);
+            log.error("{}", key, e);
         }
 
         return token;

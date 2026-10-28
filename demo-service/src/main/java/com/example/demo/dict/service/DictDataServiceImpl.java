@@ -129,14 +129,14 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             return new DictData();
         }
 
-        String key = typeValue + "&" + value;
+        String key = RedisService.CACHE_KEY_DICT_TYPE + typeValue + "&" + value;
 
         DictData data = null;
 
         try {
-            data = redisService.get(RedisService.CACHE_KEY_DICT_TYPE + key);
+            data = redisService.get(key);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_DICT_TYPE + "{}", key, e);
+            log.error("{}", key, e);
         }
 
         if (data != null) {
@@ -155,9 +155,9 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         }
 
         try {
-            redisService.set(RedisService.CACHE_KEY_DICT_TYPE + key, data);
+            redisService.set(key, data);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_DICT_TYPE + "{}", key, e);
+            log.error("{}", key, e);
         }
 
         return data;

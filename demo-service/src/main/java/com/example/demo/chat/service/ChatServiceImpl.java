@@ -149,18 +149,19 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
         }
 
+        var updateWrapper = Wrappers.<ChatDO> lambdaUpdate().eq(ChatDO::getId, id)
+            .eq(ChatDO::getUserId, userId).set(ChatDO::getUnread, 0)
+            .set(ChatDO::getUpdateBy, userId.toString());
+
+        if (!this.update(updateWrapper)) {
+            log.error("{},{}", userId, id);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息不存在");
+        }
+
         Chat chat = new Chat();
         chat.setId(id);
         chat.setUserId(userId);
         chat.setUnread(0);
-
-        ChatDO chatDO = BeanUtil.copy(chat, ChatDO.class);
-        chatDO.setUpdateBy(userId.toString());
-
-        if (this.baseMapper.updateUnread(chatDO) != 1) {
-            log.error("{}", chatDO);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "信息不存在");
-        }
 
         return chat;
     }
