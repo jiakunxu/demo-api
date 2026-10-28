@@ -29,14 +29,14 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public String getTicket(String appId, String appSecret) throws RuntimeException {
-        String key = appId + "&" + appSecret;
+        String key = RedisService.CACHE_KEY_WX_TICKET + appId + "&" + appSecret;
 
         String ticket = null;
 
         try {
-            ticket = redisService.get(RedisService.CACHE_KEY_WX_TICKET + key);
+            ticket = redisService.get(key);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_WX_TICKET + key, e);
+            log.error(key, e);
         }
 
         if (StringUtils.isNotBlank(ticket)) {
@@ -49,10 +49,9 @@ public class TicketServiceImpl implements TicketService {
         ticket = jsapiTicket.getTicket();
 
         try {
-            redisService.set(RedisService.CACHE_KEY_WX_TICKET + key, ticket,
-                jsapiTicket.getExpiresIn() - 5 * 60);
+            redisService.set(key, ticket, jsapiTicket.getExpiresIn() - 5 * 60);
         } catch (ServiceException e) {
-            log.error(RedisService.CACHE_KEY_WX_TICKET + key, e);
+            log.error(key, e);
         }
 
         return ticket;
