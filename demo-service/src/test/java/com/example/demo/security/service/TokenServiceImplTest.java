@@ -57,14 +57,17 @@ class TokenServiceImplTest {
         verify(redis, never()).set(anyString(), any());
     }
 
-    @Test
-    void staleRevisionReloadsAndRefreshesUser() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "Bearer "})
+    void staleRevisionReloadsAndRefreshesUser(String prefix) {
         LoginUser fresh = new LoginUser();
         fresh.setId(BigInteger.TEN);
         when(redis.get("id")).thenReturn(user);
         when(users.loadUserById(BigInteger.TEN)).thenReturn(fresh);
-        assertThat(service.getUser(token("id"))).isSameAs(fresh);
+        assertThat(service.getUser(prefix + token("id"))).isSameAs(fresh);
+        verify(redis).get("id");
         verify(redis).set("id", fresh);
+        verifyNoMoreInteractions(redis);
         verify(refresh).set(fresh);
     }
 
