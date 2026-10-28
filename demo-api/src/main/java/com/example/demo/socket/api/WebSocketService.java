@@ -5,6 +5,8 @@ package com.example.demo.socket.api;
  */
 public interface WebSocketService {
 
+    void close(String tunnelId);
+
     /**
      *
      * @param tunnelId

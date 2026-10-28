@@ -16,6 +16,23 @@ import java.io.IOException;
 public class WebSocketServiceImpl implements WebSocketService {
 
     @Override
+    public void close(String tunnelId) {
+        WebSocketSession session = WebSocketManager.get(tunnelId);
+
+        if (session == null) {
+            return;
+        }
+
+        if (session.isOpen()) {
+            try {
+                session.close();
+            } catch (IOException e) {
+                log.error("{}", tunnelId, e);
+            }
+        }
+    }
+
+    @Override
     public void sendMessage(String tunnelId, String message) {
         WebSocketSession session = WebSocketManager.get(tunnelId);
 
@@ -25,7 +42,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         if (session.isOpen()) {
             try {
-                session.sendMessage(new TextMessage("message:" + message));
+                session.sendMessage(new TextMessage(message));
             } catch (IOException e) {
                 log.error("{},{}", tunnelId, message, e);
             }
