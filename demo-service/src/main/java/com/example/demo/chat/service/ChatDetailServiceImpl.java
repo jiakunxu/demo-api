@@ -72,7 +72,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
         chatDetailDO.setPageNo(Long.valueOf(pageNo));
         chatDetailDO.setPageSize(Long.valueOf(pageSize));
 
-        List<ChatDetail> list = BeanUtil.copy(this.baseMapper.list(chatDetailDO),
+        List<ChatDetail> list = BeanUtil.copy(this.getBaseMapper().list(chatDetailDO),
             ChatDetail.class);
 
         if (CollectionUtils.isEmpty(list)) {

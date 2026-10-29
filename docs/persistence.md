@@ -23,6 +23,8 @@
 
 ## MyBatis 与数据库规则
 
+- 继承 MyBatis-Plus ServiceImpl 的业务类访问当前 Mapper 时，统一使用 `this.getBaseMapper().方法(...)`，例如 `this.getBaseMapper().list(query)`。同一方法确需多次使用时可保存为局部变量；不为单次调用重复注入同类型 Mapper。测试辅助设施仍可按既有方式设置 baseMapper 字段。
+
 - DO 使用 `@TableName` / `@TableField` 映射，继承 `BaseDO` 的实体具有审计/软删除字段；查询附加属性在 `BaseQuery` 中使用 `@TableField(exist=false)`。
 - 业务排序列使用 `sort_order`，Java 属性使用可空 `Integer sortOrder`；不使用保留字 `order`，也不复用表示动态排序字段的 `sort`。旧列迁移见 [数据库指南](database.md)。
 - 当前应用配置 `id-type=AUTO`、`logic-delete-field=deleted`、删除值 1/正常值 0、下划线转驼峰。改用手工 MyBatis 配置或独立测试环境时需显式核对这些行为。

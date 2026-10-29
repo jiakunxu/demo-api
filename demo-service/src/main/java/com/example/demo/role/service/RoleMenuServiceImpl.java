@@ -37,7 +37,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
         RoleMenuDO roleMenuDO = new RoleMenuDO();
         roleMenuDO.setMenuId(menuId);
 
-        return this.baseMapper.count(roleMenuDO);
+        return this.getBaseMapper().count(roleMenuDO);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
         RoleMenuDO roleMenuDO = new RoleMenuDO();
         roleMenuDO.setRoleId(roleId);
 
-        List<RoleMenu> list = BeanUtil.copy(this.baseMapper.list(roleMenuDO), RoleMenu.class);
+        List<RoleMenu> list = BeanUtil.copy(this.getBaseMapper().list(roleMenuDO), RoleMenu.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

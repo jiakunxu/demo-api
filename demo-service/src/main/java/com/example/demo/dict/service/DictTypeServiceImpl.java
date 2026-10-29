@@ -40,7 +40,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(type, DictTypeDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(type, DictTypeDO.class));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         }
 
         List<DictType> list = BeanUtil
-            .copy(this.baseMapper.list(BeanUtil.copy(type, DictTypeDO.class)), DictType.class);
+            .copy(this.getBaseMapper().list(BeanUtil.copy(type, DictTypeDO.class)), DictType.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

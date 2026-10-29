@@ -39,7 +39,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = new MenuDO();
         menuDO.setPid(pid);
 
-        return this.baseMapper.count(menuDO);
+        return this.getBaseMapper().count(menuDO);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             menu.setPid(new BigInteger(pid));
         }
 
-        return this.baseMapper.count(BeanUtil.copy(menu, MenuDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(menu, MenuDO.class));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             menu.setPid(new BigInteger(pid));
         }
 
-        return BeanUtil.copy(this.baseMapper.list(BeanUtil.copy(menu, MenuDO.class)),
+        return BeanUtil.copy(this.getBaseMapper().list(BeanUtil.copy(menu, MenuDO.class)),
             Menu.class);
     }
 
@@ -75,7 +75,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setName(name);
         menuDO.setStatus(status);
 
-        return BeanUtil.copy(this.baseMapper.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.getBaseMapper().list(menuDO), Menu.class);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         MenuDO menuDO = new MenuDO();
         menuDO.setIds(ids);
 
-        List<Menu> menus = BeanUtil.copy(this.baseMapper.list(menuDO), Menu.class);
+        List<Menu> menus = BeanUtil.copy(this.getBaseMapper().list(menuDO), Menu.class);
 
         if (CollectionUtils.isEmpty(menus)) {
             return null;
@@ -123,7 +123,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setStatus(Menu.Status.ENABLE.value);
         menuDO.setTypes(type);
 
-        return BeanUtil.copy(this.baseMapper.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.getBaseMapper().list(menuDO), Menu.class);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
         menuDO.setTypes(type);
         menuDO.setUserId(userId);
 
-        return BeanUtil.copy(this.baseMapper.list(menuDO), Menu.class);
+        return BeanUtil.copy(this.getBaseMapper().list(menuDO), Menu.class);
     }
 
     @Override

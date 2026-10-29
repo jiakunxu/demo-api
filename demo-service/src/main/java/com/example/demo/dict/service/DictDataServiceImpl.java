@@ -41,7 +41,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         data.setTypeValue(typeValue);
 
-        return this.baseMapper.count(BeanUtil.copy(data, DictDataDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(data, DictDataDO.class));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         data.setTypeValue(typeValue);
 
         List<DictData> list = BeanUtil
-            .copy(this.baseMapper.list(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
+            .copy(this.getBaseMapper().list(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -96,7 +96,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         data.setTypeValues(typeValue);
 
         List<DictData> list = BeanUtil
-            .copy(this.baseMapper.list(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
+            .copy(this.getBaseMapper().list(BeanUtil.copy(data, DictDataDO.class)), DictData.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

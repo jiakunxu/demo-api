@@ -52,7 +52,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         ChatDO chatDO = new ChatDO();
         chatDO.setUserId(userId);
 
-        return this.baseMapper.count(chatDO);
+        return this.getBaseMapper().count(chatDO);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         chatDO.setPageNo(Long.valueOf(pageNo));
         chatDO.setPageSize(Long.valueOf(pageSize));
 
-        List<Chat> list = BeanUtil.copy(this.baseMapper.list(chatDO), Chat.class);
+        List<Chat> list = BeanUtil.copy(this.getBaseMapper().list(chatDO), Chat.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -131,7 +131,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
         chatDO.setUpdateBy(userId.toString());
 
         try {
-            if (this.baseMapper.updateChat(chatDO) != 1) {
+            if (this.getBaseMapper().updateChat(chatDO) != 1) {
                 this.save(chatDO);
                 chat.setId(chatDO.getId());
             }

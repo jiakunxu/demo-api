@@ -30,7 +30,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(banner, BannerDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(banner, BannerDO.class));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
         }
 
         List<Banner> list = BeanUtil
-            .copy(this.baseMapper.list(BeanUtil.copy(banner, BannerDO.class)), Banner.class);
+            .copy(this.getBaseMapper().list(BeanUtil.copy(banner, BannerDO.class)), Banner.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
