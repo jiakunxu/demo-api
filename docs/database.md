@@ -193,7 +193,7 @@ CREATE TABLE `tb_dict_data` (
 | --- | --- |
 | [DictTypeDO](../demo-dao/src/main/java/com/example/demo/dict/dao/dataobject/DictTypeDO.java) | @TableName 指向 tb_dict_type；自增 ID、业务字段及继承的 BaseDO 字段 |
 | [DictType](../demo-api/src/main/java/com/example/demo/dict/api/bo/DictType.java) | 对外业务对象；当前没有状态枚举 |
-| [DictTypeMapper](../demo-dao/src/main/java/com/example/demo/dict/dao/mapper/DictTypeMapper.java) / [XML](../demo-dao/src/main/resources/mappers/DictTypeMapper.xml) | long count、列表投影、过滤、排序与固定分页 |
+| [DictTypeMapper](../demo-dao/src/main/java/com/example/demo/dict/dao/mapper/DictTypeMapper.java) / [XML](../demo-dao/src/main/resources/mappers/DictTypeMapper.xml) | Long count、列表投影、过滤、排序与固定分页 |
 | [DictTypeServiceImpl](../demo-service/src/main/java/com/example/demo/dict/service/DictTypeServiceImpl.java) | CRUD、缓存、关联数据同步及事务编排 |
 | [DictTypeController](../demo-web/src/main/java/com/example/demo/dict/web/DictTypeController.java) | /system/dict/type 下的 list/get/save/update/delete，要求 dict:crud 权限 |
 | [DictTypeServiceImplTest](../demo-service/src/test/java/com/example/demo/dict/service/DictTypeServiceImplTest.java) | mock/spy 验证计数、转换、ID 回填、关联更新删除、缓存失效与事务 advice |

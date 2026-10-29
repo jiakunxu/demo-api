@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BannerMapper extends BaseMapper<BannerDO> {
 
-    long count(BannerDO bannerDO);
+    Long count(BannerDO bannerDO);
 
     List<BannerDO> list(BannerDO bannerDO);
 

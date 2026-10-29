@@ -27,7 +27,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(log, OperateLogDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(log, OperateLogDO.class));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         }
 
         List<OperateLog> list = BeanUtil.copy(
-            this.baseMapper.list(BeanUtil.copy(log, OperateLogDO.class)), OperateLog.class);
+            this.getBaseMapper().list(BeanUtil.copy(log, OperateLogDO.class)), OperateLog.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

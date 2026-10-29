@@ -34,7 +34,7 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(corp, CorpDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(corp, CorpDO.class));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CorpServiceImpl extends ServiceImpl<CorpMapper, CorpDO>
         }
 
         List<Corp> list = BeanUtil
-            .copy(this.baseMapper.list(BeanUtil.copy(corp, CorpDO.class)), Corp.class);
+            .copy(this.getBaseMapper().list(BeanUtil.copy(corp, CorpDO.class)), Corp.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

@@ -44,7 +44,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(role, RoleDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(role, RoleDO.class));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return List.of();
         }
 
-        List<Role> list = BeanUtil.copy(this.baseMapper.list(BeanUtil.copy(role, RoleDO.class)),
+        List<Role> list = BeanUtil.copy(this.getBaseMapper().list(BeanUtil.copy(role, RoleDO.class)),
             Role.class);
 
         if (CollectionUtils.isEmpty(list)) {

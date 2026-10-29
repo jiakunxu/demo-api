@@ -30,7 +30,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
             return 0;
         }
 
-        return this.baseMapper.count(BeanUtil.copy(article, ArticleDO.class));
+        return this.getBaseMapper().count(BeanUtil.copy(article, ArticleDO.class));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
         }
 
         List<Article> list = BeanUtil.copy(
-            this.baseMapper.list(BeanUtil.copy(article, ArticleDO.class)), Article.class);
+            this.getBaseMapper().list(BeanUtil.copy(article, ArticleDO.class)), Article.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();

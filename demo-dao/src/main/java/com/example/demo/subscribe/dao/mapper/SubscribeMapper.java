@@ -16,14 +16,14 @@ public interface SubscribeMapper extends BaseMapper<SubscribeDO> {
      * @param subscribeDO
      * @return
      */
-    long count0(SubscribeDO subscribeDO);
+    Long count0(SubscribeDO subscribeDO);
 
     /**
      *
      * @param subscribeDO
      * @return
      */
-    long count1(SubscribeDO subscribeDO);
+    Long count1(SubscribeDO subscribeDO);
 
     /**
      *

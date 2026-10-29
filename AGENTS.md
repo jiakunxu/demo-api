@@ -46,7 +46,7 @@
 - 保留路径、请求方法、响应、日期、null/空列表和错误码契约；自定义校验依赖代理，不能机械换成 Jakarta 或 JSpecify 注解。
 - 审计使用 createBy/updateBy 与 create_by/update_by；插入需要时回填 ID。默认值以实际 DDL 为准，不额外设置已由数据库管理的字段。
 - 更新/删除保留可信 ID、业务归属与软删除条件；检查影响行数。普通保存不包通用 try/catch；唯一键冲突仅按业务需要转换。
-- count 链路用 long，COUNT resultType 用 java.lang.Long，影响行数仍是 int；可选分页不是公开输入校验，不得将非法参数变成无界查询。
+- Mapper 自定义计数方法返回 Long，Service/API/Controller 计数使用 long，COUNT resultType 用 java.lang.Long，影响行数仍是 int；可选分页不是公开输入校验，不得将非法参数变成无界查询。
 - 不共用 list/get SELECT 投影；count/list 可共享过滤条件。SQL 值绑定用 #{}，动态排序用白名单；CDATA 与 Mapper 缩进按持久化规则处理。
 - Chat 的 saveOrUpdate 先按业务键 updateChat，影响行数不为 1 时插入，不改成按主键的通用 saveOrUpdate。
 - 本地事务不能回滚 Redis/MQ/HTTP；TransactionUtil.afterCommit 要求活动事务，无持久化和自动重试保证。
