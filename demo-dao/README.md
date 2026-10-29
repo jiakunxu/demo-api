@@ -26,7 +26,7 @@ DO 不能完整证明实际字段长度、默认值、唯一键和索引；这�
 ## 修改注意事项
 
 - 新增自定义 Mapper 方法时核对 XML/注解绑定、参数名、resultType 和资源打包。
-- count 返回 long，COUNT resultType 使用 java.lang.Long；更新影响行数仍为 int。
+- Mapper 自定义计数方法返回 Long，COUNT resultType 使用 java.lang.Long；Service/API 仍使用 long，更新影响行数仍为 int。
 - 自定义 SQL 显式保留软删除与用户/企业范围，不能假定自动追加。
 - 审计字段使用 createBy/updateBy 对应 create_by/update_by；排序列使用 sort_order。
 - BaseDO 通过 NEVER 排除创建人的实体更新、更新人的实体插入及两个时间字段的实体插入/更新；时间维护依赖数据库机制，详见 [字段策略](../docs/persistence.md#basedo-插入与更新策略)。

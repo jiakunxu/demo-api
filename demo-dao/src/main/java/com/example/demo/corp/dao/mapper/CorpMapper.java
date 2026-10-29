@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface CorpMapper extends BaseMapper<CorpDO> {
 
-    long count(CorpDO corpDO);
+    Long count(CorpDO corpDO);
 
     List<CorpDO> list(CorpDO corpDO);
 

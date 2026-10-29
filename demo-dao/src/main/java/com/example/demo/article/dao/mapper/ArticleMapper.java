@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ArticleMapper extends BaseMapper<ArticleDO> {
 
-    long count(ArticleDO articleDO);
+    Long count(ArticleDO articleDO);
 
     List<ArticleDO> list(ArticleDO articleDO);
 

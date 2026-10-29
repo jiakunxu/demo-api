@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface DictDataMapper extends BaseMapper<DictDataDO> {
 
-    long count(DictDataDO dictDataDO);
+    Long count(DictDataDO dictDataDO);
 
     List<DictDataDO> list(DictDataDO dictDataDO);
 
