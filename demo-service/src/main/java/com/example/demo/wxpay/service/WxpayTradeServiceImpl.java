@@ -61,10 +61,13 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
         wxpayTrade.setBankType(transaction.getBankType());
         wxpayTrade.setAttach(transaction.getAttach());
         wxpayTrade.setSuccessTime(transaction.getSuccessTime());
-        wxpayTrade.setPayer(JSON.toJSONString(transaction.getPayer()));
-        wxpayTrade.setAmount(JSON.toJSONString(transaction.getAmount()));
+        wxpayTrade.setPayer(
+            transaction.getPayer() == null ? null : JSON.toJSONString(transaction.getPayer()));
+        wxpayTrade.setAmount(transaction.getAmount() == null ? null
+            : JSON.toJSONString(transaction.getAmount()));
         wxpayTrade.setSceneInfo(null);
-        wxpayTrade.setPromotionDetail(JSON.toJSONString(transaction.getPromotionDetail()));
+        wxpayTrade.setPromotionDetail(transaction.getPromotionDetail() == null ? null
+            : JSON.toJSONString(transaction.getPromotionDetail()));
 
         return wxpayTrade;
     }
@@ -88,10 +91,13 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
         wxpayTrade.setBankType(transaction.getBankType());
         wxpayTrade.setAttach(transaction.getAttach());
         wxpayTrade.setSuccessTime(transaction.getSuccessTime());
-        wxpayTrade.setPayer(JSON.toJSONString(transaction.getPayer()));
-        wxpayTrade.setAmount(JSON.toJSONString(transaction.getAmount()));
+        wxpayTrade.setPayer(transaction.getPayer() == null ? null
+            : JSON.toJSONString(transaction.getPayer()));
+        wxpayTrade.setAmount(transaction.getAmount() == null ? null
+            : JSON.toJSONString(transaction.getAmount()));
         wxpayTrade.setSceneInfo(null);
-        wxpayTrade.setPromotionDetail(JSON.toJSONString(transaction.getPromotionDetail()));
+        wxpayTrade.setPromotionDetail(transaction.getPromotionDetail() == null ? null
+            : JSON.toJSONString(transaction.getPromotionDetail()));
 
         return wxpayTrade;
     }
@@ -123,10 +129,13 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
         wxpayTrade.setBankType(transaction.getBankType());
         wxpayTrade.setAttach(transaction.getAttach());
         wxpayTrade.setSuccessTime(transaction.getSuccessTime());
-        wxpayTrade.setPayer(JSON.toJSONString(transaction.getPayer()));
-        wxpayTrade.setAmount(JSON.toJSONString(transaction.getAmount()));
+        wxpayTrade.setPayer(transaction.getPayer() == null ? null
+            : JSON.toJSONString(transaction.getPayer()));
+        wxpayTrade.setAmount(transaction.getAmount() == null ? null
+            : JSON.toJSONString(transaction.getAmount()));
         wxpayTrade.setSceneInfo(null);
-        wxpayTrade.setPromotionDetail(JSON.toJSONString(transaction.getPromotionDetail()));
+        wxpayTrade.setPromotionDetail(transaction.getPromotionDetail() == null ? null
+            : JSON.toJSONString(transaction.getPromotionDetail()));
 
         return wxpayTrade;
     }
@@ -160,10 +169,13 @@ public class WxpayTradeServiceImpl extends ServiceImpl<WxpayTradeMapper, WxpayTr
         wxpayTrade.setBankType(transaction.getBankType());
         wxpayTrade.setAttach(transaction.getAttach());
         wxpayTrade.setSuccessTime(transaction.getSuccessTime());
-        wxpayTrade.setPayer(JSON.toJSONString(transaction.getPayer()));
-        wxpayTrade.setAmount(JSON.toJSONString(transaction.getAmount()));
+        wxpayTrade.setPayer(transaction.getPayer() == null ? null
+            : JSON.toJSONString(transaction.getPayer()));
+        wxpayTrade.setAmount(transaction.getAmount() == null ? null
+            : JSON.toJSONString(transaction.getAmount()));
         wxpayTrade.setSceneInfo(null);
-        wxpayTrade.setPromotionDetail(JSON.toJSONString(transaction.getPromotionDetail()));
+        wxpayTrade.setPromotionDetail(transaction.getPromotionDetail() == null ? null
+            : JSON.toJSONString(transaction.getPromotionDetail()));
 
         return wxpayTrade;
     }

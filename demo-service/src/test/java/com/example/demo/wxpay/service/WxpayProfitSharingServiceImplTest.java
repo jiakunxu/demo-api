@@ -10,6 +10,7 @@ import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
 import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.util.Map;
@@ -87,5 +88,46 @@ class WxpayProfitSharingServiceImplTest {
         assertThatThrownBy(() -> service.insertProfitSharing(null)).hasMessage("参数信息不能为空");
         assertThatThrownBy(() -> service.updateProfitSharing("", data)).hasMessage("参数信息不能为空");
         assertThatThrownBy(() -> service.updateProfitSharing("id", null)).hasMessage("参数信息不能为空");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"false,missing", "true,missing", "false,null", "true,null",
+        "false,empty", "true,empty", "false,populated", "true,populated"})
+    void queriedReceiversPreserveNullAndControlUpdates(boolean subMerchant, String shape) {
+        String field = switch (shape) {
+            case "missing" -> "";
+            case "null" -> ",\"receivers\":null";
+            case "empty" -> ",\"receivers\":[]";
+            default -> ",\"receivers\":[{\"account\":\"receiver\"}]";
+        };
+        var response = JSON.parseObject("{\"order_id\":\"id\",\"state\":\"FINISHED\""
+            + field + "}", OrdersEntity.class);
+        if (subMerchant) {
+            when(remote.queryOrder("sub", "transaction", "order")).thenReturn(response);
+        } else {
+            when(remote.queryOrder("transaction", "order")).thenReturn(response);
+        }
+        WxpayProfitSharing result = subMerchant
+            ? service.getProfitSharing("sub", "transaction", "order")
+            : service.getProfitSharing("transaction", "order");
+        boolean absent = shape.equals("missing") || shape.equals("null");
+        if (absent) {
+            assertThat(result.getReceivers()).isNull();
+        } else {
+            assertThat(JSON.parseArray(result.getReceivers()))
+                .hasSize(shape.equals("empty") ? 0 : 1);
+        }
+        doReturn(true).when(service).update(any(Wrapper.class));
+        service.updateProfitSharing("id", result);
+        ArgumentCaptor<Wrapper<WxpayProfitSharingDO>> capture = ArgumentCaptor.captor();
+        verify(service).update(capture.capture());
+        var wrapper = (LambdaUpdateWrapper<WxpayProfitSharingDO>) capture.getValue();
+        if (absent) {
+            assertThat(wrapper.getSqlSet()).doesNotContain("receivers");
+        } else {
+            assertThat(wrapper.getSqlSet()).contains("receivers=");
+            assertThat(wrapper.getParamNameValuePairs().values()).contains(result.getReceivers());
+        }
+        verify(service, never()).save(any(WxpayProfitSharingDO.class));
     }
 }
