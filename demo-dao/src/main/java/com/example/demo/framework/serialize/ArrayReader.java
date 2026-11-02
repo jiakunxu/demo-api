@@ -11,7 +11,10 @@ public class ArrayReader implements ObjectReader<String> {
     @Override
     public String readObject(JSONReader jsonReader, Type fieldType, Object fieldName,
                              long features) {
-        return jsonReader.readArray() == null ? null : JSON.toJSONString(jsonReader.readArray());
+        if (jsonReader.nextIfNull()) {
+            return null;
+        }
+        return JSON.toJSONString(jsonReader.readArray());
     }
 
 }
