@@ -111,8 +111,4 @@ public class MenuDO extends BaseDO {
     @TableField(exist = false)
     private String[]          roleCodes;
 
-    public MenuDO(BigInteger id) {
-        this.id = id;
-    }
-
 }

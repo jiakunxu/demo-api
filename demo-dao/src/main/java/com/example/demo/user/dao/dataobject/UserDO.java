@@ -53,12 +53,4 @@ public class UserDO extends BaseDO {
     @TableField(exist = false)
     private Boolean           exists;
 
-    public UserDO(BigInteger id) {
-        this.id = id;
-    }
-
-    public UserDO(String username) {
-        this.username = username;
-    }
-
 }

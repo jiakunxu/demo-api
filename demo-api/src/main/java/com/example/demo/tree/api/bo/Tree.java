@@ -48,9 +48,4 @@ public class Tree implements Serializable {
     @JSONField(name = "class")
     private String            className;
 
-    public Tree(BigInteger id, String label) {
-        this.id = id;
-        this.label = label;
-    }
-
 }

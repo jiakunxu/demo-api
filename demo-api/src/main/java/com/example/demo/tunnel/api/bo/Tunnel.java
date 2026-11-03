@@ -28,12 +28,4 @@ public class Tunnel extends BaseBO {
 
     private String            host;
 
-    public Tunnel(BigInteger id) {
-        this.id = id;
-    }
-
-    public Tunnel(String tunnelId) {
-        this.tunnelId = tunnelId;
-    }
-
 }

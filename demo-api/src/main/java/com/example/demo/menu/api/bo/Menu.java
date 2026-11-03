@@ -87,10 +87,6 @@ public class Menu extends BaseBO {
      */
     private String            status;
 
-    public Menu(BigInteger id) {
-        this.id = id;
-    }
-
     public Boolean getLeaf() {
         return !Menu.Type.CONTENTS.value.equals(this.type) || this.external;
     }

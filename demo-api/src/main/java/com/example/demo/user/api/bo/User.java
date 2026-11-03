@@ -42,8 +42,4 @@ public class User extends BaseBO {
 
     private String            refreshToken;
 
-    public User(String name) {
-        this.name = name;
-    }
-
 }

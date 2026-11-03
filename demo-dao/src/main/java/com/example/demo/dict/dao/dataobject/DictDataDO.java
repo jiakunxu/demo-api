@@ -43,8 +43,4 @@ public class DictDataDO extends BaseDO {
     @TableField(exist = false)
     private String[]          typeValues;
 
-    public DictDataDO(BigInteger id) {
-        this.id = id;
-    }
-
 }

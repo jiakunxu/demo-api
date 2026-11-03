@@ -338,7 +338,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         userService.refreshToken(corpId, userId, updateBy);
 
-        return new UserRole(userId, roleId);
+        return UserRole.builder().userId(userId).roleId(roleId).build();
     }
 
     @Override
@@ -368,7 +368,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         userService.refreshToken(corpId, list.toArray(new BigInteger[0]), updateBy);
 
-        return new UserRole(null, roleId);
+        return UserRole.builder().roleId(roleId).build();
     }
 
 }

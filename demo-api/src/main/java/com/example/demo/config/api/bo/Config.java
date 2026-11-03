@@ -38,8 +38,4 @@ public class Config extends BaseBO {
 
     private Boolean           system;
 
-    public Config(BigInteger id) {
-        this.id = id;
-    }
-
 }

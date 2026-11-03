@@ -43,15 +43,6 @@ public class Role extends BaseBO {
 
     private BigInteger[]      menuIds;
 
-    public Role(BigInteger id) {
-        this.id = id;
-    }
-
-    public Role(BigInteger id, String status) {
-        this.id = id;
-        this.status = status;
-    }
-
     public enum Status {
                         /**
                          * 启用/停用

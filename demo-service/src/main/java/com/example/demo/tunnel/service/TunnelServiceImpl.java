@@ -48,7 +48,7 @@ public class TunnelServiceImpl extends ServiceImpl<TunnelMapper, TunnelDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return new Tunnel(tunnelId);
+        return Tunnel.builder().tunnelId(tunnelId).build();
     }
 
 }

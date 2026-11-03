@@ -60,8 +60,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return List.of();
         }
 
-        List<Role> list = BeanUtil.copy(this.getBaseMapper().list(BeanUtil.copy(role, RoleDO.class)),
-            Role.class);
+        List<Role> list = BeanUtil
+            .copy(this.getBaseMapper().list(BeanUtil.copy(role, RoleDO.class)), Role.class);
 
         if (CollectionUtils.isEmpty(list)) {
             return List.of();
@@ -198,7 +198,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
 
         remove(id);
 
-        return new Role(id, status);
+        return Role.builder().id(id).status(status).build();
     }
 
     @Override
@@ -222,7 +222,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
 
         remove(id);
 
-        return new Role(id);
+        return Role.builder().id(id).build();
     }
 
     private void remove(BigInteger id) {

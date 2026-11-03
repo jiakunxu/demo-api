@@ -82,11 +82,6 @@ public class OperateLog extends BaseBO {
      */
     private String            errMsg;
 
-    public OperateLog(String module, String operateType) {
-        this.module = module;
-        this.operateType = operateType;
-    }
-
     public enum Status {
                         /**
                          * 成功/失败

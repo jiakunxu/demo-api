@@ -182,7 +182,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
         remove(id + "@null");
         remove("null@" + before.getValue());
 
-        return new DictType(id);
+        return DictType.builder().id(id).build();
     }
 
     private void remove(String key) {

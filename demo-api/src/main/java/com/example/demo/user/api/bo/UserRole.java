@@ -29,9 +29,4 @@ public class UserRole extends BaseBO {
      */
     private BigInteger        roleId;
 
-    public UserRole(BigInteger userId, BigInteger roleId) {
-        this.userId = userId;
-        this.roleId = roleId;
-    }
-
 }

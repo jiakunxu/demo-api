@@ -32,8 +32,4 @@ public class DictTypeDO extends BaseDO {
 
     private String            status;
 
-    public DictTypeDO(String value) {
-        this.value = value;
-    }
-
 }

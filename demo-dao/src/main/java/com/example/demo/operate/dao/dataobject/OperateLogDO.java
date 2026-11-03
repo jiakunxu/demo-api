@@ -92,8 +92,4 @@ public class OperateLogDO extends BaseDO {
      */
     private String            errMsg;
 
-    public OperateLogDO(BigInteger id) {
-        this.id = id;
-    }
-
 }

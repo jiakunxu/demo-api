@@ -30,8 +30,4 @@ public class DictType extends BaseBO {
 
     private String            status;
 
-    public DictType(BigInteger id) {
-        this.id = id;
-    }
-
 }

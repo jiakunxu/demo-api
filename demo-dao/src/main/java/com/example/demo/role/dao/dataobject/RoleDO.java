@@ -42,8 +42,4 @@ public class RoleDO extends BaseDO {
      */
     private String            status;
 
-    public RoleDO(BigInteger id) {
-        this.id = id;
-    }
-
 }

@@ -60,7 +60,7 @@ class RoleServiceImplTest {
     @Test
     void roleIdsAreQueriedInOneBatchAndMappedToBusinessObjects() {
         List<BigInteger> ids = List.of(id, BigInteger.ONE);
-        RoleDO row = new RoleDO(id);
+        RoleDO row = RoleDO.builder().id(id).build();
         row.setName("管理员");
         when(mapper.selectByIds(ids)).thenReturn(List.of(row));
 
