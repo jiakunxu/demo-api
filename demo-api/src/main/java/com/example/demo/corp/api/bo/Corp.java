@@ -1,8 +1,7 @@
 package com.example.demo.corp.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -12,6 +11,10 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Corp extends BaseBO {
 
     @Serial

@@ -2,18 +2,17 @@ package com.example.demo.dict.dao.dataobject;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.framework.dataobject.BaseDO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName("tb_dict_type")
 public class DictTypeDO extends BaseDO {
 

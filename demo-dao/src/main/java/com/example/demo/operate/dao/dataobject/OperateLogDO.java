@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -15,8 +12,10 @@ import java.util.Date;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName("tb_operate_log")
 public class OperateLogDO extends BaseDO {
 
