@@ -29,6 +29,7 @@ public class Tree implements Serializable {
     /**
      * 指定子树为节点对象的某个属性值.
      */
+    @ToString.Exclude
     private List<Tree>        children;
 
     /**
