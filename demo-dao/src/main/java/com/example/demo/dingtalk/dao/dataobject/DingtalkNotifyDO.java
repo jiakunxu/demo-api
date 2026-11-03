@@ -5,6 +5,7 @@ import com.example.demo.framework.dataobject.BaseDO;
 import lombok.*;
 
 import java.io.Serial;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -17,5 +18,7 @@ public class DingtalkNotifyDO extends BaseDO {
 
     @Serial
     private static final long serialVersionUID = 6706644591052897288L;
+
+    private BigInteger        id;
 
 }
