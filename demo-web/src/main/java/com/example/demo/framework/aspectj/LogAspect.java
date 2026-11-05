@@ -37,18 +37,21 @@ public class LogAspect {
     @AfterReturning(pointcut = "@annotation(log)", returning = "object")
     public void doAfterReturning(JoinPoint joinPoint, Log log, Object object) {
         handle(joinPoint.getTarget().getClass().getSimpleName(),
-            new OperateLog(log.module(), log.desc()), OperateLog.Status.SUCCESS.value, null);
+            OperateLog.builder().module(log.module()).operateType(log.desc()).build(),
+            OperateLog.Status.SUCCESS.value, null);
     }
 
     @AfterThrowing(value = "@annotation(log)", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Log log, Exception e) {
         handle(joinPoint.getTarget().getClass().getSimpleName(),
-            new OperateLog(log.module(), log.desc()), OperateLog.Status.FAIL.value, e.getMessage());
+            OperateLog.builder().module(log.module()).operateType(log.desc()).build(),
+            OperateLog.Status.FAIL.value, e.getMessage());
     }
 
     private void handle(String clazz, OperateLog log, String status, String errMsg) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = "anonymousUser".equals(authentication.getName()) ? new User("anonymous")
+        User user = "anonymousUser".equals(authentication.getName())
+            ? User.builder().name("anonymous").build()
             : (LoginUser) authentication.getPrincipal();
 
         log.setOperator(user.getId() == null ? user.getName() : user.getId().toString());

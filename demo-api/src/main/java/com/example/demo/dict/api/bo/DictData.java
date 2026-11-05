@@ -1,9 +1,7 @@
 package com.example.demo.dict.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -13,7 +11,10 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class DictData extends BaseBO {
 
     @Serial
@@ -36,21 +37,6 @@ public class DictData extends BaseBO {
     private String            status;
 
     private String[]          typeValues;
-
-    public DictData(BigInteger id, BigInteger typeId) {
-        this.id = id;
-        this.typeId = typeId;
-    }
-
-    public DictData(BigInteger typeId, String typeValue) {
-        this.typeId = typeId;
-        this.typeValue = typeValue;
-    }
-
-    public DictData(String name, String value) {
-        this.name = name;
-        this.value = value;
-    }
 
     public enum Status {
                         /**

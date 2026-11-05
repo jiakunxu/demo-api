@@ -1,9 +1,7 @@
 package com.example.demo.role.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -13,7 +11,10 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Role extends BaseBO {
 
     @Serial
@@ -41,15 +42,6 @@ public class Role extends BaseBO {
     private String            status;
 
     private BigInteger[]      menuIds;
-
-    public Role(BigInteger id) {
-        this.id = id;
-    }
-
-    public Role(BigInteger id, String status) {
-        this.id = id;
-        this.status = status;
-    }
 
     public enum Status {
                         /**

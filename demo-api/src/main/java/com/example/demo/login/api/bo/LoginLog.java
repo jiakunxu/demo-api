@@ -1,8 +1,7 @@
 package com.example.demo.login.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -10,6 +9,10 @@ import java.util.Date;
 
 @Getter
 @Setter
+@Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginLog extends BaseBO {
 
     @Serial

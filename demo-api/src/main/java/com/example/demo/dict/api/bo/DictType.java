@@ -1,9 +1,7 @@
 package com.example.demo.dict.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -13,7 +11,10 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class DictType extends BaseBO {
 
     @Serial
@@ -28,9 +29,5 @@ public class DictType extends BaseBO {
     private String            remark;
 
     private String            status;
-
-    public DictType(BigInteger id) {
-        this.id = id;
-    }
 
 }

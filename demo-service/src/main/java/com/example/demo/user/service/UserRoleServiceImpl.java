@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -211,14 +213,14 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         return userRole;
     }
 
-    private void insertUserRole(BigInteger userId, List<UserRole> userRoleList, String createBy) {
-        if (CollectionUtils.isEmpty(userRoleList)) {
+    private void insertUserRole(BigInteger userId, List<UserRole> userRoles, String createBy) {
+        if (CollectionUtils.isEmpty(userRoles)) {
             return;
         }
 
-        List<UserRoleDO> userRoleDOs = new ArrayList<>(userRoleList.size());
+        List<UserRoleDO> userRoleDOs = new ArrayList<>(userRoles.size());
 
-        for (UserRole userRole : userRoleList) {
+        for (UserRole userRole : userRoles) {
             userRole.setUserId(userId);
 
             UserRoleDO userRoleDO = BeanUtil.copy(userRole, UserRoleDO.class);
@@ -228,6 +230,10 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         }
 
         this.saveBatch(userRoleDOs);
+
+        for (int i = 0; i < userRoles.size(); i++) {
+            userRoles.get(i).setId(userRoleDOs.get(i).getId());
+        }
     }
 
     @Override
@@ -236,38 +242,35 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
                                          String[] roleIds, @NotBlank String updateBy) {
         userService.validate(corpId, userId);
 
-        List<UserRole> userRoleList = new ArrayList<>();
+        List<UserRole> userRoles = new ArrayList<>();
 
-        if (roleIds != null && roleIds.length > 0) {
+        if (roleIds != null) {
             for (String roleId : roleIds) {
                 // TODO roleService.validate(corpId, roleId);
 
                 UserRole userRole = new UserRole();
                 userRole.setRoleId(new BigInteger(roleId));
 
-                userRoleList.add(userRole);
+                userRoles.add(userRole);
             }
         }
 
         List<UserRole> list0 = listUserRoles(userId);
 
         if (CollectionUtils.isEmpty(list0)) {
-            insertUserRole(userId, userRoleList, updateBy);
+            insertUserRole(userId, userRoles, updateBy);
 
             userService.refreshToken(corpId, userId, updateBy);
 
-            return userRoleList;
+            return userRoles;
         }
 
-        Map<BigInteger, UserRole> map = new HashMap<>(list0.size());
-
-        for (UserRole userRole : list0) {
-            map.put(userRole.getRoleId(), userRole);
-        }
+        Map<BigInteger, UserRole> map = list0.stream()
+            .collect(Collectors.toMap(UserRole::getRoleId, Function.identity(), (v1, v2) -> v2));
 
         List<UserRole> list1 = new ArrayList<>();
 
-        for (UserRole userRole : userRoleList) {
+        for (UserRole userRole : userRoles) {
             if (map.containsKey(userRole.getRoleId())) {
                 map.remove(userRole.getRoleId());
             } else {
@@ -288,7 +291,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         userService.refreshToken(corpId, userId, updateBy);
 
-        return userRoleList;
+        return userRoles;
     }
 
     @Override
@@ -338,7 +341,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         userService.refreshToken(corpId, userId, updateBy);
 
-        return new UserRole(userId, roleId);
+        return UserRole.builder().userId(userId).roleId(roleId).build();
     }
 
     @Override
@@ -368,7 +371,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         userService.refreshToken(corpId, list.toArray(new BigInteger[0]), updateBy);
 
-        return new UserRole(null, roleId);
+        return UserRole.builder().roleId(roleId).build();
     }
 
 }

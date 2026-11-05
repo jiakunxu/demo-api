@@ -2,18 +2,17 @@ package com.example.demo.role.dao.dataobject;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.framework.dataobject.BaseDO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName("tb_role")
 public class RoleDO extends BaseDO {
 
@@ -42,9 +41,5 @@ public class RoleDO extends BaseDO {
      * 状态
      */
     private String            status;
-
-    public RoleDO(BigInteger id) {
-        this.id = id;
-    }
 
 }

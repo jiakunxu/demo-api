@@ -2,8 +2,7 @@ package com.example.demo.chat.api.bo;
 
 import com.example.demo.user.api.bo.User;
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -14,6 +13,10 @@ import java.util.Date;
  */
 @Getter
 @Setter
+@Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Chat extends BaseBO {
 
     @Serial

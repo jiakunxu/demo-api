@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -98,7 +100,11 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
 
         this.saveBatch(roleMenuDOs);
 
-        return BeanUtil.copy(roleMenuDOs, RoleMenu.class);
+        for (int i = 0; i < roleMenus.size(); i++) {
+            roleMenus.get(i).setId(roleMenuDOs.get(i).getId());
+        }
+
+        return roleMenus;
     }
 
     @Override
@@ -122,11 +128,8 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
             return insertRoleMenus(roleId, roleMenus, updateBy);
         }
 
-        Map<BigInteger, RoleMenu> map = new HashMap<>(list0.size());
-
-        for (RoleMenu roleMenu : list0) {
-            map.put(roleMenu.getMenuId(), roleMenu);
-        }
+        Map<BigInteger, RoleMenu> map = list0.stream()
+            .collect(Collectors.toMap(RoleMenu::getMenuId, Function.identity(), (v1, v2) -> v2));
 
         List<RoleMenu> list1 = new ArrayList<>();
 

@@ -5,18 +5,17 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName("tb_user")
 public class UserDO extends BaseDO {
 
@@ -53,13 +52,5 @@ public class UserDO extends BaseDO {
 
     @TableField(exist = false)
     private Boolean           exists;
-
-    public UserDO(BigInteger id) {
-        this.id = id;
-    }
-
-    public UserDO(String username) {
-        this.username = username;
-    }
 
 }

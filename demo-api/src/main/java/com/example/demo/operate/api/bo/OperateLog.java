@@ -1,9 +1,7 @@
 package com.example.demo.operate.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -11,7 +9,10 @@ import java.util.Date;
 
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class OperateLog extends BaseBO {
 
     @Serial
@@ -80,11 +81,6 @@ public class OperateLog extends BaseBO {
      * 错误消息
      */
     private String            errMsg;
-
-    public OperateLog(String module, String operateType) {
-        this.module = module;
-        this.operateType = operateType;
-    }
 
     public enum Status {
                         /**

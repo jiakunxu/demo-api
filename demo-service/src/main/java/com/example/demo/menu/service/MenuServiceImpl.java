@@ -102,7 +102,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
 
         for (Menu menu : menus) {
             if (pid.compareTo(menu.getPid()) == 0) {
-                Tree tree = new Tree(menu.getId(), menu.getName());
+                Tree tree = Tree.builder().id(menu.getId()).label(menu.getName()).build();
 
                 tree.setChildren(getTreeList(menu.getId(), menus));
 
@@ -205,7 +205,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return new Menu(id);
+        return Menu.builder().id(id).build();
     }
 
 }

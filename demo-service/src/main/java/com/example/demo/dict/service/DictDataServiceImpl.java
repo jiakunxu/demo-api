@@ -218,7 +218,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         this.update(updateWrapper);
 
-        return new DictData(typeId, typeValue);
+        return DictData.builder().typeId(typeId).typeValue(typeValue).build();
     }
 
     @Override
@@ -249,7 +249,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
 
         this.update(updateWrapper);
 
-        return new DictData(id, typeId);
+        return DictData.builder().id(id).typeId(typeId).build();
     }
 
     private void remove(String key) {

@@ -10,6 +10,11 @@ import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
 import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -116,4 +121,70 @@ class WxpayTradeServiceImplTest {
         assertThat(JSON.parseObject(capture.getValue().getTrade(), WxpayTrade.class).getOutTradeNo()).isEqualTo("order");
     }
 
+
+    static Stream<Arguments> nullablePayloads() {
+        return IntStream.range(0, 4).boxed().flatMap(mode ->
+            Stream.of("missing", "null", "empty", "populated")
+                .map(shape -> Arguments.of(mode, shape)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullablePayloads")
+    void allTradePathsPreserveNullableJsonFields(int mode, String shape) {
+        String fields = switch (shape) {
+            case "missing" -> "";
+            case "null" -> ",\"payer\":null,\"amount\":null,\"promotion_detail\":null";
+            case "empty" -> ",\"payer\":{},\"amount\":{},\"promotion_detail\":[]";
+            default -> ",\"payer\":{\"openid\":\"user\",\"sp_openid\":\"user\"},"
+                + "\"amount\":{\"total\":1230},"
+                + "\"promotion_detail\":[{}]";
+        };
+        String json = "{\"trade_state\":\"SUCCESS\"" + fields + "}";
+        WxpayTrade result;
+        if (mode == 0 || mode == 2) {
+            var response = JSON.parseObject(json,
+                com.wechat.pay.java.service.payments.model.Transaction.class);
+            if (mode == 0) {
+                when(remote.queryOrderByOutTradeNo("merchant", "order")).thenReturn(response);
+                result = service.getTrade("merchant", "order");
+            } else {
+                try (var parsers = mockConstruction(NotificationParser.class, (parser, context) ->
+                    when(parser.parse(any(RequestParam.class),
+                        eq(com.wechat.pay.java.service.payments.model.Transaction.class)))
+                        .thenReturn(response))) {
+                    result = service.getTradeV1("serial", "nonce", "123", "sign", "{}");
+                }
+            }
+        } else {
+            var response = JSON.parseObject(json,
+                com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction.class);
+            if (mode == 1) {
+                when(partnerRemote.queryOrderByOutTradeNo("sp", "sub", "order"))
+                    .thenReturn(response);
+                result = service.getTrade("sp", "sub", "order");
+            } else {
+                try (var parsers = mockConstruction(NotificationParser.class, (parser, context) ->
+                    when(parser.parse(any(RequestParam.class),
+                        eq(com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction.class)))
+                        .thenReturn(response))) {
+                    result = service.getTradeV2("serial", "nonce", "123", "sign", "{}");
+                }
+            }
+        }
+        if (shape.equals("missing") || shape.equals("null")) {
+            assertThat(result.getPayer()).isNull();
+            assertThat(result.getAmount()).isNull();
+            assertThat(result.getPromotionDetail()).isNull();
+        } else {
+            assertThat(JSON.parseObject(result.getPayer())).isNotNull();
+            assertThat(JSON.parseObject(result.getAmount())).isNotNull();
+            assertThat(JSON.parseArray(result.getPromotionDetail()))
+                .hasSize(shape.equals("empty") ? 0 : 1);
+            if (shape.equals("populated")) {
+                assertThat(JSON.parseObject(result.getPayer())).containsValue("user");
+                assertThat(JSON.parseObject(result.getAmount()).getIntValue("total"))
+                    .isEqualTo(1230);
+            }
+        }
+    }
 }

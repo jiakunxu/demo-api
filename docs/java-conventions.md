@@ -23,6 +23,8 @@
 
 ## 选择转换方式
 
+对象/集合转存为 JSON 字符串字段时，先判断源值：源为 null 时保留 Java null，非 null 时再调用 JSON.toJSONString；空集合保留 `"[]"`。直接序列化 null 会得到字符串 `"null"`，与 BeanUtil.copy 到 String 属性的结果不等价，还可能通过非空判断后覆盖数据库原值。原值已是 String 时也不能无条件再次 JSON 序列化，否则可能增加引号。SDK 在缺字段时初始化的空列表应按实际 getter 结果处理，不强制改成 null。新增转换测试覆盖缺字段、显式 null、空集合及正常对象；“忽略更新”和“显式清空 SQL NULL”仍按持久化契约分别处理。
+
 [BeanUtil](../demo-util/src/main/java/com/example/demo/framework/util/BeanUtil.java) 的 Class 重载经 JSON 序列化后反序列化；Supplier 重载通过 BeanCopier 复制属性，不启用 converter。JSON 注解、属性类型不一致、嵌套引用与空值都可能影响结果。转换方式改变时用对应回归用例验证，而非仅比较耗时。
 
 BO 表达业务/API 数据，DO 表达持久化数据；它们可能都包含基础查询字段。不要因为同名字段便假定可直接将客户端对象作为更新实体。审计及数据归属由可信参数设置。

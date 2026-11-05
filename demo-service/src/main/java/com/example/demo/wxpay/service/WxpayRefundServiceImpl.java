@@ -59,8 +59,10 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
         wxpayRefund.setStatus(refund.getStatus().name());
         wxpayRefund.setFundsAccount(
             refund.getFundsAccount() == null ? null : refund.getFundsAccount().name());
-        wxpayRefund.setAmount(JSON.toJSONString(refund.getAmount()));
-        wxpayRefund.setPromotionDetail(JSON.toJSONString(refund.getPromotionDetail()));
+        wxpayRefund.setAmount(refund.getAmount() == null ? null
+            : JSON.toJSONString(refund.getAmount()));
+        wxpayRefund.setPromotionDetail(refund.getPromotionDetail() == null ? null
+            : JSON.toJSONString(refund.getPromotionDetail()));
 
         return wxpayRefund;
     }
@@ -85,8 +87,10 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
         wxpayRefund.setStatus(refund.getStatus().name());
         wxpayRefund.setFundsAccount(
             refund.getFundsAccount() == null ? null : refund.getFundsAccount().name());
-        wxpayRefund.setAmount(JSON.toJSONString(refund.getAmount()));
-        wxpayRefund.setPromotionDetail(JSON.toJSONString(refund.getPromotionDetail()));
+        wxpayRefund.setAmount(refund.getAmount() == null ? null
+            : JSON.toJSONString(refund.getAmount()));
+        wxpayRefund.setPromotionDetail(refund.getPromotionDetail() == null ? null
+            : JSON.toJSONString(refund.getPromotionDetail()));
 
         return wxpayRefund;
     }
@@ -112,8 +116,10 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
         wxpayRefund.setStatus(refund.getRefundStatus().name());
         wxpayRefund.setFundsAccount(
             refund.getFundsAccount() == null ? null : refund.getFundsAccount().name());
-        wxpayRefund.setAmount(JSON.toJSONString(refund.getAmount()));
-        wxpayRefund.setPromotionDetail(JSON.toJSONString(refund.getPromotionDetail()));
+        wxpayRefund.setAmount(refund.getAmount() == null ? null
+            : JSON.toJSONString(refund.getAmount()));
+        wxpayRefund.setPromotionDetail(refund.getPromotionDetail() == null ? null
+            : JSON.toJSONString(refund.getPromotionDetail()));
 
         return wxpayRefund;
     }
@@ -139,8 +145,10 @@ public class WxpayRefundServiceImpl extends ServiceImpl<WxpayRefundMapper, Wxpay
         wxpayRefund.setStatus(refund.getRefundStatus().name());
         wxpayRefund.setFundsAccount(
             refund.getFundsAccount() == null ? null : refund.getFundsAccount().name());
-        wxpayRefund.setAmount(JSON.toJSONString(refund.getAmount()));
-        wxpayRefund.setPromotionDetail(JSON.toJSONString(refund.getPromotionDetail()));
+        wxpayRefund.setAmount(refund.getAmount() == null ? null
+            : JSON.toJSONString(refund.getAmount()));
+        wxpayRefund.setPromotionDetail(refund.getPromotionDetail() == null ? null
+            : JSON.toJSONString(refund.getPromotionDetail()));
 
         return wxpayRefund;
     }

@@ -1,16 +1,17 @@
 package com.example.demo.user.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
 
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserRole extends BaseBO {
 
     @Serial
@@ -27,10 +28,5 @@ public class UserRole extends BaseBO {
      * 角色
      */
     private BigInteger        roleId;
-
-    public UserRole(BigInteger userId, BigInteger roleId) {
-        this.userId = userId;
-        this.roleId = roleId;
-    }
 
 }

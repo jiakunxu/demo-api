@@ -47,7 +47,8 @@ public class WxpayProfitSharingServiceImpl extends
         profitSharing.setTransactionId(orders.getTransactionId());
         profitSharing.setOutOrderNo(orders.getOutOrderNo());
         profitSharing.setState(orders.getState().name());
-        profitSharing.setReceivers(JSON.toJSONString(orders.getReceivers()));
+        profitSharing.setReceivers(orders.getReceivers() == null ? null
+            : JSON.toJSONString(orders.getReceivers()));
 
         return profitSharing;
     }
@@ -67,7 +68,8 @@ public class WxpayProfitSharingServiceImpl extends
         profitSharing.setTransactionId(orders.getTransactionId());
         profitSharing.setOutOrderNo(orders.getOutOrderNo());
         profitSharing.setState(orders.getState().name());
-        profitSharing.setReceivers(JSON.toJSONString(orders.getReceivers()));
+        profitSharing.setReceivers(orders.getReceivers() == null ? null
+            : JSON.toJSONString(orders.getReceivers()));
 
         return profitSharing;
     }

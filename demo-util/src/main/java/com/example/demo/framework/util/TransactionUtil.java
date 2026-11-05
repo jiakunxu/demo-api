@@ -7,10 +7,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * 基于 Spring 命令式事务的提交后回调工具，不创建事务、不切换线程、不自动重试。
+ * 基于 Spring 命令式事务的回调工具，不创建事务、不切换线程、不自动重试。
  * <p>
- * 回调跟随注册时的事务：提交成功后同步执行，回滚时不执行。
- * 回调执行时数据库已经提交，回调失败不能撤销已提交的数据。
+ * 回调跟随注册时的事务：afterCommit 仅在提交成功后执行，afterCompletion 在提交或回滚完成后执行。
+ * 回调失败不能撤销已经完成的事务。
  * 回调如需写数据库，应通过另一个 Spring Bean 开启 REQUIRES_NEW 事务。
  */
 public final class TransactionUtil {
@@ -67,10 +67,33 @@ public final class TransactionUtil {
         });
     }
 
+    /**
+     * 注册事务完成后的清理操作，提交和回滚均执行。加入外层事务时，等待外层事务完成。
+     * <p>
+     * 适用于释放锁等清理工作。Spring 会记录回调异常，不向调用方传播；
+     * 调用方应在 action 内处理失败，不依赖此回调进行业务写入或回滚。
+     *
+     * @param action 事务完成后执行的操作，不允许为 null
+     * @throws NullPointerException action 为 null
+     * @throws IllegalStateException 当前没有活动事务或事务同步未启用
+     */
+    public static void afterCompletion(Runnable action) {
+        Objects.requireNonNull(action, "action 不能为空");
+        requireTransaction();
+
+        TransactionSynchronizationManager.registerSynchronization(
+            new TransactionSynchronization() {
+                @Override
+                public void afterCompletion(int status) {
+                    action.run();
+                }
+            });
+    }
+
     private static void requireTransaction() {
         if (!TransactionSynchronizationManager.isActualTransactionActive()
             || !TransactionSynchronizationManager.isSynchronizationActive()) {
-            throw new IllegalStateException("afterCommit 必须在启用事务同步的活动事务中调用");
+            throw new IllegalStateException("事务回调必须在启用事务同步的活动事务中调用");
         }
     }
 }

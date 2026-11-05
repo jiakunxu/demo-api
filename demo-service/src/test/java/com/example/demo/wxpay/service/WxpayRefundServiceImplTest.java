@@ -10,6 +10,10 @@ import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.core.notification.RequestParam;
 import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
@@ -86,4 +90,61 @@ class WxpayRefundServiceImplTest {
         assertThat(JSON.parseObject(capture.getValue().getRefund(), WxpayRefund.class).getOutTradeNo()).isEqualTo("order");
     }
 
+
+    static Stream<Arguments> nullablePayloads() {
+        return IntStream.range(0, 4).boxed().flatMap(mode ->
+            Stream.of("missing", "null", "empty", "populated")
+                .map(shape -> Arguments.of(mode, shape)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullablePayloads")
+    void allRefundPathsPreserveNullableJsonFields(int mode, String shape) {
+        String fields = switch (shape) {
+            case "missing" -> "";
+            case "null" -> ",\"amount\":null,\"promotion_detail\":null";
+            case "empty" -> ",\"amount\":{},\"promotion_detail\":[]";
+            default -> ",\"amount\":{\"refund\":1230},\"promotion_detail\":[{}]";
+        };
+        String json = "{\"status\":\"SUCCESS\",\"refund_status\":\"SUCCESS\"" + fields + "}";
+        WxpayRefund result;
+        if (mode < 2) {
+            var response = JSON.parseObject(json,
+                com.wechat.pay.java.service.refund.model.Refund.class);
+            if (mode == 0) {
+                when(remote.queryByOutRefundNo("refund-order")).thenReturn(response);
+                result = service.getRefund("refund-order");
+            } else {
+                when(remote.queryByOutRefundNo("sub", "refund-order")).thenReturn(response);
+                result = service.getRefund("sub", "refund-order");
+            }
+        } else {
+            var response = JSON.parseObject(json,
+                com.wechat.pay.java.service.refund.model.RefundNotification.class);
+            try (var parsers = mockConstruction(NotificationParser.class, (parser, context) ->
+                when(parser.parse(any(RequestParam.class),
+                    eq(com.wechat.pay.java.service.refund.model.RefundNotification.class)))
+                    .thenReturn(response))) {
+                result = mode == 2
+                    ? service.getRefundV1("serial", "nonce", "123", "sign", "body")
+                    : service.getRefundV2("serial", "nonce", "123", "sign", "body");
+            }
+        }
+        if (shape.equals("missing") || shape.equals("null")) {
+            assertThat(result.getAmount()).isNull();
+            if (mode >= 2 && shape.equals("missing")) {
+                assertThat(result.getPromotionDetail()).isEqualTo("[]");
+            } else {
+                assertThat(result.getPromotionDetail()).isNull();
+            }
+        } else {
+            assertThat(JSON.parseObject(result.getAmount())).isNotNull();
+            assertThat(JSON.parseArray(result.getPromotionDetail()))
+                .hasSize(shape.equals("empty") ? 0 : 1);
+            if (shape.equals("populated")) {
+                assertThat(JSON.parseObject(result.getAmount()).getIntValue("refund"))
+                    .isEqualTo(1230);
+            }
+        }
+    }
 }

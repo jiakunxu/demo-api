@@ -1,9 +1,7 @@
 package com.example.demo.config.api.bo;
 
 import com.example.demo.framework.bo.BaseBO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.math.BigInteger;
@@ -13,7 +11,10 @@ import java.math.BigInteger;
  */
 @Getter
 @Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Config extends BaseBO {
 
     @Serial
@@ -36,9 +37,5 @@ public class Config extends BaseBO {
     private String            remark;
 
     private Boolean           system;
-
-    public Config(BigInteger id) {
-        this.id = id;
-    }
 
 }

@@ -101,7 +101,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
 
-        return new Config(id);
+        return Config.builder().id(id).build();
     }
 
 }
