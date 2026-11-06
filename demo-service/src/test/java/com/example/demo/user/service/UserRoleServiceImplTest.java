@@ -120,12 +120,31 @@ class UserRoleServiceImplTest {
         verify(users).refreshToken(corp, user, "editor");
     }
 
-    @Test
-    void failedDeletionRollsBackThroughSpringAdviceAndDoesNotRefreshToken() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void deletionResultDoesNotPreventTokenRefreshOrCommit(boolean changed) {
         when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
-        doReturn(false).when(service).update(any(Wrapper.class));
+        doReturn(changed).when(service).update(any(Wrapper.class));
         var transactions = new TransactionProbe();
-        assertThatThrownBy(() -> transactions.wrap(service).updateUserRole(corp, user, null, "editor")).isInstanceOf(ServiceException.class);
+
+        assertThat(transactions.wrap(service).updateUserRole(corp, user, null, "editor"))
+            .isEmpty();
+        var sequence = inOrder(service, users);
+        sequence.verify(service).update(any(Wrapper.class));
+        sequence.verify(users).refreshToken(corp, user, "editor");
+        assertThat(transactions.commits).isEqualTo(1);
+        assertThat(transactions.rollbacks).isZero();
+    }
+
+    @Test
+    void deletionExceptionRollsBackAndDoesNotRefreshToken() {
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
+        var failure = new org.springframework.dao.DataAccessResourceFailureException("offline");
+        doThrow(failure).when(service).update(any(Wrapper.class));
+        var transactions = new TransactionProbe();
+
+        assertThatThrownBy(() -> transactions.wrap(service)
+            .updateUserRole(corp, user, null, "editor")).isSameAs(failure);
         assertThat(transactions.rollbacks).isEqualTo(1);
         assertThat(transactions.commits).isZero();
         verify(users, never()).refreshToken(any(), any(BigInteger.class), anyString());

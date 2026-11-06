@@ -6,6 +6,7 @@ import com.example.demo.operate.dao.mapper.OperateLogMapper;
 import com.example.demo.support.ServiceTestSupport;
 import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,17 +85,23 @@ class OperateLogServiceImplTest {
         assertThatThrownBy(() -> service.insertLog(new OperateLog(), "creator")).isSameAs(failure);
     }
 
-    @Test
-    void defaultSortAndAnonymousDisplayAreNormalized() {
-        OperateLogDO row = new OperateLogDO(); row.setOperator("anonymous");
+    @ParameterizedTest
+    @CsvSource(value = {"anonymous, anonymous", "alice, ''", "'', ''", "NULL, ''"},
+        nullValues = "NULL")
+    void defaultSortAndOperatorDisplayFollowCurrentContract(String operator,
+                                                           String expectedDisplay) {
+        OperateLogDO row = new OperateLogDO();
+        row.setOperator(operator);
         when(mapper.list(any())).thenReturn(List.of(row));
-        assertThat(service.listLogs(new OperateLog()).getFirst().getOperator()).isEmpty();
+        assertThat(service.listLogs(new OperateLog()).getFirst().getOperator())
+            .isEqualTo(expectedDisplay);
         var capture = ArgumentCaptor.forClass(OperateLogDO.class);
         verify(mapper).list(capture.capture());
         assertThat(capture.getValue().getSort()).isEqualTo("id");
         assertThat(capture.getValue().getDir()).isEqualTo("DESC");
         doReturn(row).when(service).getById(id);
-        assertThat(service.getLog("10").getOperator()).isEmpty();
+        assertThat(service.getLog("10").getOperator()).isEqualTo(expectedDisplay);
+        assertThat(service.getLog(id).getOperator()).isEqualTo(operator);
     }
 
 }

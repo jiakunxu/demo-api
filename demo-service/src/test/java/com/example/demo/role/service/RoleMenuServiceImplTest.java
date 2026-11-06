@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.demo.role.api.bo.RoleMenu;
 import com.example.demo.role.dao.dataobject.RoleMenuDO;
 import com.example.demo.role.dao.mapper.RoleMenuMapper;
-import com.example.demo.framework.exception.ServiceException;
 import com.example.demo.support.ServiceTestSupport;
 import com.example.demo.support.TransactionProbe;
 import org.mockito.ArgumentCaptor;
@@ -96,15 +95,30 @@ class RoleMenuServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void springProxyCommitsSuccessfulUpdateAndRollsBackDeletionFailure(boolean success) {
+    void springProxyCommitsWhenDeletionReturnsNormally(boolean changed) {
         when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
-        doReturn(success).when(service).update(any(Wrapper.class));
+        doReturn(changed).when(service).update(any(Wrapper.class));
         var transactions = new TransactionProbe();
         RoleMenuServiceImpl proxy = transactions.wrap(service);
-        if (success) proxy.updateRoleMenus(roleId, null, "editor");
-        else assertThatThrownBy(() -> proxy.updateRoleMenus(roleId, null, "editor")).isInstanceOf(ServiceException.class);
-        assertThat(transactions.commits).isEqualTo(success ? 1 : 0);
-        assertThat(transactions.rollbacks).isEqualTo(success ? 0 : 1);
+
+        assertThat(proxy.updateRoleMenus(roleId, null, "editor")).isEmpty();
+        verify(service).update(any(Wrapper.class));
+        assertThat(transactions.commits).isEqualTo(1);
+        assertThat(transactions.rollbacks).isZero();
+    }
+
+    @Test
+    void springProxyRollsBackWhenDeletionThrows() {
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
+        var failure = new org.springframework.dao.DataAccessResourceFailureException("offline");
+        doThrow(failure).when(service).update(any(Wrapper.class));
+        var transactions = new TransactionProbe();
+        RoleMenuServiceImpl proxy = transactions.wrap(service);
+
+        assertThatThrownBy(() -> proxy.updateRoleMenus(roleId, null, "editor"))
+            .isSameAs(failure);
+        assertThat(transactions.commits).isZero();
+        assertThat(transactions.rollbacks).isEqualTo(1);
     }
 
     @Test
