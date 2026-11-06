@@ -4,6 +4,38 @@
 
 <mapper namespace="com.example.demo.user.dao.mapper.UserRoleMapper">
 
+	<sql id="queryCondition">
+		<if test="enabled != null">
+			AND t.`is_enabled` = #{enabled}
+		</if>
+		<if test="exists == true">
+			AND EXISTS(
+		</if>
+		<if test="exists == false">
+			AND NOT EXISTS(
+		</if>
+		 SELECT 1
+		   FROM `tb_user_role` p, `tb_role` q
+		  WHERE t.`id` = p.`user_id`
+		    AND q.`id` = p.`role_id`
+		    AND p.`is_deleted` = 0
+		    AND q.`is_deleted` = 0
+		<if test="roleId != null">
+			AND p.`role_id` = #{roleId}
+		</if>
+		<if test="codes != null and codes.length > 0">
+			AND q.`code` IN
+			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
+		</if>
+			)
+		<if test="name != null and name != ''">
+			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
+		</if>
+	</sql>
+
 	<select id="count" parameterType="userRoleDO" resultType="java.lang.Long">
 		SELECT COUNT(*)
 		  FROM `tb_user_role` t
@@ -58,35 +90,7 @@
 		  FROM `tb_user` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`corp_id` = #{corpId}
-		<if test="enabled != null">
-			AND t.`is_enabled` = #{enabled}
-		</if>
-		<if test="exists == true">
-			AND EXISTS(
-		</if>
-		<if test="exists == false">
-			AND NOT EXISTS(
-		</if>
-		 SELECT 1
-		   FROM `tb_user_role` p, `tb_role` q
-		  WHERE t.`id` = p.`user_id`
-		    AND q.`id` = p.`role_id`
-		    AND p.`is_deleted` = 0
-		    AND q.`is_deleted` = 0
-		<if test="roleId != null">
-			AND p.`role_id` = #{roleId}
-		</if>
-		<if test="codes != null and codes.length > 0">
-			AND q.`code` IN
-			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
-		</if>
-			)
-		<if test="name != null and name != ''">
-			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
-		</if>
-		<if test="mobile != null and mobile != ''">
-			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
-		</if>
+		<include refid="queryCondition"/>
 	</select>
 
 	<select id="listUsers" parameterType="userDO" resultType="userDO">
@@ -100,35 +104,7 @@
 		  FROM `tb_user` t
 		 WHERE t.`is_deleted` = 0
 		   AND t.`corp_id` = #{corpId}
-		<if test="enabled != null">
-			AND t.`is_enabled` = #{enabled}
-		</if>
-		<if test="exists == true">
-			AND EXISTS(
-		</if>
-		<if test="exists == false">
-			AND NOT EXISTS(
-		</if>
-		 SELECT 1
-		   FROM `tb_user_role` p, `tb_role` q
-		  WHERE t.`id` = p.`user_id`
-		    AND q.`id` = p.`role_id`
-		    AND p.`is_deleted` = 0
-		    AND q.`is_deleted` = 0
-		<if test="roleId != null">
-			AND p.`role_id` = #{roleId}
-		</if>
-		<if test="codes != null and codes.length > 0">
-			AND q.`code` IN
-			<foreach collection="codes" item="code" open="(" close=")" separator=",">#{code}</foreach>
-		</if>
-			)
-		<if test="name != null and name != ''">
-			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
-		</if>
-		<if test="mobile != null and mobile != ''">
-			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
-		</if>
+		<include refid="queryCondition"/>
 		 ORDER BY t.`id` DESC
 		 LIMIT #{offset}, #{pageSize}
 	</select>
