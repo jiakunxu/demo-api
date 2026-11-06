@@ -33,7 +33,7 @@
 
 [UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
 
-[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 当前静态初始化设置 crypto.policy=limited；[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 要求初始化不改变 JVM 策略。当原策略为 unlimited 时，该检查失败并阻止类内测试正常执行；初始化错误不能解读为全部加解密用例已执行。
+[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 使用运行环境的 JCE 策略，不修改 JVM 全局 `crypto.policy` 或反射修改 JCE 内部状态。[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 检查初始化前后策略一致，并覆盖独立回调解密向量、签名校验和加密响应；初始化检查失败时不能解读为类内加解密用例已执行。
 
 当前未配置 JaCoCo 采集和报告，不能从测试通过数量推算行或分支覆盖率。功能缺口见 [工程现状](engineering-roadmap.md)，不因本页记录而自动实施。
 

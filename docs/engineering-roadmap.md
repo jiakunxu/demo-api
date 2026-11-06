@@ -19,7 +19,8 @@
 | [AlipayServiceImpl](../demo-service/src/main/java/com/example/demo/alipay/service/AlipayServiceImpl.java) | query、close、refund、queryRefund 返回 null，pay 的测试不能证明这些功能可用 | 明确查询、关闭、退款契约后实现并隔离平台测试 |
 | [DingtalkNotifyServiceImpl](../demo-service/src/main/java/com/example/demo/dingtalk/service/DingtalkNotifyServiceImpl.java) | notify 返回空 Map | 明确验签、解密、事件处理和响应契约 |
 | [BytedanceNotifyServiceImpl](../demo-service/src/main/java/com/example/demo/bytedance/service/BytedanceNotifyServiceImpl.java) | verify 返回空字符串，notify 返回 null | 明确验证与通知处理契约后实现并测试 |
-| [DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) | 静态初始化修改 JVM 全局加密策略，与初始化不改策略的测试契约冲突 | 评估旧 JCE 反射处理在 JDK 25 的必要性；修复后验证固定加解密向量及策略保持 |
+
+2026-11-06 修复：[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 已移除修改全局加密策略的静态初始化及旧 JCE 反射逻辑，使用运行环境原有策略。回归范围包括初始化策略保持、独立回调解密向量、签名校验及加密响应，见 [测试指南](testing.md)。
 
 上述检查不代表全仓库安全审计；其他未实现接口应在涉及它们的任务中进一步确认。
 
