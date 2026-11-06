@@ -92,7 +92,7 @@ public class UserRoleController extends BaseController {
         User user = this.getParameter(request, new User());
 
         user.setName(this.getParameter(request, "name"));
-        user.setMobile(this.getParameter(request, "mobile"));
+        user.setPhone(this.getParameter(request, "phone"));
 
         long count = userRoleService.countUser(corpId, roleId, exists, user);
 
