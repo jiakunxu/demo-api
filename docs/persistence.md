@@ -23,6 +23,8 @@
 
 ## MyBatis 与数据库规则
 
+- Lambda Wrapper 统一显式传入实体类型：使用 `Wrappers.lambdaQuery(EntityDO.class)` 和 `Wrappers.lambdaUpdate(EntityDO.class)` 创建查询与更新条件。
+
 - 继承 MyBatis-Plus ServiceImpl 的业务类访问当前 Mapper 时，统一使用 `this.getBaseMapper().方法(...)`，例如 `this.getBaseMapper().list(query)`。同一方法确需多次使用时可保存为局部变量；不为单次调用重复注入同类型 Mapper。测试辅助设施仍可按既有方式设置 baseMapper 字段。
 
 - DO 使用 `@TableName` / `@TableField` 映射，继承 `BaseDO` 的实体具有审计/软删除字段；查询附加属性在 `BaseQuery` 中使用 `@TableField(exist=false)`。

@@ -87,7 +87,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
 
         typeDO.setValue(value);
 
-        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery()
+        var queryWrapper = Wrappers.lambdaQuery(DictTypeDO.class)
             .eq(typeDO.getId() != null, DictTypeDO::getId, typeDO.getId())
             .eq(StringUtils.isNotEmpty(value), DictTypeDO::getValue, value);
 
@@ -112,7 +112,8 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             return null;
         }
 
-        var queryWrapper = Wrappers.<DictTypeDO> lambdaQuery().eq(id != null, DictTypeDO::getId, id)
+        var queryWrapper = Wrappers.lambdaQuery(DictTypeDO.class)
+            .eq(id != null, DictTypeDO::getId, id)
             .eq(StringUtils.isNotEmpty(value), DictTypeDO::getValue, value);
 
         return BeanUtil.copy(this.getOne(queryWrapper), DictType.class);
@@ -168,7 +169,7 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictTypeDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
         }
 
-        var updateWrapper = Wrappers.<DictTypeDO> lambdaUpdate().eq(DictTypeDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(DictTypeDO.class).eq(DictTypeDO::getId, id)
             .set(DictTypeDO::getDeleted, true).set(DictTypeDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

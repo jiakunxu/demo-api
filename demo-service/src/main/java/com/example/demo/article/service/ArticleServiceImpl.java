@@ -97,7 +97,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO>
 
     @Override
     public Article deleteArticle(@NotNull BigInteger id, @NotBlank String updateBy) {
-        var updateWrapper = Wrappers.<ArticleDO> lambdaUpdate().eq(ArticleDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(ArticleDO.class).eq(ArticleDO::getId, id)
             .set(ArticleDO::getDeleted, true).set(ArticleDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

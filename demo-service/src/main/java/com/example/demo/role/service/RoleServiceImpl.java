@@ -131,7 +131,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             return null;
         }
 
-        RoleDO role = this.getOne(Wrappers.<RoleDO> lambdaQuery().eq(RoleDO::getCode, code));
+        RoleDO role = this.getOne(Wrappers.lambdaQuery(RoleDO.class).eq(RoleDO::getCode, code));
 
         if (role == null) {
             return null;
@@ -188,7 +188,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
     @Override
     public Role updateRole(@NotNull BigInteger id, @NotBlank String status,
                            @NotBlank String updateBy) {
-        var updateWrapper = Wrappers.<RoleDO> lambdaUpdate().eq(RoleDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(RoleDO.class).eq(RoleDO::getId, id)
             .set(RoleDO::getStatus, status).set(RoleDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {
@@ -208,7 +208,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "已关联用户，请先调整用户角色");
         }
 
-        var updateWrapper = Wrappers.<RoleDO> lambdaUpdate().eq(RoleDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(RoleDO.class).eq(RoleDO::getId, id)
             .set(RoleDO::getDeleted, true).set(RoleDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

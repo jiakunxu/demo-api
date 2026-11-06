@@ -103,7 +103,7 @@ class NullableUpdateMappingTest {
     void explicitWrapperCanStillRenameDictionaryType() {
         var configuration = new MybatisConfiguration();
         configuration.addMapper(DictDataTestMapper.class);
-        var wrapper = Wrappers.<DictDataDO>lambdaUpdate()
+        var wrapper = Wrappers.lambdaUpdate(DictDataDO.class)
             .eq(DictDataDO::getTypeId, BigInteger.ONE)
             .set(DictDataDO::getTypeValue, "new-color")
             .set(DictDataDO::getUpdateBy, "editor");

@@ -41,7 +41,8 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
             return List.of();
         }
 
-        var queryWrapper = Wrappers.<ChatDetailDO> lambdaQuery().eq(ChatDetailDO::getUserId, userId)
+        var queryWrapper = Wrappers.lambdaQuery(ChatDetailDO.class)
+            .eq(ChatDetailDO::getUserId, userId)
             .in(ChatDetailDO::getId, ids);
 
         List<ChatDetail> list = BeanUtil.copy(this.list(queryWrapper), ChatDetail.class);
@@ -88,7 +89,7 @@ public class ChatDetailServiceImpl extends ServiceImpl<ChatDetailMapper, ChatDet
             return null;
         }
 
-        var queryWrapper = Wrappers.<ChatDetailDO> lambdaQuery().eq(ChatDetailDO::getId, id)
+        var queryWrapper = Wrappers.lambdaQuery(ChatDetailDO.class).eq(ChatDetailDO::getId, id)
             .eq(ChatDetailDO::getUserId, userId);
 
         return BeanUtil.copy(this.getOne(queryWrapper), ChatDetail.class);

@@ -40,7 +40,8 @@ public class TunnelServiceImpl extends ServiceImpl<TunnelMapper, TunnelDO>
 
     @Override
     public Tunnel deleteTunnel(@NotBlank String tunnelId, @NotBlank String updateBy) {
-        var updateWrapper = Wrappers.<TunnelDO> lambdaUpdate().eq(TunnelDO::getTunnelId, tunnelId)
+        var updateWrapper = Wrappers.lambdaUpdate(TunnelDO.class)
+            .eq(TunnelDO::getTunnelId, tunnelId)
             .set(TunnelDO::getDeleted, true).set(TunnelDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

@@ -92,7 +92,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             return null;
         }
 
-        var queryWrapper = Wrappers.<UserDO> lambdaQuery().eq(UserDO::getId, id)
+        var queryWrapper = Wrappers.lambdaQuery(UserDO.class).eq(UserDO::getId, id)
             .eq(UserDO::getCorpId, corpId);
 
         return BeanUtil.copy(this.getOne(queryWrapper), User.class);
@@ -105,7 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
 
         UserDO userDO = this
-            .getOne(Wrappers.<UserDO> lambdaQuery().eq(UserDO::getUsername, username));
+            .getOne(Wrappers.lambdaQuery(UserDO.class).eq(UserDO::getUsername, username));
 
         if (userDO == null) {
             return null;
@@ -138,7 +138,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         userDO.setUpdateBy(updateBy);
         userDO.setRefreshToken(UUID.randomUUID().toString());
 
-        var updateWrapper = Wrappers.<UserDO> lambdaUpdate().eq(UserDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(UserDO.class).eq(UserDO::getId, id)
             .eq(UserDO::getCorpId, corpId).set(UserDO::getRefreshToken, userDO.getRefreshToken())
             .set(UserDO::getUpdateBy, updateBy);
 

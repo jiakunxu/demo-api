@@ -111,7 +111,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
             return null;
         }
 
-        var queryWrapper = Wrappers.<ChatDO> lambdaQuery().eq(ChatDO::getUserId, userId)
+        var queryWrapper = Wrappers.lambdaQuery(ChatDO.class).eq(ChatDO::getUserId, userId)
             .eq(ChatDO::getFriendId, friendId);
 
         return BeanUtil.copy(this.getOne(queryWrapper), Chat.class);
@@ -149,7 +149,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, ChatDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
         }
 
-        var updateWrapper = Wrappers.<ChatDO> lambdaUpdate().eq(ChatDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(ChatDO.class).eq(ChatDO::getId, id)
             .eq(ChatDO::getUserId, userId).set(ChatDO::getUnread, 0)
             .set(ChatDO::getUpdateBy, userId.toString());
 
