@@ -32,7 +32,7 @@ public class User extends BaseBO {
     @JSONField(serialize = false)
     private String            password;
 
-    private String            mobile;
+    private String            phone;
 
     private Boolean           expired;
 

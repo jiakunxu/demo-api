@@ -33,6 +33,8 @@ public class UserDO extends BaseDO {
 
     private String            password;
 
+    private String            phone;
+
     @TableField("is_expired")
     private Boolean           expired;
 

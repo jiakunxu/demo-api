@@ -31,8 +31,8 @@
 		<if test="name != null and name != ''">
 			AND t.`name` LIKE #{name,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
-		<if test="mobile != null and mobile != ''">
-			AND t.`mobile` LIKE #{mobile,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
+		<if test="phone != null and phone != ''">
+			AND t.`phone` LIKE #{phone,typeHandler=com.example.demo.framework.mybatis.type.WildcardTypeHandler}
 		</if>
 	</sql>
 
@@ -97,7 +97,7 @@
 		SELECT t.`id`,
 			   t.`name`,
 			   t.`nickname`,
-			   t.`mobile`,
+			   t.`phone`,
 			   t.`email`,
 			   t.`status`,
 			   t.`create_time` AS createTime
