@@ -192,6 +192,7 @@ public class HttpUtil {
     public static String put(String uri, InputStream content, String contentType) throws Exception {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             ClassicHttpRequest request = ClassicRequestBuilder.put(uri)
+                .setHeader(HttpHeaders.CONTENT_TYPE, contentType)
                 .setEntity(new InputStreamEntity(content, ContentType.parse(contentType))).build();
 
             return client.execute(request, response -> {
