@@ -282,7 +282,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
 
         if (!map.isEmpty()) {
             List<BigInteger> ids = map.values().stream().map(UserRole::getId).toList();
-            var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().in(UserRoleDO::getId, ids)
+            var updateWrapper = Wrappers.lambdaUpdate(UserRoleDO.class).in(UserRoleDO::getId, ids)
                 .eq(UserRoleDO::getUserId, userId).set(UserRoleDO::getDeleted, true)
                 .set(UserRoleDO::getUpdateBy, updateBy);
 
@@ -333,7 +333,8 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
         userService.validate(corpId, userId);
         // TODO roleService.validate(corpId, roleId);
 
-        var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().eq(UserRoleDO::getUserId, userId)
+        var updateWrapper = Wrappers.lambdaUpdate(UserRoleDO.class)
+            .eq(UserRoleDO::getUserId, userId)
             .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
             .set(UserRoleDO::getUpdateBy, updateBy);
 
@@ -363,7 +364,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleDO>
             list.add(new BigInteger(userId));
         }
 
-        var updateWrapper = Wrappers.<UserRoleDO> lambdaUpdate().in(UserRoleDO::getUserId, list)
+        var updateWrapper = Wrappers.lambdaUpdate(UserRoleDO.class).in(UserRoleDO::getUserId, list)
             .eq(UserRoleDO::getRoleId, roleId).set(UserRoleDO::getDeleted, true)
             .set(UserRoleDO::getUpdateBy, updateBy);
 

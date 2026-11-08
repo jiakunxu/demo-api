@@ -145,7 +145,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
 
         if (!map.isEmpty()) {
             List<BigInteger> ids = map.values().stream().map(RoleMenu::getId).toList();
-            var updateWrapper = Wrappers.<RoleMenuDO> lambdaUpdate().in(RoleMenuDO::getId, ids)
+            var updateWrapper = Wrappers.lambdaUpdate(RoleMenuDO.class).in(RoleMenuDO::getId, ids)
                 .eq(RoleMenuDO::getRoleId, roleId).set(RoleMenuDO::getDeleted, true)
                 .set(RoleMenuDO::getUpdateBy, updateBy);
 
@@ -161,7 +161,7 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "参数信息不能为空");
         }
 
-        var updateWrapper = Wrappers.<RoleMenuDO> lambdaUpdate()
+        var updateWrapper = Wrappers.lambdaUpdate(RoleMenuDO.class)
             .eq(roleId != null, RoleMenuDO::getRoleId, roleId)
             .eq(menuId != null, RoleMenuDO::getMenuId, menuId).set(RoleMenuDO::getDeleted, true)
             .set(RoleMenuDO::getUpdateBy, updateBy);

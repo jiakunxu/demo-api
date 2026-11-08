@@ -1,0 +1,154 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: |
+            **/pom.xml
+            .mvn/wrapper/maven-wrapper.properties
+
+      - name: Show build environment
+        run: |
+          java -version
+          ./mvnw -version
+
+      # Compile all modules and tests, but keep Start's context test out of unit CI.
+      - name: Package all modules and resolve Mockito agent
+        run: >-
+          ./mvnw -B -ntp -DskipTests package dependency:build-classpath
+          -DincludeGroupIds=org.mockito
+          -DincludeArtifactIds=mockito-core
+          -Dmdep.outputFile=target/mockito-classpath.txt
+
+      - name: Check Mockito agent
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          agents = set()
+          for module in ('demo-util', 'demo-manager', 'demo-service'):
+              classpath = Path(module, 'target/mockito-classpath.txt').read_text().strip()
+              paths = classpath.split(os.pathsep)
+              if len(paths) != 1 or not Path(paths[0]).is_file():
+                  raise SystemExit(f'{module}: expected one resolved Mockito agent JAR')
+              agents.add(paths[0])
+          if len(agents) != 1:
+              raise SystemExit('Test modules resolve different Mockito versions')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f'MOCKITO_JAR={agents.pop()}\n')
+          PY
+
+      - name: Run unit tests
+        id: tests
+        run: >-
+          ./mvnw -B -ntp -pl demo-service -am test
+          "-DargLine=-javaagent:\"${MOCKITO_JAR}\" -Djava.awt.headless=true"
+
+      - name: Check test reports
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          keys = ('tests', 'failures', 'errors', 'skipped')
+          total = dict.fromkeys(keys, 0)
+          failed = False
+          rows = ['| Module | Tests | Failures | Errors | Skipped |',
+                  '| --- | ---: | ---: | ---: | ---: |']
+          for module in ('demo-util', 'demo-manager', 'demo-service'):
+              reports = list(Path(module, 'target/surefire-reports').glob('TEST-*.xml'))
+              counts = dict.fromkeys(keys, 0)
+              for report in reports:
+                  suite = ET.parse(report).getroot()
+                  for key in keys:
+                      counts[key] += int(suite.attrib[key])
+              failed |= not reports or counts['tests'] <= counts['skipped']
+              failed |= any(counts[key] for key in ('failures', 'errors', 'skipped'))
+              rows.append('| ' + module + ' | ' + ' | '.join(str(counts[k]) for k in keys) + ' |')
+              for key in keys:
+                  total[key] += counts[key]
+          rows.append('| Total | ' + ' | '.join(str(total[k]) for k in keys) + ' |')
+          summary = '\n'.join(rows) + '\n'
+          print(summary)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write(summary)
+          if failed:
+              raise SystemExit('Missing, empty, failed or skipped unit test reports')
+          PY
+
+      - name: Upload test reports
+        if: ${{ always() && steps.tests.outcome != 'skipped' }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: unit-test-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            demo-util/target/surefire-reports/*.xml
+            demo-util/target/surefire-reports/*.txt
+            demo-manager/target/surefire-reports/*.xml
+            demo-manager/target/surefire-reports/*.txt
+            demo-service/target/surefire-reports/*.xml
+            demo-service/target/surefire-reports/*.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  dependency-submission:
+    needs: build
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: |
+            **/pom.xml
+            .mvn/wrapper/maven-wrapper.properties
+
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c # v6.0.1
+        with:
+          ignore-maven-wrapper: false
+          # Build reactor artifacts before resolving the graph on this fresh runner.
+          maven-args: -B -ntp -DskipTests package

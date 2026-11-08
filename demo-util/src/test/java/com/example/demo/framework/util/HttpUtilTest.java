@@ -5,6 +5,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
@@ -12,6 +13,7 @@ import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -75,6 +77,9 @@ class HttpUtilTest {
                     assertThat(out.toString(StandardCharsets.UTF_8)).contains("name=\"name\"", "张三", "name=\"file\"", "file-content");
                 }
                 case PUT -> {
+                    assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNotNull();
+                    assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue())
+                        .isEqualTo("text/plain");
                     assertThat(request.getEntity().getContentType()).startsWith("text/plain");
                     assertThat(EntityUtils.toString(request.getEntity())).isEqualTo("file-content");
                 }
@@ -141,6 +146,40 @@ class HttpUtilTest {
         try (var factory = mockStatic(HttpClients.class)) {
             factory.when(HttpClients::createDefault).thenReturn(client);
             assertThatThrownBy(requestCase::invoke).isSameAs(failure);
+            verify(client).close();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "text/plain; charset=UTF-8",
+        "application/json; charset=UTF-8",
+        "application/octet-stream; version=1"
+    })
+    void putPreservesContentTypeParametersAndPayload(String contentType) throws Exception {
+        CloseableHttpClient client = mock(CloseableHttpClient.class);
+        byte[] payload = BODY.getBytes(StandardCharsets.UTF_8);
+        when(client.execute(any(ClassicHttpRequest.class),
+            org.mockito.ArgumentMatchers.<HttpClientResponseHandler<Object>>any()))
+            .thenAnswer(invocation -> {
+                ClassicHttpRequest request = invocation.getArgument(0);
+                assertThat(request.getMethod()).isEqualTo("PUT");
+                assertThat(request.getUri().toString()).isEqualTo(URI);
+                assertThat(request.getHeaders(HttpHeaders.CONTENT_TYPE)).hasSize(1);
+                assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue())
+                    .isEqualTo(contentType);
+                assertThat(request.getEntity().getContentType()).isEqualTo(contentType);
+                assertThat(EntityUtils.toByteArray(request.getEntity())).containsExactly(payload);
+                HttpClientResponseHandler<Object> handler = invocation.getArgument(1);
+                return handler.handleResponse(new BasicClassicHttpResponse(204));
+            });
+
+        try (var factory = mockStatic(HttpClients.class);
+             var content = new ByteArrayInputStream(payload)) {
+            factory.when(HttpClients::createDefault).thenReturn(client);
+
+            assertThat(HttpUtil.put(URI, content, contentType)).isNull();
+
             verify(client).close();
         }
     }

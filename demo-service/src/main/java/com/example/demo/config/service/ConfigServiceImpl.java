@@ -55,7 +55,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
             return null;
         }
 
-        var queryWrapper = Wrappers.<ConfigDO> lambdaQuery()
+        var queryWrapper = Wrappers.lambdaQuery(ConfigDO.class)
             .eq(StringUtils.isNotBlank(id), ConfigDO::getId,
                 StringUtils.isNotBlank(id) ? new BigInteger(id) : null)
             .eq(StringUtils.isNotBlank(key), ConfigDO::getKey, key);
@@ -93,7 +93,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, ConfigDO>
 
     @Override
     public Config deleteConfig(@NotNull BigInteger id, @NotBlank String updateBy) {
-        var updateWrapper = Wrappers.<ConfigDO> lambdaUpdate().eq(ConfigDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(ConfigDO.class).eq(ConfigDO::getId, id)
             .set(ConfigDO::getDeleted, true).set(ConfigDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

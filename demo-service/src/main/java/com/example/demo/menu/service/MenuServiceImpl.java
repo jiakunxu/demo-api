@@ -197,7 +197,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements 
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "已关联角色，请先调整角色菜单");
         }
 
-        var updateWrapper = Wrappers.<MenuDO> lambdaUpdate().eq(MenuDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(MenuDO.class).eq(MenuDO::getId, id)
             .set(MenuDO::getDeleted, true).set(MenuDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

@@ -1,8 +1,8 @@
 # 持续集成（CI）指南
 
-维护于 2026-10-15。适用于 GitHub Actions、PR 检查、构建与测试报告、分支必需检查的维护。
+维护于 2026-11-06。适用于 GitHub Actions、PR 检查、构建与测试报告、分支必需检查的维护。
 
-**状态：现状核查与待实施方案。** 当前仓库只有下述两个安全相关工作流；本文提出的编译、单元测试及汇总门禁尚未创建。文件存在、工作流配置存在、远程执行成功、分支规则已生效是四种不同状态，必须分别提供证据。
+**状态：Maven 工作流已配置，独立汇总门禁仍待实施。** 当前仓库包含 Maven 构建、CodeQL 和 Dependency Review 三个工作流。文件存在、工作流配置存在、远程执行成功、分支规则已生效是四种不同状态，必须分别提供证据。
 
 本文不自动启用 CI、不修改 GitHub 设置、不授权部署或访问真实平台。默认 YAML 配置项完整、地址和账号有效，不核查或改写其中取值。
 
@@ -25,23 +25,26 @@ CI 提供可重复验证，不替代需求验收、代码审查、真实 SQL 验
 
 | 工作流 | 当前触发方式 | 当前配置 | 尚未核实 |
 | --- | --- | --- | --- |
+| [Java CI with Maven](../.github/workflows/maven.yml) | push 到任意分支、PR 目标为 master、手动运行 | ubuntu-24.04；Temurin 25；仓库 Maven Wrapper；build 执行全模块打包、单元测试及报告校验；dependency-submission 在任意分支 push 且 build 成功后提交依赖图 | GitHub 远程运行、依赖图功能可用性、分支是否要求其通过 |
 | [CodeQL](../.github/workflows/codeql-analysis.yml) | push 到 master、PR 目标为 master、定时 cron `17 9 * * 6` | ubuntu-latest；Java；checkout@v3；codeql-action init/autobuild/analyze@v2；job 名 Analyze | 远程最近运行、平台支持情况、自动构建实际 JDK、分支是否要求其通过 |
 | [Dependency Review](../.github/workflows/dependency-review.yml) | pull_request，未限制目标分支 | ubuntu-latest；checkout@v3；dependency-review-action@v1；contents: read | 远程运行、仓库功能可用性及实际阻断策略 |
 
-上表记录文件当前声明，不推荐继续使用这些 Action 版本，也不凭版本号断言本次运行失败。维护时核对官方迁移说明、runner 要求和实际检查结果，再选择受支持版本。
+上表记录文件当前声明。Maven 工作流使用已核对完整 SHA 的 checkout v7、setup-java v6、upload-artifact v6 和 maven-dependency-submission-action v6.0.1；两个既有安全工作流尚未迁移，不凭版本号断言它们本次运行失败。维护时核对官方迁移说明、runner 要求和实际检查结果，再选择受支持版本。
 
 当前还没有：
 
-- 专门执行全模块编译、Util/Manager/Service 单元测试的工作流。
+- 独立的编译、单元测试 job 和统一汇总门禁；当前由 Maven 工作流的 build job 顺序执行。
 - 已配置的 JaCoCo 覆盖率门槛、Spotless/Checkstyle 格式门禁。
 - 完整隔离数据库集成测试、统一迁移基线或专门 Failsafe 流程。
 - 在仓库文件中能够证明的 GitHub 必需检查、管理员绕过策略或合并队列设置。
 
 [ApplicationTests](../start/src/test/java/com/example/demo/ApplicationTests.java) 使用 `@SpringBootTest`。全仓库 `test` 会包含它，可能初始化外部组件；普通 PR 单元测试应使用明确模块范围。
 
-## 3. 建议的目标流水线（尚未实施）
+## 3. 当前流水线与后续拆分建议
 
-首批建议新增一个 Java CI 工作流，例如 `.github/workflows/java-ci.yml`，采用下表稳定的 job 显示名。该路径为规划，当前没有对应文件。
+当前 `.github/workflows/maven.yml` 保留 build 检查名：先跳过测试执行完成全模块打包（包括测试源码编译），再运行 `demo-service` 及上游的单元测试。测试开始后，即使 Maven 失败，也会校验并上传 Surefire XML/TXT 报告，保留 14 天；报告缺失、无实际测试、失败、错误或跳过都会使校验失败。普通 PR 只有 `contents: read`，不上传 JAR、不运行 Start 上下文测试。依赖图单独使用 `contents: write`，在任意分支 push 且 build 成功后执行，标签推送不触发；在其独立 runner 中先于同一 Maven reactor 执行 `-DskipTests package`，再生成依赖图，避免依赖缓存中的旧模块产物。
+
+后续若将编译和单元测试拆分，可采用下表稳定的 job 显示名；当前没有单独的 `.github/workflows/java-ci.yml` 或 Java CI gate，不应在分支规则中直接要求不存在的检查。
 
 | 建议检查名 | 任务 | 验证价值 | 首批合并要求 |
 | --- | --- | --- | --- |
@@ -62,7 +65,7 @@ Java CI gate 只汇总自己工作流明确依赖的 job；不能声称它已汇
 | 事件 | 建议执行 | 说明 |
 | --- | --- | --- |
 | pull_request，目标 master | 编译、单元测试及适用安全检查 | 覆盖 PR 创建、后续提交、重新打开；核对实际 checkout 的提交 |
-| push 到 master | 编译、单元测试及安全检查 | 验证合并后的实际分支状态 |
+| push 到任意分支 | Maven 打包、单元测试，成功后提交依赖图 | 覆盖包含 `/` 的分支名；既有 CodeQL 的 push 触发仍仅限 master |
 | workflow_dispatch | 手动运行同一套检查 | 用于排障，不接受任意 shell 命令输入 |
 | schedule | 适用安全扫描、按需定期验证 | 不是每个 PR 的替代检查 |
 | merge_group | 启用合并队列时追加对应必需检查 | 尚未确认仓库使用合并队列 |
@@ -91,21 +94,24 @@ GitHub 对被路径、分支或提交信息过滤的工作流可能保留 Pendin
 
 ## 6. 命令入口与 Mockito 参数
 
-以下是建议工作流中的执行入口，当前文档生成不代表这些命令已在 CI 运行：
+以下为当前 Maven 工作流的命令入口；已写入配置不代表已在 GitHub 远程运行成功：
 
 ```bash
 # 记录实际构建环境
 java -version
 ./mvnw -version
 
-# 全模块主代码与测试代码编译，不执行测试
-./mvnw -B -ntp -DskipTests test-compile
+# 全模块打包并编译测试源码，不执行测试；同时解析 Mockito 的实际路径
+./mvnw -B -ntp -DskipTests package dependency:build-classpath \
+  -DincludeGroupIds=org.mockito -DincludeArtifactIds=mockito-core \
+  -Dmdep.outputFile=target/mockito-classpath.txt
 
 # 单元测试：包含 Service 及上游 Manager、Util 等，不包含 Start
-./mvnw -B -ntp -pl demo-service -am test
+./mvnw -B -ntp -pl demo-service -am test \
+  "-DargLine=-javaagent:\"${MOCKITO_JAR}\" -Djava.awt.headless=true"
 ```
 
-`-B` 使用批处理模式，`-ntp` 减少下载进度输出。编译 job 和测试 job 的日志、结果应分开报告。首批普通单元测试不直接运行根目录 `./mvnw test` 或 `verify`，以免无意执行 Start 上下文测试。
+`-B` 使用批处理模式，`-ntp` 减少下载进度输出。当前打包和测试分为同一 job 的两个步骤，结果分别判断。普通单元测试不直接运行根目录 `./mvnw test` 或 `verify`，以免无意执行 Start 上下文测试。
 
 Mockito inline/static mock 在部分 JDK/runner 环境需要显式 agent；POI/图形测试可能需要 headless。配置原则与 [测试指南](testing.md) 一致，不在 POM 添加临时 agent/headless 配置。
 
@@ -117,7 +123,7 @@ test -f "$MOCKITO_JAR"
   "-DargLine=-javaagent:\"$MOCKITO_JAR\" -Djava.awt.headless=true"
 ```
 
-实施工作流时必须先实现可靠的 agent 路径解析与文件检查，不能原样复制占位路径。版本以测试模块有效依赖树为准，本地仓库位置以 Maven settings 为准；不要扫描目录并取“最高版本”。如多个模块解析到不同 Mockito 版本，应先解决差异或分别运行，不能共用未经核实的 agent。
+当前工作流读取 demo-util、demo-manager、demo-service 的 `target/mockito-classpath.txt`，要求每个模块解析出一个存在的 JAR，且三个路径一致，再写入 `MOCKITO_JAR`。因此版本和仓库路径来自 Maven 实际解析，不扫描目录取“最高版本”，也不使用机器专属路径。如多个模块解析到不同 Mockito 版本，应先解决差异或分别运行，不能共用未经核实的 agent。
 
 已有 argLine 时合并必要参数，尤其未来 JaCoCo agent；不能覆盖已有 agent。下载依赖的准备步骤也要检查失败结果，不能继续执行空路径命令。具体解析方法见 [依赖管理](dependencies.md)，文档不虚构尚未实现的 CI 脚本。
 
@@ -212,4 +218,4 @@ GitHub 显示绿色不等于业务测试确实执行，汇总规则必须检查�
 
 仅文档变更：核对事实、相对链接、代码块语法和 diff，不运行业务测试或访问远程平台。实际工作流变更：还需验证 YAML/表达式、真实触发与运行结果；语法正确不能代替远程执行。
 
-完成报告分别列出：已写配置、已运行的检查、目标测试数量、报告位置、已设置的远程门禁和未完成事项。本文此次交付仅为文档及导航，不表示上述待建设流程已落地。
+完成报告分别列出：已写配置、已运行的检查、目标测试数量、报告位置、已设置的远程门禁和未完成事项。Maven 工作流已写入配置；远程运行与分支规则须另行提供证据，后续拆分和汇总门禁仍未实施。

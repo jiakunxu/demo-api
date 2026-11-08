@@ -89,7 +89,8 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
             return null;
         }
 
-        var queryWrapper = Wrappers.<SubscribeDO> lambdaQuery().eq(SubscribeDO::getUserId, userId)
+        var queryWrapper = Wrappers.lambdaQuery(SubscribeDO.class)
+            .eq(SubscribeDO::getUserId, userId)
             .eq(SubscribeDO::getAppId, appId).eq(SubscribeDO::getScene, scene)
             .eq(SubscribeDO::getSceneId, new BigInteger(sceneId)).last("LIMIT 1");
 

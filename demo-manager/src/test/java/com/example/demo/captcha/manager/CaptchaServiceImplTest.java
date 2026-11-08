@@ -3,6 +3,7 @@ package com.example.demo.captcha.manager;
 import com.example.demo.cache.api.RedisService;
 import com.example.demo.framework.constant.HttpStatus;
 import com.example.demo.framework.exception.ServiceException;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.*;
@@ -47,6 +51,7 @@ class CaptchaServiceImplTest {
             assertThat(image.getWidth()).isEqualTo(160);
             assertThat(image.getHeight()).isEqualTo(60);
         }
+        verify(redisService, never()).remove(anyString());
     }
 
     @Test
@@ -55,6 +60,23 @@ class CaptchaServiceImplTest {
             .thenThrow(new ServiceException(HttpStatus.SERVICE_UNAVAILABLE, "unavailable"));
 
         assertValidationError(() -> service.getCaptcha(), "系统正忙，请稍后再试");
+        verify(redisService, never()).remove(anyString());
+    }
+
+    @Test
+    void imageWriteFailureDoesNotAccessRedis() {
+        var image = new BufferedImage(160, 60, BufferedImage.TYPE_INT_RGB);
+        try (var producers = mockConstruction(DefaultKaptcha.class, (producer, context) -> {
+            when(producer.createText()).thenReturn("3*4=?@12");
+            when(producer.createImage("3*4=?")).thenReturn(image);
+        }); var imageIO = mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.write(same(image), eq("jpg"), any(OutputStream.class)))
+                .thenThrow(new IOException("image write failed"));
+
+            assertValidationError(() -> service.getCaptcha(), "系统正忙，请稍后再试");
+
+            verifyNoInteractions(redisService);
+        }
     }
 
     @ParameterizedTest

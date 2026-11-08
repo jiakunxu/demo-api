@@ -121,7 +121,7 @@ public class WxpayProfitSharingServiceImpl extends
 
         profitSharing.setOrderId(orderId);
 
-        var updateWrapper = Wrappers.<WxpayProfitSharingDO> lambdaUpdate()
+        var updateWrapper = Wrappers.lambdaUpdate(WxpayProfitSharingDO.class)
             .eq(WxpayProfitSharingDO::getOrderId, orderId)
             .set(WxpayProfitSharingDO::getOrderId, orderId)
             .set(StringUtils.isNotEmpty(profitSharing.getMchid()), WxpayProfitSharingDO::getMchid,

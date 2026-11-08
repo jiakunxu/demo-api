@@ -39,7 +39,7 @@ public class UserLoginServiceImpl extends ServiceImpl<UserMapper, UserDO>
         }
 
         UserDO userDO = this
-            .getOne(Wrappers.<UserDO> lambdaQuery().eq(UserDO::getUsername, username));
+            .getOne(Wrappers.lambdaQuery(UserDO.class).eq(UserDO::getUsername, username));
 
         return setAuthorities(userDO);
     }

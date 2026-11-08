@@ -2,7 +2,7 @@
 
 状态：已核查测试设施与项目规范。维护于 2026-10-13。运行命令均从仓库根目录执行，选择范围以本次改动为准。本项目协作默认 YAML 配置项完整、地址和账号有效；测试不以核查 YAML 取值为前置步骤。
 
-自动检查的触发、门禁、报告保留及权限见 [持续集成指南](ci.md)。已有 CodeQL 与 Dependency Review 工作流；专门单元测试任务和覆盖率门槛尚未建设，工作流存在不代表远程执行成功。
+自动检查的触发、门禁、报告保留及权限见 [持续集成指南](ci.md)。已有 Maven 构建及单元测试、CodeQL 与 Dependency Review 工作流；覆盖率门槛尚未建设，工作流存在不代表远程执行成功。
 
 ## 现有设施和边界
 
@@ -31,9 +31,16 @@
 | demo-dao / demo-open / demo-task | 当前未发现模块内测试；Service 中的 Mapper mock 不证明 DAO SQL 正确 |
 | start | ApplicationTests 为全应用上下文测试，可能初始化外部组件，与纯单元测试分开报告 |
 
+相关回归用例覆盖以下范围：`HttpUtilTest` 检查 PUT 的 Content-Type 请求头、
+charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图片写入失败时不访问 Redis，
+并返回统一业务错误；`UserRoleServiceImplTest` 检查 phone 查询条件和结果转换。
+`UserRoleQueryMappingTest` 解析实际 Mapper XML，检查 count/list 的过滤条件一致、phone 空值分支、
+参数绑定与通配符转义。这些用例不访问外部服务；SQL 绑定测试不证明真实数据库结构或执行结果，
+也不验证旧版 mobile HTTP 参数的兼容性。
+
 [UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
 
-[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 当前静态初始化设置 crypto.policy=limited；[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 要求初始化不改变 JVM 策略。当原策略为 unlimited 时，该检查失败并阻止类内测试正常执行；初始化错误不能解读为全部加解密用例已执行。
+[DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 使用运行环境的 JCE 策略，不修改 JVM 全局 `crypto.policy` 或反射修改 JCE 内部状态。[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 检查初始化前后策略一致，并覆盖独立回调解密向量、签名校验和加密响应；初始化检查失败时不能解读为类内加解密用例已执行。
 
 当前未配置 JaCoCo 采集和报告，不能从测试通过数量推算行或分支覆盖率。功能缺口见 [工程现状](engineering-roadmap.md)，不因本页记录而自动实施。
 

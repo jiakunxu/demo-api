@@ -143,7 +143,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             return data;
         }
 
-        var queryWrapper = Wrappers.<DictDataDO> lambdaQuery()
+        var queryWrapper = Wrappers.lambdaQuery(DictDataDO.class)
             .eq(DictDataDO::getTypeValue, typeValue).eq(DictDataDO::getValue, value)
             .eq(DictDataDO::getStatus, DictData.Status.ENABLE.value).orderByDesc(DictDataDO::getId)
             .last("LIMIT 1");
@@ -213,7 +213,8 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             }
         }
 
-        var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate().eq(DictDataDO::getTypeId, typeId)
+        var updateWrapper = Wrappers.lambdaUpdate(DictDataDO.class)
+            .eq(DictDataDO::getTypeId, typeId)
             .set(DictDataDO::getTypeValue, typeValue).set(DictDataDO::getUpdateBy, updateBy);
 
         this.update(updateWrapper);
@@ -243,7 +244,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
             }
         }
 
-        var updateWrapper = Wrappers.<DictDataDO> lambdaUpdate()
+        var updateWrapper = Wrappers.lambdaUpdate(DictDataDO.class)
             .eq(id != null, DictDataDO::getId, id).eq(id == null, DictDataDO::getTypeId, typeId)
             .set(DictDataDO::getDeleted, true).set(DictDataDO::getUpdateBy, updateBy);
 

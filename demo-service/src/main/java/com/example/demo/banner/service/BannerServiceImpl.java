@@ -97,7 +97,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, BannerDO>
 
     @Override
     public Banner deleteBanner(@NotNull BigInteger id, @NotBlank String updateBy) {
-        var updateWrapper = Wrappers.<BannerDO> lambdaUpdate().eq(BannerDO::getId, id)
+        var updateWrapper = Wrappers.lambdaUpdate(BannerDO.class).eq(BannerDO::getId, id)
             .set(BannerDO::getDeleted, true).set(BannerDO::getUpdateBy, updateBy);
 
         if (!this.update(updateWrapper)) {

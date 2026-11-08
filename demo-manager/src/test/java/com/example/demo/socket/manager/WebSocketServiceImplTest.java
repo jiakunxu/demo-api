@@ -50,7 +50,7 @@ class WebSocketServiceImplTest {
 
         service.sendMessage(key, "hello");
 
-        verify(session).sendMessage(new TextMessage("message:hello"));
+        verify(session).sendMessage(new TextMessage("hello"));
     }
 
     @Test
@@ -60,6 +60,6 @@ class WebSocketServiceImplTest {
         doThrow(new IOException("connection closed")).when(session).sendMessage(any());
 
         assertThatCode(() -> service.sendMessage(key, "hello")).doesNotThrowAnyException();
-        verify(session).sendMessage(new TextMessage("message:hello"));
+        verify(session).sendMessage(new TextMessage("hello"));
     }
 }
