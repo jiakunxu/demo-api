@@ -98,21 +98,19 @@ public class CaptchaServiceImpl extends DefaultTextCreator implements CaptchaSer
         String[] text = producer.createText().split("=?@");
         BufferedImage image = producer.createImage(text[0]);
 
-        String key = RedisService.CACHE_KEY_CAPTCHA + uuid;
-
-        try {
-            redisService.add(key, text[1], RedisService.CACHE_KEY_CAPTCHA_DEFAULT_EXP);
-        } catch (ServiceException e) {
-            log.error("{},{}", uuid, text, e);
-            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "系统正忙，请稍后再试");
-        }
-
         FastByteArrayOutputStream stream = new FastByteArrayOutputStream();
 
         try {
             ImageIO.write(image, "jpg", stream);
         } catch (IOException e) {
-            remove(key);
+            log.error("{},{}", uuid, text, e);
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "系统正忙，请稍后再试");
+        }
+
+        try {
+            redisService.add(RedisService.CACHE_KEY_CAPTCHA + uuid, text[1],
+                RedisService.CACHE_KEY_CAPTCHA_DEFAULT_EXP);
+        } catch (ServiceException e) {
             log.error("{},{}", uuid, text, e);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "系统正忙，请稍后再试");
         }

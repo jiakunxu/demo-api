@@ -108,6 +108,23 @@ class RoleMenuServiceImplTest {
     }
 
     @Test
+    void springProxyCommitsAfterInsertionWhenDeletionReturnsFalse() {
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
+        doReturn(false).when(service).update(any(Wrapper.class));
+        var transactions = new TransactionProbe();
+        RoleMenuServiceImpl proxy = transactions.wrap(service);
+
+        assertThat(proxy.updateRoleMenus(roleId,
+            new BigInteger[] {BigInteger.TWO}, "editor"))
+            .extracting(RoleMenu::getMenuId).containsExactly(BigInteger.TWO);
+        var order = inOrder(service);
+        order.verify(service).saveBatch(anyCollection());
+        order.verify(service).update(any(Wrapper.class));
+        assertThat(transactions.commits).isEqualTo(1);
+        assertThat(transactions.rollbacks).isZero();
+    }
+
+    @Test
     void springProxyRollsBackWhenDeletionThrows() {
         when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         var failure = new org.springframework.dao.DataAccessResourceFailureException("offline");

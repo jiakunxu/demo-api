@@ -137,6 +137,23 @@ class UserRoleServiceImplTest {
     }
 
     @Test
+    void zeroRowDeletionAfterInsertionStillRefreshesTokenAndCommits() {
+        when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
+        doReturn(false).when(service).update(any(Wrapper.class));
+        var transactions = new TransactionProbe();
+
+        assertThat(transactions.wrap(service)
+            .updateUserRole(corp, user, new String[] {"2"}, "editor"))
+            .extracting(UserRole::getRoleId).containsExactly(BigInteger.TWO);
+        var sequence = inOrder(service, users);
+        sequence.verify(service).saveBatch(anyCollection());
+        sequence.verify(service).update(any(Wrapper.class));
+        sequence.verify(users).refreshToken(corp, user, "editor");
+        assertThat(transactions.commits).isEqualTo(1);
+        assertThat(transactions.rollbacks).isZero();
+    }
+
+    @Test
     void deletionExceptionRollsBackAndDoesNotRefreshToken() {
         when(mapper.list(any())).thenReturn(List.of(row(101, 1)));
         var failure = new org.springframework.dao.DataAccessResourceFailureException("offline");
