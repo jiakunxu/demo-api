@@ -263,16 +263,43 @@ class UserRoleServiceImplTest {
         assertThat(query.getCodes()).containsExactly("admin", "user");
     }
 
-    @Test
-    void roleBasedUserQueriesPreserveCorpAndExistenceCriteria() {
-        when(mapper.countUser(any())).thenReturn(2L);
-        assertThat(service.countUser(corp, "1", "true", new User())).isEqualTo(2L);
-        service.listUsers(corp, "1", "false", new User());
-        var capture = ArgumentCaptor.forClass(UserDO.class);
-        verify(mapper).listUsers(capture.capture());
-        assertThat(capture.getValue().getCorpId()).isEqualTo(corp);
-        assertThat(capture.getValue().getRoleId()).isEqualTo(BigInteger.ONE);
-        assertThat(capture.getValue().getExists()).isFalse();
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void roleBasedUserQueriesPreservePhoneAndTrustedScope(boolean exists) {
+        User filter = new User();
+        filter.setCorpId(BigInteger.valueOf(999));
+        filter.setName("张");
+        filter.setPhone("138");
+        filter.setPageNo(2L);
+        filter.setPageSize(10L);
+        UserDO row = new UserDO();
+        row.setId(user);
+        row.setPhone("13800138000");
+        when(mapper.countUser(any())).thenReturn(3000000000L);
+        when(mapper.listUsers(any())).thenReturn(List.of(row));
+
+        assertThat(service.countUser(corp, "1", Boolean.toString(exists), filter))
+            .isEqualTo(3000000000L);
+        filter.setCorpId(BigInteger.valueOf(999));
+        List<User> result = service.listUsers(corp, "1", Boolean.toString(exists), filter);
+
+        assertThat(result).singleElement().satisfies(value -> {
+            assertThat(value.getId()).isEqualTo(user);
+            assertThat(value.getPhone()).isEqualTo("13800138000");
+        });
+        var countQuery = ArgumentCaptor.forClass(UserDO.class);
+        var listQuery = ArgumentCaptor.forClass(UserDO.class);
+        verify(mapper).countUser(countQuery.capture());
+        verify(mapper).listUsers(listQuery.capture());
+        for (UserDO query : List.of(countQuery.getValue(), listQuery.getValue())) {
+            assertThat(query.getCorpId()).isEqualTo(corp);
+            assertThat(query.getRoleId()).isEqualTo(BigInteger.ONE);
+            assertThat(query.getExists()).isEqualTo(exists);
+            assertThat(query.getName()).isEqualTo("张");
+            assertThat(query.getPhone()).isEqualTo("138");
+        }
+        assertThat(listQuery.getValue().getOffset()).isEqualTo(10L);
+        assertThat(listQuery.getValue().getPageSize()).isEqualTo(10L);
     }
 
     @Test

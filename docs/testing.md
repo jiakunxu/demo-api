@@ -31,6 +31,13 @@
 | demo-dao / demo-open / demo-task | 当前未发现模块内测试；Service 中的 Mapper mock 不证明 DAO SQL 正确 |
 | start | ApplicationTests 为全应用上下文测试，可能初始化外部组件，与纯单元测试分开报告 |
 
+相关回归用例覆盖以下范围：`HttpUtilTest` 检查 PUT 的 Content-Type 请求头、
+charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图片写入失败后删除同一缓存键，
+以及清理异常时仍返回统一业务错误；`UserRoleServiceImplTest` 检查 phone 查询条件和结果转换。
+`UserRoleQueryMappingTest` 解析实际 Mapper XML，检查 count/list 的过滤条件一致、phone 空值分支、
+参数绑定与通配符转义。这些用例不访问外部服务；SQL 绑定测试不证明真实数据库结构或执行结果，
+也不验证旧版 mobile HTTP 参数的兼容性。
+
 [UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
 
 [DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 使用运行环境的 JCE 策略，不修改 JVM 全局 `crypto.policy` 或反射修改 JCE 内部状态。[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 检查初始化前后策略一致，并覆盖独立回调解密向量、签名校验和加密响应；初始化检查失败时不能解读为类内加解密用例已执行。
