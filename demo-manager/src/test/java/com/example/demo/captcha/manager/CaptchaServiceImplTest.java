@@ -63,13 +63,8 @@ class CaptchaServiceImplTest {
         verify(redisService, never()).remove(anyString());
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    void imageWriteFailureRemovesCachedAnswerEvenWhenCleanupFails(boolean cleanupFails) {
-        if (cleanupFails) {
-            doThrow(new ServiceException(HttpStatus.SERVICE_UNAVAILABLE, "unavailable"))
-                .when(redisService).remove(anyString());
-        }
+    @Test
+    void imageWriteFailureDoesNotAccessRedis() {
         var image = new BufferedImage(160, 60, BufferedImage.TYPE_INT_RGB);
         try (var producers = mockConstruction(DefaultKaptcha.class, (producer, context) -> {
             when(producer.createText()).thenReturn("3*4=?@12");
@@ -80,13 +75,7 @@ class CaptchaServiceImplTest {
 
             assertValidationError(() -> service.getCaptcha(), "系统正忙，请稍后再试");
 
-            var key = ArgumentCaptor.forClass(String.class);
-            var order = inOrder(redisService);
-            order.verify(redisService).add(key.capture(), eq("12"),
-                eq(RedisService.CACHE_KEY_CAPTCHA_DEFAULT_EXP));
-            assertThat(key.getValue()).startsWith(RedisService.CACHE_KEY_CAPTCHA);
-            order.verify(redisService).remove(key.getValue());
-            verifyNoMoreInteractions(redisService);
+            verifyNoInteractions(redisService);
         }
     }
 

@@ -32,8 +32,8 @@
 | start | ApplicationTests 为全应用上下文测试，可能初始化外部组件，与纯单元测试分开报告 |
 
 相关回归用例覆盖以下范围：`HttpUtilTest` 检查 PUT 的 Content-Type 请求头、
-charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图片写入失败后删除同一缓存键，
-以及清理异常时仍返回统一业务错误；`UserRoleServiceImplTest` 检查 phone 查询条件和结果转换。
+charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图片写入失败时不访问 Redis，
+并返回统一业务错误；`UserRoleServiceImplTest` 检查 phone 查询条件和结果转换。
 `UserRoleQueryMappingTest` 解析实际 Mapper XML，检查 count/list 的过滤条件一致、phone 空值分支、
 参数绑定与通配符转义。这些用例不访问外部服务；SQL 绑定测试不证明真实数据库结构或执行结果，
 也不验证旧版 mobile HTTP 参数的兼容性。
