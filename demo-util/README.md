@@ -19,7 +19,6 @@
 | [HttpUtil](src/main/java/com/example/demo/framework/util/HttpUtil.java) | HTTP 请求、响应及资源处理 |
 | [DateUtil](src/main/java/com/example/demo/framework/util/DateUtil.java) | 日期格式与时间边界 |
 | [ExcelUtil](src/main/java/com/example/demo/framework/util/ExcelUtil.java)、[WordUtil](src/main/java/com/example/demo/framework/util/WordUtil.java) | 文档转换、模板和资源关闭 |
-| [SqlUtil](src/main/java/com/example/demo/framework/util/SqlUtil.java) | 排序字符和长度检查；不等于业务字段白名单 |
 | [EncryptUtil](src/main/java/com/example/demo/framework/util/EncryptUtil.java) | 算法及编码契约，不能按方法名猜测算法 |
 
 另有 com/google/code/kaptcha 和 com/qq/weixin/mp/aes 下的第三方来源代码。
@@ -44,7 +43,7 @@
 ```
 
 测试位于 [framework.util 测试包](src/test/java/com/example/demo/framework/util)。
-当前新增测试范围限于该包；SqlUtil 尚无对应测试，不据其他工具测试通过推断其已覆盖。
+当前新增测试范围限于该包；各工具的覆盖范围以实际用例为准。
 POI 测试在部分环境需要临时 headless 参数，参见测试指南；公共行为改变还需消费者回归。
 
 ## 相关文档

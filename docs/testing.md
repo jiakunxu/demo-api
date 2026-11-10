@@ -24,7 +24,7 @@
 
 | 范围 | 当前状态与限制 |
 | --- | --- |
-| demo-util | framework.util 包已有多项工具测试；SqlUtil 尚无对应测试，排序字符、长度边界和关键字检查仍需验证 |
+| demo-util | framework.util 包已有多项工具测试；各工具的覆盖范围以实际用例为准 |
 | demo-manager | 已有实现类对应测试；CaptchaServiceImpl.getText 经 getCaptcha 间接执行，但现有用例未校验算式与答案一致，也未确定性覆盖各运算分支 |
 | demo-service | 已有主要业务实现测试；ValidateAspectTest 位于 role/service 测试包，不应因包位置不同认定缺失；占位功能见工程现状 |
 | demo-web | 当前未发现模块内测试；BaseController 请求绑定、排序/分页及 TokenAuthenticationFilter 认证上下文和刷新行为尚缺专项测试 |
