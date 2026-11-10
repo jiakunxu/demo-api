@@ -65,6 +65,9 @@ public class BaseController {
                 parameter.setSort(null);
                 parameter.setDir(null);
             }
+        } else {
+            parameter.setSort(null);
+            parameter.setDir(null);
         }
 
         String pageNo = request.getParameter("pageNo");
@@ -96,13 +99,20 @@ public class BaseController {
                     baseBO.setEnd(baseBO.getDateRange()[1]);
                 }
 
-                String dir = baseBO.getDir();
-                if ("ascending".equals(dir)) {
-                    baseBO.setDir("ASC");
-                } else if ("descending".equals(dir)) {
-                    baseBO.setDir("DESC");
+                if (StringUtils.isNotBlank(baseBO.getSort())
+                    && !SqlInjectionUtils.check(baseBO.getSort())) {
+                    String dir = baseBO.getDir();
+                    if ("ascending".equals(dir)) {
+                        baseBO.setDir("ASC");
+                    } else if ("descending".equals(dir)) {
+                        baseBO.setDir("DESC");
+                    } else {
+                        baseBO.setSort(null);
+                        baseBO.setDir(null);
+                    }
                 } else {
-                    baseBO.setDir(dir);
+                    baseBO.setSort(null);
+                    baseBO.setDir(null);
                 }
             }
 
