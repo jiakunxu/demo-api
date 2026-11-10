@@ -21,7 +21,7 @@ public class ArticleDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -4068500118415403863L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
 }

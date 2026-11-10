@@ -25,7 +25,7 @@ public class BytedanceNotifyDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 7889307835833273313L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

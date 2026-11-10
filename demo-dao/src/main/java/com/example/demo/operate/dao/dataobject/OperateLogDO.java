@@ -22,7 +22,7 @@ public class OperateLogDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -5521798017790714164L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

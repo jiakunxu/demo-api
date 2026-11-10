@@ -24,7 +24,7 @@ public class DingtalkAgentDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -3085683708399250037L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            corpId;

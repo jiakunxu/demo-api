@@ -23,7 +23,7 @@ public class RoleMenuDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -5876006806537431915L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

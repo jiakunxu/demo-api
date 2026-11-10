@@ -24,7 +24,7 @@ public class SubscribeDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 857172631787085965L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private BigInteger        userId;

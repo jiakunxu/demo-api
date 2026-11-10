@@ -20,7 +20,7 @@ public class MenuDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 6834457453642427426L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

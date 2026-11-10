@@ -22,7 +22,7 @@ public class UserRoleDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -5384472265511972841L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

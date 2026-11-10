@@ -24,7 +24,7 @@ public class TunnelDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 9197256150530836373L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private BigInteger        userId;

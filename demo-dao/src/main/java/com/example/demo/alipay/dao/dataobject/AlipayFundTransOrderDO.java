@@ -21,7 +21,7 @@ public class AlipayFundTransOrderDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 7420423017705642148L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

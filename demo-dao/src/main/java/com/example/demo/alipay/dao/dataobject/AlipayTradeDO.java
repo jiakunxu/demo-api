@@ -23,7 +23,7 @@ public class AlipayTradeDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 1715441966296002388L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            outTradeNo;

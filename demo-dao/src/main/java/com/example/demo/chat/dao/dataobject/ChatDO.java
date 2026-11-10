@@ -25,7 +25,7 @@ public class ChatDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 8356420243427841172L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private BigInteger        userId;
