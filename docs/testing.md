@@ -38,6 +38,11 @@ charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图�
 参数绑定与通配符转义。这些用例不访问外部服务；SQL 绑定测试不证明真实数据库结构或执行结果，
 也不验证旧版 mobile HTTP 参数的兼容性。
 
+[MapperResultMappingTest](../demo-service/src/test/java/com/example/demo/support/MapperResultMappingTest.java)
+按项目配置开启下划线转驼峰，读取实际 Mapper XML 的结果列标签，通过 MyBatis 结果处理器验证
+`is_system/system`、菜单布尔字段别名和 `sort_order/sortOrder` 的映射，覆盖 true/false、非零/零及
+SQL NULL。测试模拟 JDBC ResultSet，不连接数据库，不证明真实表结构或 SQL 执行正确。
+
 [UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
 
 [DingCallbackCrypto](../demo-manager/src/main/java/com/example/demo/dingtalk/manager/DingCallbackCrypto.java) 使用运行环境的 JCE 策略，不修改 JVM 全局 `crypto.policy` 或反射修改 JCE 内部状态。[对应测试](../demo-manager/src/test/java/com/example/demo/dingtalk/manager/DingCallbackCryptoTest.java) 在 BeforeAll 检查初始化前后策略一致，并覆盖独立回调解密向量、签名校验和加密响应；初始化检查失败时不能解读为类内加解密用例已执行。

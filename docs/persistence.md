@@ -29,6 +29,7 @@
 - 继承 MyBatis-Plus ServiceImpl 的业务类访问当前 Mapper 时，统一使用 `this.getBaseMapper().方法(...)`，例如 `this.getBaseMapper().list(query)`。同一方法确需多次使用时可保存为局部变量；不为单次调用重复注入同类型 Mapper。测试辅助设施仍可按既有方式设置 baseMapper 字段。
 
 - DO 使用 `@TableName` / `@TableField` 映射，继承 `BaseDO` 的实体具有审计/软删除字段；查询附加属性在 `BaseQuery` 中使用 `@TableField(exist=false)`。
+- 手写 XML 使用 `resultType` 时，结果列按列标签匹配属性。当前已开启下划线转驼峰，`sort_order` 可直接映射到 `sortOrder`；`is_system` 与 `system` 等无法通过驼峰转换匹配的列需要显式 `AS` 别名或 `resultMap`，不能仅依赖 DO 的 `@TableField`。
 - 业务排序列使用 `sort_order`，Java 属性使用可空 `Integer sortOrder`；不使用保留字 `order`，也不复用表示动态排序字段的 `sort`。旧列迁移见 [数据库指南](database.md)。
 - 当前应用配置 `id-type=AUTO`、`logic-delete-field=deleted`、删除值 1/正常值 0、下划线转驼峰。改用手工 MyBatis 配置或独立测试环境时需显式核对这些行为。
 - 计数 API、Service 实现、Controller 局部变量使用 `long`；继承 BaseMapper 的 Mapper 自定义计数方法（包括 count/count0/count1/countUser）返回 `Long`，XML `COUNT` 的 `resultType` 使用 `java.lang.Long`。Service 返回时会自动拆箱；常规 COUNT(*) 无匹配记录返回 0，不将 Mapper 的异常 null 返回默认为 0。不要与 insert/update/delete 的影响行数 `int` 混淆。
