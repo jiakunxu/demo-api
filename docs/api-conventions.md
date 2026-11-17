@@ -1,6 +1,6 @@
 # API 与 Web 契约
 
-状态：现状与开发规范。维护于 2026-10-13。面向 Controller、BO、响应、序列化和消费者修改。公开行为的变更需按 [需求模板](requirements/template.md) 表述，并验证消费者。
+状态：现状与开发规范。维护于 2026-11-17。面向 Controller、BO、响应、序列化和消费者修改。公开行为的变更需按 [需求模板](requirements/template.md) 表述，并验证消费者。
 
 ## 保留的契约
 
@@ -20,10 +20,10 @@
 | GET/表单与 BO 实例 | ServletRequestDataBinder 绑定，startDate/endDate 映射到 start/end；数字字符串转换 pageNo/pageSize | 绑定错误、数值范围、越界和允许修改字段 |
 | JSON 与 Class | Content-Type 合适时读取 UTF-8 JSON；BaseBO 的二项 dateRange 映射日期；解析失败通常记录日志后返回空对象 | 坏 JSON 与真正空请求的区别，不能宣称统一返回 400 |
 | JSON 数组 | 非 JSON 返回空数组；读取路径主要捕获 IOException | 语法错误与空列表的异常行为不同于 Class 路径 |
-| 排序字段（GET/表单与 BO 路径） | sort 非空白且 SqlInjectionUtils.check 返回 false 时进入排序处理 | 检查不等于业务字段白名单；未通过时已绑定的排序值不会被清除 |
-| 排序方向（GET/表单与 BO 路径） | 进入排序处理后，ascending/descending 映射 ASC/DESC，其他值（含缺失）清空 sort 和 dir | 未进入排序处理时保留绑定阶段的值，不能假定方向总经过转换或清空 |
+| 排序字段（GET/表单与 BO 路径） | sort 非空白且 SqlInjectionUtils.check 返回 false 时处理方向；否则清空 sort 和 dir | 检查不等于业务字段白名单；验证缺失、空白和检查返回 true 时两项均为 null |
+| 排序方向（GET/表单与 BO 路径） | 排序字段通过检查后，ascending/descending 映射 ASC/DESC，其他值（含缺失）清空 sort 和 dir | 方向仅接受 ascending/descending；直接传入 ASC/DESC 也会清空两项 |
 
-2026-11-10 核对：表单排序处理使用 MyBatis-Plus 的 SqlInjectionUtils.check，未保留原有的字符范围和 500 字符长度限制。ServletRequestDataBinder 在检查前已绑定 sort/dir；sort 为空白或检查返回 true 时，当前实现只跳过后续分支，不抛异常，也不清除已经绑定的值。动态 SQL 的允许列名和排序方向仍需在入口明确校验，不能将该检查视为完整拦截。JSON 等其他解析入口不能直接套用上述表单路径的行为。
+2026-11-17 核对：表单排序处理使用 MyBatis-Plus 的 SqlInjectionUtils.check，未保留原有的字符范围和 500 字符长度限制。ServletRequestDataBinder 在检查前已绑定 sort/dir；sort 缺失、为空白或检查返回 true 时，当前实现将两项均设为 null，不抛异常。排序字段通过检查但方向不是 ascending/descending 时，也清空两项。JSON 与 Class 路径解析结果为 BaseBO 时应用相同排序规则；JSON 数组路径不做该处理。SqlInjectionUtils.check 不是业务字段白名单，动态 SQL 的允许列名仍需明确校验。
 
 `getRemoteAddr` 优先取 X-Forwarded-For，不能假定它一定可信或只有一个 IP；受信代理策略属于入口部署契约。新增输入校验需显式实施并回归，不能写文档即认为现有解析已安全。
 
