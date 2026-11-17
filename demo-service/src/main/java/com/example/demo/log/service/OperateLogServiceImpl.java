@@ -11,6 +11,7 @@ import com.example.demo.operate.dao.mapper.OperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -36,7 +37,8 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
             return List.of();
         }
 
-        if (StringUtils.isAnyBlank(log.getSort(), log.getDir())) {
+        if (StringUtils.isAnyBlank(log.getSort(), log.getDir())
+            || !Strings.CS.equalsAny(log.getSort(), "id", "operateTime")) {
             log.setSort("id");
             log.setDir("DESC");
         }
