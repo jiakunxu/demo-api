@@ -193,6 +193,10 @@ public class DateUtil {
         return Seconds.secondsBetween(new DateTime(startDate), new DateTime(endDate)).getSeconds();
     }
 
+    public static Date addMonths(Date date, int months) {
+        return new DateTime(date).monthOfYear().addToCopy(months).toDate();
+    }
+
     /**
      * 获取日期时间加上days天.
      *

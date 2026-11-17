@@ -19,7 +19,7 @@ public class DictTypeDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -3596786743912293542L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            name;

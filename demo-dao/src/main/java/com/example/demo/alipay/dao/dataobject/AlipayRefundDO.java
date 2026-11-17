@@ -1,6 +1,5 @@
 package com.example.demo.alipay.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
@@ -21,7 +20,7 @@ public class AlipayRefundDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 1715441966296002388L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            outTradeNo;

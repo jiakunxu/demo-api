@@ -24,7 +24,7 @@
 
 | 范围 | 当前状态与限制 |
 | --- | --- |
-| demo-util | framework.util 包已有多项工具测试；SqlUtil 尚无对应测试，排序字符、长度边界和关键字检查仍需验证 |
+| demo-util | framework.util 包已有多项工具测试；各工具的覆盖范围以实际用例为准 |
 | demo-manager | 已有实现类对应测试；CaptchaServiceImpl.getText 经 getCaptcha 间接执行，但现有用例未校验算式与答案一致，也未确定性覆盖各运算分支 |
 | demo-service | 已有主要业务实现测试；ValidateAspectTest 位于 role/service 测试包，不应因包位置不同认定缺失；占位功能见工程现状 |
 | demo-web | 当前未发现模块内测试；BaseController 请求绑定、排序/分页及 TokenAuthenticationFilter 认证上下文和刷新行为尚缺专项测试 |
@@ -37,6 +37,11 @@ charset/自定义参数及原始请求体；`CaptchaServiceImplTest` 检查图�
 `UserRoleQueryMappingTest` 解析实际 Mapper XML，检查 count/list 的过滤条件一致、phone 空值分支、
 参数绑定与通配符转义。这些用例不访问外部服务；SQL 绑定测试不证明真实数据库结构或执行结果，
 也不验证旧版 mobile HTTP 参数的兼容性。
+
+[MapperResultMappingTest](../demo-service/src/test/java/com/example/demo/support/MapperResultMappingTest.java)
+按项目配置开启下划线转驼峰，读取实际 Mapper XML 的结果列标签，通过 MyBatis 结果处理器验证
+`is_system/system`、菜单布尔字段别名和 `sort_order/sortOrder` 的映射，覆盖 true/false、非零/零及
+SQL NULL。测试模拟 JDBC ResultSet，不连接数据库，不证明真实表结构或 SQL 执行正确。
 
 [UserDetailsServiceImplTest](../demo-service/src/test/java/com/example/demo/security/service/UserDetailsServiceImplTest.java) 当前验证按用户名加载；TokenServiceImplTest 中按 ID 加载用户是 mock，不能证明真实 loadUserById 已实现。不要为占位方法仅添加返回 null/空集合断言来宣称功能已覆盖。
 

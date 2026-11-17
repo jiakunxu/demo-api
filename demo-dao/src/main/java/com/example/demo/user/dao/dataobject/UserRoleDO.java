@@ -1,6 +1,5 @@
 package com.example.demo.user.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -22,7 +21,7 @@ public class UserRoleDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -5384472265511972841L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

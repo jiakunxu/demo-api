@@ -1,6 +1,5 @@
 package com.example.demo.corp.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
@@ -24,7 +23,7 @@ public class CorpDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 1738874407695964779L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            name;

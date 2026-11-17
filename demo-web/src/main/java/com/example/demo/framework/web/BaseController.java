@@ -1,8 +1,8 @@
 package com.example.demo.framework.web;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import com.example.demo.framework.bo.BaseBO;
-import com.example.demo.framework.util.SqlUtil;
 import com.example.demo.security.api.bo.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -52,13 +52,19 @@ public class BaseController {
         parameter.setSearch(request.getParameter("search"));
         parameter.setStart(request.getParameter("startDate"));
         parameter.setEnd(request.getParameter("endDate"));
-        parameter.setSort(SqlUtil.escapeOrderBySql(request.getParameter("sort")));
 
-        String dir = request.getParameter("dir");
-        if ("ascending".equals(dir)) {
-            parameter.setDir("ASC");
-        } else if ("descending".equals(dir)) {
-            parameter.setDir("DESC");
+        String sort = request.getParameter("sort");
+        if (StringUtils.isNotBlank(sort) && !SqlInjectionUtils.check(sort)) {
+            parameter.setSort(sort);
+            String dir = request.getParameter("dir");
+            if ("ascending".equals(dir)) {
+                parameter.setDir("ASC");
+            } else if ("descending".equals(dir)) {
+                parameter.setDir("DESC");
+            } else {
+                parameter.setSort(null);
+                parameter.setDir(null);
+            }
         } else {
             parameter.setSort(null);
             parameter.setDir(null);
@@ -93,13 +99,20 @@ public class BaseController {
                     baseBO.setEnd(baseBO.getDateRange()[1]);
                 }
 
-                String dir = baseBO.getDir();
-                if ("ascending".equals(dir)) {
-                    baseBO.setDir("ASC");
-                } else if ("descending".equals(dir)) {
-                    baseBO.setDir("DESC");
+                if (StringUtils.isNotBlank(baseBO.getSort())
+                    && !SqlInjectionUtils.check(baseBO.getSort())) {
+                    String dir = baseBO.getDir();
+                    if ("ascending".equals(dir)) {
+                        baseBO.setDir("ASC");
+                    } else if ("descending".equals(dir)) {
+                        baseBO.setDir("DESC");
+                    } else {
+                        baseBO.setSort(null);
+                        baseBO.setDir(null);
+                    }
                 } else {
-                    baseBO.setDir(dir);
+                    baseBO.setSort(null);
+                    baseBO.setDir(null);
                 }
             }
 

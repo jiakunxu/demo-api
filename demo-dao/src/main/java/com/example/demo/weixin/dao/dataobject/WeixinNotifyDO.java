@@ -1,6 +1,5 @@
 package com.example.demo.weixin.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
@@ -21,7 +20,7 @@ public class WeixinNotifyDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 852047823813545755L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
 }

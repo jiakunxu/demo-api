@@ -19,7 +19,7 @@ public class DictDataDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 3136596514473209241L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     @TableField(updateStrategy = FieldStrategy.NEVER)

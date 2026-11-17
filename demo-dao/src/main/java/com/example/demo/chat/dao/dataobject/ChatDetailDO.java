@@ -1,6 +1,5 @@
 package com.example.demo.chat.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -25,7 +24,7 @@ public class ChatDetailDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = 4553378337957619071L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            chatId;

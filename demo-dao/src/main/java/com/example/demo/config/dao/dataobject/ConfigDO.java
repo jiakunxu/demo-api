@@ -19,7 +19,7 @@ public class ConfigDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -6484949074708858420L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     /**

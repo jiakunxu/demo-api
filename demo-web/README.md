@@ -1,6 +1,6 @@
 # demo-web：HTTP 与连接入口
 
-维护于 2026-10-20。事实来源为本模块 POM、Controller、过滤器和配置类。
+维护于 2026-11-17。事实来源为本模块 POM、Controller、过滤器和配置类。
 
 ## 职责与边界
 
@@ -32,7 +32,7 @@
 - 同步 API/Service、BO、参数解析、方法权限及异常处理；涉及配置时登记消费者。
 - 方法权限不替代 Service/SQL 的用户、企业和数据归属条件。
 - BaseController 的表单绑定与 JSON 解析是不同路径，不能假定过滤规则完全相同。
-- 当前表单排序由 SqlUtil 检查字符及长度，未知 dir 清空排序；仍不是业务字段白名单。
+- 当前表单排序仅在 sort 非空白且 SqlInjectionUtils.check 返回 false 时处理方向，将 ascending/descending 转为 ASC/DESC；sort 缺失、为空白、检查返回 true，或方向为其他值（含缺失、ASC/DESC）时，均清空 sort/dir。JSON 与 Class 路径解析结果为 BaseBO 时应用相同排序规则。该检查不是业务字段白名单，详见 [API 约定](../docs/api-conventions.md)。
 - 回调保留原始体、签名和身份语义；不为调试扩大公开路径或关闭验签。
 - 新增连接功能同时核对连接归属、断连清理和发送失败。
 

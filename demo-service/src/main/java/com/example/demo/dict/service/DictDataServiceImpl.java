@@ -184,6 +184,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         DictData before = getData(id);
 
         if (before == null) {
+            log.error("{},{},{}", id, data, updateBy);
             throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR, "暂无权限");
         }
 
@@ -214,8 +215,8 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictDataDO>
         }
 
         var updateWrapper = Wrappers.lambdaUpdate(DictDataDO.class)
-            .eq(DictDataDO::getTypeId, typeId)
-            .set(DictDataDO::getTypeValue, typeValue).set(DictDataDO::getUpdateBy, updateBy);
+            .eq(DictDataDO::getTypeId, typeId).set(DictDataDO::getTypeValue, typeValue)
+            .set(DictDataDO::getUpdateBy, updateBy);
 
         this.update(updateWrapper);
 

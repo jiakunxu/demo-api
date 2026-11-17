@@ -104,6 +104,7 @@ mybatis-plus:
     banner: false
     db-config:
       id-type: AUTO
+      insert-ignore-auto-increment-column: true
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0

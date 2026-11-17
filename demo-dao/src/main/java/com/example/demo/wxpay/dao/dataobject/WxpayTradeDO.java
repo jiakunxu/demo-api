@@ -1,6 +1,5 @@
 package com.example.demo.wxpay.dao.dataobject;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.framework.dataobject.BaseDO;
@@ -21,7 +20,7 @@ public class WxpayTradeDO extends BaseDO {
     @Serial
     private static final long serialVersionUID = -7407102721978781501L;
 
-    @TableId(type = IdType.AUTO)
+    @TableId
     private BigInteger        id;
 
     private String            outTradeNo;
